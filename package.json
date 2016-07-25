@@ -1,0 +1,24 @@
+{
+  "name": "tocu-graph-api",
+  "version": "0.1.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/ecolab/tocu-graph-api.git"
+  },
+  "keywords": [
+    "tocu",
+    "graph",
+    "api"
+  ],
+  "author": "Hieu Tran <hieu.tranduc@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/ecolab/tocu-graph-api/issues"
+  },
+  "homepage": "https://gitlab.com/ecolab/tocu-graph-api#README"
+}
