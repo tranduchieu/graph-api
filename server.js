@@ -1,5 +1,6 @@
 /* eslint no-console:0 */
 import express from 'express';
+import cors from 'cors';
 import Parse from 'parse/node';
 import {
   ParseServer,
@@ -7,7 +8,13 @@ import {
 }
 from 'parse-server';
 import parseDashboard from 'parse-dashboard';
-import config from './config';
+
+import graphHTTP from 'express-graphql';
+import Schema from './graphql/schema';
+import loaders from './graphql/loaders';
+
+const env = process.env.NODE_ENV || 'development';
+const config = require('./config.json')[env];
 
 const SERVER_PORT = process.env.PORT || 8080;
 const SERVER_HOST = process.env.HOST || 'localhost';
@@ -24,6 +31,7 @@ Parse.masterKey = MASTER_KEY;
 Parse.Cloud.useMasterKey();
 
 const server = express();
+server.use(cors());
 
 server.use(
   '/parse',
@@ -65,6 +73,35 @@ if (IS_DEVELOPMENT) {
     }, IS_DEVELOPMENT)
   );
 }
+
+function extractTokenFromHeader(headers) {
+  if (headers === null || headers.authorization === null) return null;
+
+  let authorization = headers.authorization;
+  let authArr = authorization.split(' ');
+  if (authArr.length !== 2) return null;
+
+  // retrieve token
+  let token = authArr[1];
+  // 	if (token.length != TOKEN_LENGTH * 2) throw new Error('Token length is not the expected one');
+
+  return token;
+}
+
+server.user(
+  '/graphql',
+  graphHTTP(req => ({
+    schema: Schema,
+    pretty: true,
+    graphiql: true,
+    rootValue: {
+      access_token: extractTokenFromHeader(req.headers) ||
+                      req.query.access_token ||
+                      null
+    },
+    context: {loaders}
+  }))
+);
 
 server.listen(SERVER_PORT, () => console.log(
   `Server is now running in ${process.env.NODE_ENV || 'development'} mode on http://localhost:${SERVER_PORT}`

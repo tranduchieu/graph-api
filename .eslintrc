@@ -6,3 +6,17 @@ env:
   es6: true
   node: true
   mocha: true
+{
+  "parser": "babel-eslint",
+  "extends": "google",
+  "ecmaFeatures": {
+    "experimentalObjectRestSpread": true
+  },
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "rules": {
+    "no-console": 0
+  }
+}
