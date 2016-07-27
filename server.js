@@ -1,15 +1,13 @@
-import path from 'path';
+/* eslint no-console:0 */
 import express from 'express';
 import Parse from 'parse/node';
 import {
   ParseServer,
-  S3Adapter
+  S3Adapter,
 }
 from 'parse-server';
 import parseDashboard from 'parse-dashboard';
-
-const env = process.env.NODE_ENV || 'development';
-const config = require('./config.json')[env];
+import config from './config';
 
 const SERVER_PORT = process.env.PORT || 8080;
 const SERVER_HOST = process.env.HOST || 'localhost';
@@ -40,18 +38,18 @@ server.use(
       config.S3_ACCESS_KEY,
       config.S3_SECRET_KEY,
       config.S3_BUCKET,
-      {directAccess: true}
-    )
+      { directAccess: true },
+    ),
   })
 );
 
 if (IS_DEVELOPMENT) {
   let users;
   if (DASHBOARD_AUTH) {
-    var [user, pass] = DASHBOARD_AUTH.split(':');
+    const [user, pass] = DASHBOARD_AUTH.split(':');
     users = [{
       user,
-      pass
+      pass,
     }];
   }
   server.use(
@@ -61,9 +59,9 @@ if (IS_DEVELOPMENT) {
         serverURL: '/parse',
         appId: APP_ID,
         masterKey: MASTER_KEY,
-        appName: 'Parse Server'
+        appName: 'Parse Server',
       }],
-      users
+      users,
     }, IS_DEVELOPMENT)
   );
 }

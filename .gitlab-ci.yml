@@ -1,0 +1,17 @@
+image: node:wheezy
+
+cache:
+  paths:
+  - node_modules/
+
+stages:
+  - test
+
+test_lint:
+  stage: test
+  script:
+  - npm i -g eslint
+  - npm i
+  - npm run lint
+  tags:
+    - docker
