@@ -6,11 +6,11 @@ function _wrapResolver(typeName, resolver) {
     const resolved = resolver(...args);
     if (resolved && typeof resolved.then === 'function') {
       return resolved.then(result => {
-        Object.assign(result, {__relayType: typeName});
+        Object.assign(result, { __relayType: typeName });
         return result;
       });
     } else if (resolved) {
-      Object.assign(resolved, {__relayType: typeName});
+      Object.assign(resolved, { __relayType: typeName });
     }
     return resolved;
   };

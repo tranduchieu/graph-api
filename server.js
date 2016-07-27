@@ -11,10 +11,8 @@ import parseDashboard from 'parse-dashboard';
 
 import graphHTTP from 'express-graphql';
 import Schema from './graphql/schema';
-import loaders from './graphql/loaders';
-
-const env = process.env.NODE_ENV || 'development';
-const config = require('./config.json')[env];
+// import loaders from './graphql/loaders';
+import config from './config';
 
 const SERVER_PORT = process.env.PORT || 8080;
 const SERVER_HOST = process.env.HOST || 'localhost';
@@ -29,6 +27,15 @@ Parse.initialize(APP_ID);
 Parse.serverURL = `http://localhost:${SERVER_PORT}/parse`;
 Parse.masterKey = MASTER_KEY;
 Parse.Cloud.useMasterKey();
+
+// function getSchema() {
+//   // if (!IS_DEVELOPMENT) {
+//   //   return Schema;
+//   // }
+
+//   // delete require.cache[require.resolve('./graphql/schema.js')];
+//   return require('./graphql/schema');
+// }
 
 const server = express();
 server.use(cors());
@@ -46,7 +53,7 @@ server.use(
       config.S3_ACCESS_KEY,
       config.S3_SECRET_KEY,
       config.S3_BUCKET,
-      { directAccess: true },
+      { directAccess: true }
     ),
   })
 );
@@ -75,20 +82,22 @@ if (IS_DEVELOPMENT) {
 }
 
 function extractTokenFromHeader(headers) {
-  if (headers === null || headers.authorization === null) return null;
+  if (headers == null || headers.authorization == null) return null;
 
-  let authorization = headers.authorization;
-  let authArr = authorization.split(' ');
+  const authorization = headers.authorization;
+  const authArr = authorization.split(' ');
   if (authArr.length !== 2) return null;
 
   // retrieve token
-  let token = authArr[1];
+  const token = authArr[1];
   // 	if (token.length != TOKEN_LENGTH * 2) throw new Error('Token length is not the expected one');
 
   return token;
 }
 
-server.user(
+const loaders = require('./graphql/loaders');
+
+server.use(
   '/graphql',
   graphHTTP(req => ({
     schema: Schema,
@@ -97,9 +106,9 @@ server.user(
     rootValue: {
       access_token: extractTokenFromHeader(req.headers) ||
                       req.query.access_token ||
-                      null
+                      null,
     },
-    context: {loaders}
+    context: { loaders },
   }))
 );
 
@@ -107,9 +116,3 @@ server.listen(SERVER_PORT, () => console.log(
   `Server is now running in ${process.env.NODE_ENV || 'development'} mode on http://localhost:${SERVER_PORT}`
 ));
 
-// var user = new Parse.User();
-// user.set('username', 'cu3');
-// user.set('password', 'laclac');
-// user.signUp()
-// .then(console.log)
-// .catch(console.error);

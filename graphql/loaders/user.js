@@ -1,14 +1,16 @@
 import DataLoader from 'dataloader';
 import Parse from 'parse/node';
+// Parse.initialize('oss-f8-app-2016');
 
-export const userByIDLoader = new DataLoader(ids => {
-  var queryUser = new Parse.Query(Parse.User);
+export const userByIdLoader = new DataLoader(ids => {
+  const queryUser = new Parse.Query(Parse.User);
   queryUser.containedIn('objectId', ids);
   return queryUser.find();
 });
 
 export const allUserLoader = new DataLoader(keys => {
-  var queryUser = new Parse.Query(Parse.User);
+  console.log(keys);
+  const queryUser = new Parse.Query(Parse.User);
 
   if (keys[0] !== 'allUsers' && typeof JSON.parse(keys[0]) === 'object') {
     const argObj = JSON.parse(keys[0]);
@@ -17,5 +19,14 @@ export const allUserLoader = new DataLoader(keys => {
     });
   }
 
-  return queryUser.find();
+  return Promise.all([queryUser.find()]);
 });
+
+// const queryUser = new Parse.Query(Parse.User);
+// const promise = queryUser.find();
+const promise = allUserLoader.load('allUsers');
+promise
+.then(users => {
+  console.log(users[0].get('username'));
+})
+.catch(console.error);

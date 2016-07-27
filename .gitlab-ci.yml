@@ -14,4 +14,8 @@ test_lint:
   - npm i
   - npm run lint
   tags:
+<<<<<<< 5daf3a8a674a44f9b7dee0a3ea2281fa092b45b1
     - docker
+=======
+    - docker
+>>>>>>> coding

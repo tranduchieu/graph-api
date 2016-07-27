@@ -1,9 +1,16 @@
 import {
   allUserLoader,
-  userByIDLoader
+  userByIdLoader,
 } from './user';
 
-export default {
+import {
+  allProfilesLoader,
+  profileByIdLoader,
+} from './profile';
+
+module.exports = {
   users: allUserLoader,
-  user: userByIDLoader
+  user: userByIdLoader,
+  profiles: allProfilesLoader,
+  profile: profileByIdLoader,
 };
