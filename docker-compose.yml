@@ -2,10 +2,25 @@ version: '2'
 services:
   web:
     build: .
+    environment:
+      NODE_ENV: development
+      SERVER_PORT: "8080"
+      SERVER_HOST: localhost
+      # Parse server
+      APP_ID:
+      MASTER_KEY:
+      DASHBOARD_AUTH: admin:admin
+      # Database
+      DATABASE_URI: mongodb://mongo:27017/dev
+      # AWS S3
+      S3_ACCESS_KEY:
+      S3_SECRET_KEY:
+      S3_BUCKET:
     ports:
       - "8080:8080"
     volumes:
       - .:/usr/src
+      - /usr/src/node_modules
     links:
       # - redis
       - mongo
@@ -13,3 +28,5 @@ services:
   #   image: redis
   mongo:
     image: mongo
+    ports:
+      - "27017:27017"
