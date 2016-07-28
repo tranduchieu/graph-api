@@ -15,18 +15,19 @@ export const allUserLoader = new DataLoader(keys => {
   if (keys[0] !== 'allUsers' && typeof JSON.parse(keys[0]) === 'object') {
     const argObj = JSON.parse(keys[0]);
     Object.keys(argObj).forEach(key => {
-      queryUser.equalTo(key, argObj.key);
+      queryUser.equalTo(key, argObj[key]);
     });
   }
 
   return Promise.all([queryUser.find()]);
 });
 
-// const queryUser = new Parse.Query(Parse.User);
-// const promise = queryUser.find();
-const promise = allUserLoader.load('allUsers');
+const queryUser = new Parse.Query(Parse.User);
+queryUser.equalTo('username', 'tranduchieu2');
+const promise = queryUser.find();
+// const promise = allUserLoader.load('allUsers');
 promise
 .then(users => {
-  console.log(users[0].get('username'));
+  console.log(users);
 })
 .catch(console.error);

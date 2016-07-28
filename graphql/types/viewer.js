@@ -11,6 +11,7 @@ const Viewer = new GraphQLObjectType({
   description: 'Viewer query',
   fields: () => ({
     id: globalIdField('Viewer'),
+    me: UserQueries.me,
     user: UserQueries.user,
     users: UserQueries.users,
   }),

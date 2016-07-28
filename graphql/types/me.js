@@ -21,6 +21,12 @@ const MeType = new GraphQLObjectType({
   description: 'Me type',
   fields: () => ({
     id: globalIdField('Me'),
+    username: {
+      type: GraphQLString,
+      resolve(data) {
+        return data.get('username');
+      },
+    },
     mobilePhone: {
       type: GraphQLString,
     },

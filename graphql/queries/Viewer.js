@@ -4,6 +4,7 @@ export default {
   viewer: {
     type: ViewerType,
     resolve(_) {
+      console.log(_);
       return _;
     },
   },

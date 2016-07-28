@@ -104,8 +104,8 @@ server.use(
     pretty: true,
     graphiql: true,
     rootValue: {
-      access_token: extractTokenFromHeader(req.headers) ||
-                      req.query.access_token ||
+      accessToken: extractTokenFromHeader(req.headers) ||
+                      req.query.accessToken ||
                       null,
     },
     context: { loaders },
@@ -116,3 +116,13 @@ server.listen(SERVER_PORT, () => console.log(
   `Server is now running in ${process.env.NODE_ENV || 'development'} mode on http://localhost:${SERVER_PORT}`
 ));
 
+const query = new Parse.Query(Parse.Session);
+query.equalTo('sessionToken', 'r:269f715cb58f769009d135d4e6cb40cc');
+query.include('user');
+query.first({
+  sessionToken: 'xxx',
+})
+.then(result => {
+  console.log(result.get('user').get('username'));
+})
+.catch(console.error);
