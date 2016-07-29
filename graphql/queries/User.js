@@ -55,9 +55,7 @@ export default {
       ...connectionArgs,
     },
     resolve(_, args, { loaders }) {
-      const loaderKey = args.username ? JSON.stringify(args) : 'allUsers';
-
-      return connectionFromPromisedArray(loaders.users.load(loaderKey), args);
+      return connectionFromPromisedArray(loaders.users.load(JSON.stringify(args)), {});
     },
   },
 };
