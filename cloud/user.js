@@ -17,7 +17,7 @@ import _ from 'lodash';
 // }
 
 Parse.Cloud.afterSave(Parse.User, (req, res) => {
-	Parse.Cloud.useMasterKey();
+  Parse.Cloud.useMasterKey();
 
   const user = req.object;
   const authData = req.object.get('authData2') || null;
@@ -34,7 +34,7 @@ Parse.Cloud.afterSave(Parse.User, (req, res) => {
                                 fbAuthData.picture.data.url : null);
   profile.set('user', user);
 
-  profile.save()
+  return profile.save()
 	.then(profileObj => {
   user.set('profile', profileObj);
   return user.save();
