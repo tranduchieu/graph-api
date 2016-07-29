@@ -1,4 +1,5 @@
 /* eslint no-console:0 */
+import path from 'path';
 import express from 'express';
 import cors from 'cors';
 import Parse from 'parse/node';
@@ -21,6 +22,7 @@ const MASTER_KEY = process.env.MASTER_KEY ||
 const DATABASE_URI = process.env.DATABASE_URI || 'mongodb://localhost:27017/dev';
 const IS_DEVELOPMENT = process.env.NODE_ENV !== 'production';
 const DASHBOARD_AUTH = process.env.DASHBOARD_AUTH;
+const SESSION_LENGTH = process.env.SESSION_LENGTH || 2592000;
 
 const S3_ACCESS_KEY = process.env.S3_ACCESS_KEY || 'YOUR_S3_ACCESS_KEY';
 const S3_SECRET_KEY = process.env.S3_SECRET_KEY || 'YOUR_S3_SECRET_KEY';
@@ -48,11 +50,12 @@ server.use(
   '/parse',
   new ParseServer({
     databaseURI: DATABASE_URI,
-    // cloud: path.resolve(__dirname, 'Cloud.js'),
+    cloud: path.resolve(__dirname, 'cloud'),
     appId: APP_ID,
     masterKey: MASTER_KEY,
     fileKey: 'f33fc1a9-9ba9-4589-95ca-9976c0d52cd5',
     serverURL: `http://${SERVER_HOST}:${SERVER_PORT}/parse`,
+    sessionLength: SESSION_LENGTH,
     filesAdapter: new S3Adapter(
       S3_ACCESS_KEY,
       S3_SECRET_KEY,
@@ -119,14 +122,3 @@ server.use(
 server.listen(SERVER_PORT, () => console.log(
   `Server is now running in ${process.env.NODE_ENV || 'development'} mode on http://localhost:${SERVER_PORT}`
 ));
-
-// const query = new Parse.Query(Parse.Session);
-// query.equalTo('sessionToken', 'r:269f715cb58f769009d135d4e6cb40cc');
-// query.include('user');
-// query.first({
-//   sessionToken: 'xxx',
-// })
-// .then(result => {
-//   console.log(result.get('user').get('username'));
-// })
-// .catch(console.error);
