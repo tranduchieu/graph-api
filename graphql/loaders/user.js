@@ -9,7 +9,7 @@ export const userByIdLoader = new DataLoader(ids => {
   return Promise.all(ids.map(id => {
     console.log('objectId', id);
     return queryUser.find();
-  }))
+  }));
 });
 
 export const allUserLoader = new DataLoader(keys => {

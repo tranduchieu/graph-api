@@ -23,10 +23,14 @@ export default {
 
       const query = new Parse.Query(Parse.Session);
       query.equalTo('sessionToken', accessToken);
-      query.include('user');
+      query.include('user.profile');
       return query.first()
       .then(result => {
-        return result.get('user');
+        if (!result) throw new Error('không tìm thấy ');
+        const user = result.get('user');
+        user.set('expiresAt', result.get('expiresAt'));
+        user.set('userSessionToken', result.get('sessionToken'));
+        return user;
       })
       .catch(err => {
         throw err;

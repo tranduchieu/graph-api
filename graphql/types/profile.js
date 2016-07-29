@@ -18,21 +18,45 @@ const Profile = new GraphQLObjectType({
     id: globalIdField('Profile'),
     name: {
       type: GraphQLString,
+      resolve(data) {
+        return data.get('name');
+      },
     },
     email: {
       type: GraphQLString,
+      resolve(data) {
+        return data.get('email');
+      },
     },
     mobilePhone: {
       type: GraphQLString,
+      resolve(data) {
+        return data.get('mobilePhone');
+      },
+    },
+    avatarUrl: {
+      type: GraphQLString,
+      resolve(data) {
+        return data.get('avatarUrl');
+      },
     },
     address: {
       type: GraphQLString,
+      resolve(data) {
+        return data.get('address');
+      },
     },
     district: {
       type: GraphQLString,
+      resolve(data) {
+        return data.get('district');
+      },
     },
     province: {
       type: GraphQLString,
+      resolve(data) {
+        return data.get('province');
+      },
     },
   }),
 });

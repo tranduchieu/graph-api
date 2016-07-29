@@ -8,7 +8,11 @@ import {
   globalIdField,
 } from 'graphql-relay';
 
+import moment from 'moment';
+
+
 import RelayRegistry from '../relay/RelayRegistry';
+import ProfileType from './profile';
 
 // Resolver
 export function accountResolver(_, { id }, { loaders }) {
@@ -27,17 +31,27 @@ const MeType = new GraphQLObjectType({
         return data.get('username');
       },
     },
-    mobilePhone: {
+    sessionToken: {
       type: GraphQLString,
+      resolve(data) {
+        return data.get('userSessionToken');
+      },
     },
-    email: {
-      type: GraphQLString,
-    },
-    accessToken: {
-      type: GraphQLString,
-    },
-    expires: {
+    expiresIn: {
       type: GraphQLInt,
+      resolve(data) {
+        const expiresAt = data.get('expiresAt');
+        const expiresIn = moment.duration(moment(expiresAt).diff(moment())).asSeconds();
+        console.log(expiresIn);
+        return expiresIn;
+      },
+    },
+    profile: {
+      type: ProfileType,
+      resolve(data) {
+        console.log(data.get('profile'));
+        return data.get('profile');
+      },
     },
   }),
 });
