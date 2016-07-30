@@ -23,12 +23,12 @@ export const allUserLoader = new DataLoader(keys => {
     queryUser.limit(first || 20);
 
     return queryUser.find()
-    .then(users => {
-      users.forEach(item => {
-        userByIdLoader.prime(item.id, item);
-        return users;
+      .then(users => {
+        users.forEach(item => {
+          userByIdLoader.prime(item.id, item);
+          return users;
+        });
       });
-    });
   }));
 });
 

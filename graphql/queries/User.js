@@ -25,16 +25,16 @@ export default {
       query.equalTo('sessionToken', accessToken);
       query.include('user.profile');
       return query.first()
-      .then(result => {
-        if (!result) throw new Error('không tìm thấy ');
-        const user = result.get('user');
-        user.set('expiresAt', result.get('expiresAt'));
-        user.set('userSessionToken', result.get('sessionToken'));
-        return user;
-      })
-      .catch(err => {
-        throw err;
-      });
+        .then(result => {
+          if (!result) throw new Error('không tìm thấy ');
+          const user = result.get('user');
+          user.set('expiresAt', result.get('expiresAt'));
+          user.set('userSessionToken', result.get('sessionToken'));
+          return user;
+        })
+        .catch(err => {
+          throw err;
+        });
     },
   },
   user: {

@@ -35,14 +35,14 @@ Parse.Cloud.afterSave(Parse.User, (req, res) => {
   profile.set('user', user);
 
   return profile.save()
-	.then(profileObj => {
-  user.set('profile', profileObj);
-  return user.save();
-	})
-	.then(() => {
-  return res.success();
-	})
-	.catch(err => {
-  return res.error(err);
-	});
+    .then(profileObj => {
+      user.set('profile', profileObj);
+      return user.save();
+    })
+    .then(() => {
+      return res.success();
+    })
+    .catch(err => {
+      return res.error(err);
+    });
 });
