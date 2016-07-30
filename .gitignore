@@ -1,3 +1,4 @@
 node_modules
-config.json
+docker-compose.dev.yml
+docker-compose.prod.yml
 logs

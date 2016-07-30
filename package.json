@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/ecolab/tocu-graph-api.git"
+    "url": "git+https://gitlab.com/tocu/graph-api.git"
   },
   "keywords": [
     "tocu",
@@ -25,20 +25,25 @@
     "babel-preset-es2015": "^6.9.0",
     "eslint": "^3.1.1",
     "eslint-config-airbnb-base": "^5.0.0",
-    "eslint-plugin-import": "^1.11.1"
+    "eslint-plugin-import": "^1.12.0"
   },
   "dependencies": {
     "babel-plugin-syntax-async-functions": "^6.8.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "cors": "^2.7.1",
+    "dataloader": "^1.2.0",
     "express": "^4.14.0",
     "express-graphql": "^0.5.3",
     "graphql": "^0.6.2",
     "graphql-relay": "~0.4.2",
+    "lodash": "^4.14.0",
+    "moment": "^2.14.1",
     "parse": "~1.8.2",
     "parse-dashboard": "~1.0.8",
     "parse-server": "~2.2.6"
   },
   "bugs": {
-    "url": "https://gitlab.com/ecolab/tocu-graph-api/issues"
+    "url": "https://gitlab.com/tocu/graph-api/issues"
   },
-  "homepage": "https://gitlab.com/ecolab/tocu-graph-api#README"
+  "homepage": "https://gitlab.com/tocu/graph-api#README"
 }

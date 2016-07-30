@@ -1,20 +1,22 @@
 # node Current release
-FROM node:wheezy
+FROM node:latest
 
 MAINTAINER Hieu Tran <hieu.tranduc@gmail.com>
 
-# use nodemon for development
-RUN npm install --global nodemon
+# Install Node global packages
+RUN npm install -g nodemon babel-cli
 
-# use cached layer for node modules
-ADD package.json /tmp/package.json
-RUN cd /tmp && npm install
-RUN mkdir -p /usr/src && cp -a /tmp/node_modules /usr/src/
-
-# add project files
+# Create app directory
+RUN mkdir -p /usr/src
 WORKDIR /usr/src
-ADD . /usr/src
+
+# Install app dependencies
+COPY package.json /usr/src
+RUN npm install
+
+# Bundle app source
+COPY . /usr/src
 
 EXPOSE 8080
 
-CMD ["nodemon", "-L", "/usr/src/bin/www"]
+CMD ["nodemon", "-L", "--exec", "babel-node", "server.js"]
