@@ -5,12 +5,10 @@ import { cursorToOffset } from 'graphql-relay';
 export const userByIdLoader = new DataLoader(ids => {
   const queryUser = new Parse.Query(Parse.User);
   queryUser.containedIn('objectId', ids);
-  // return queryUser.find();
-  return Promise.all(ids.map(id => {
-    console.log('objectId', id);
-    return queryUser.find();
-  }));
+
+  return queryUser.find();
 });
+
 
 export const allUserLoader = new DataLoader(keys => {
   return Promise.all(keys.map(key => {
@@ -41,3 +39,14 @@ export const allUserLoader = new DataLoader(keys => {
 //   console.log(users);
 // })
 // .catch(console.error);
+
+// const promise1 = userByIdLoader.load('9Z399ohBdS');
+// const promise2 = userByIdLoader.load('m1HfcEtp8s');
+
+// Promise.all([
+//   promise1,
+//   promise2,
+// ])
+// .then(console.log)
+// .catch(console.error);
+
