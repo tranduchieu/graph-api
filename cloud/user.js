@@ -46,3 +46,15 @@ Parse.Cloud.afterSave(Parse.User, (req, res) => {
       return res.error(err);
     });
 });
+
+// Profile trigger
+const mobilePhoneUniqueValidate = function (mobilePhone) {
+  return new Promise((resolve, reject) => {
+
+  })
+}
+
+Parse.Cloud.beforeSave(Parse.File, (req, res) => {
+  console.log(req.object);
+  res.error();
+});
