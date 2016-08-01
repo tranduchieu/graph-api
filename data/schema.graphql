@@ -1,0 +1,62 @@
+schema {
+  query: Query
+}
+
+type Me {
+  id: ID!
+  username: String
+  sessionToken: String
+  expiresIn: Int
+  profile: Profile
+}
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type Profile {
+  id: ID!
+  name: String
+  email: String
+  mobilePhone: String
+  avatarUrl: String
+  address: String
+  district: String
+  province: String
+}
+
+type Query {
+  node(id: ID!): Node
+  viewer: Viewer
+}
+
+type User {
+  id: ID!
+  username: String
+  password: String
+  profile: Profile
+}
+
+type UserConnection {
+  pageInfo: PageInfo!
+  edges: [UserEdge]
+}
+
+type UserEdge {
+  node: User
+  cursor: String!
+}
+
+type Viewer {
+  id: ID!
+  me: Me
+  user(id: ID!): User
+  users(username: String, after: String, first: Int, before: String, last: Int): UserConnection
+}

@@ -26,8 +26,8 @@ export const allUserLoader = new DataLoader(keys => {
       .then(users => {
         users.forEach(item => {
           userByIdLoader.prime(item.id, item);
-          return users;
         });
+        return users;
       });
   }));
 });
