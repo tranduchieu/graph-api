@@ -2,3 +2,4 @@ node_modules
 docker-compose.dev.yml
 docker-compose.prod.yml
 logs
+data/db
