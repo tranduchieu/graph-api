@@ -5,6 +5,7 @@ import {
 import { globalIdField } from 'graphql-relay';
 
 import UserQueries from '../queries/User';
+import ProductQueries from '../queries/Product';
 
 const Viewer = new GraphQLObjectType({
   name: 'Viewer',
@@ -14,6 +15,8 @@ const Viewer = new GraphQLObjectType({
     me: UserQueries.me,
     user: UserQueries.user,
     users: UserQueries.users,
+    product: ProductQueries.product,
+    products: ProductQueries.products,
   }),
 });
 
