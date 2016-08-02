@@ -14,7 +14,7 @@ export function productTagResolver(_, { id }, { loaders }) {
 }
 
 const ProductTag = new GraphQLObjectType({
-  name: 'Product Tag',
+  name: 'ProductTag',
   description: 'Product tag type',
   fields: () => ({
     id: globalIdField('Tag'),

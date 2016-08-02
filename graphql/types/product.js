@@ -12,7 +12,6 @@ import {
 
 import RelayRegistry from '../relay/RelayRegistry';
 
-import ProductTagType from './productTag';
 import UserType from './user';
 
 export function productResolver(_, { id }, { loaders }) {
@@ -20,7 +19,7 @@ export function productResolver(_, { id }, { loaders }) {
 }
 
 const ProductImageType = new GraphQLObjectType({
-  name: 'Product Image',
+  name: 'ProductImage',
   description: 'Product image type',
   fields: () => ({
     position: {
@@ -38,6 +37,19 @@ const ProductImageType = new GraphQLObjectType({
   }),
 });
 
+const ProductAdditionalPropertiesType = new GraphQLObjectType({
+  name: 'ProductAdditionalProperties',
+  description: 'Product Additional Properties type',
+  fields: () => ({
+    name: {
+      type: GraphQLString,
+    },
+    value: {
+      type: GraphQLString,
+    },
+  }),
+});
+
 const Product = new GraphQLObjectType({
   name: 'Product',
   description: 'Product type',
@@ -49,16 +61,22 @@ const Product = new GraphQLObjectType({
         return data.get('description');
       },
     },
-    code: {
+    sku: {
       type: GraphQLString,
       resolve(data) {
-        return data.get('code');
+        return data.get('sku');
       },
     },
     shop: {
       type: GraphQLString,
       resolve(data) {
         return data.get('shop');
+      },
+    },
+    boxes: {
+      type: new GraphQLList(GraphQLString),
+      resolve(data) {
+        return data.get('boxes');
       },
     },
     status: {
@@ -82,7 +100,7 @@ const Product = new GraphQLObjectType({
       },
     },
     tags: {
-      type: new GraphQLList(ProductTagType),
+      type: new GraphQLList(GraphQLString),
       resolve(data) {
         return data.get('tags');
       },
@@ -99,14 +117,32 @@ const Product = new GraphQLObjectType({
         return data.get('salePrice');
       },
     },
+    weight: {
+      type: GraphQLInt,
+      resolve(data) {
+        return data.get('weight');
+      },
+    },
+    additionalProperties: {
+      type: new GraphQLList(ProductAdditionalPropertiesType),
+      resolve(data) {
+        return data.get('additionalProperties');
+      },
+    },
     createdBy: {
       type: UserType,
       resolve(data) {
         return data.get('createdBy');
       },
     },
+    updatedBy: {
+      type: UserType,
+      resolve(data) {
+        return data.get('updatedBy');
+      },
+    },
   }),
 });
 
-RelayRegistry.getResolverForNodeType(Product, productResolver);
+RelayRegistry.registerResolverForType(Product, productResolver);
 export default RelayRegistry.registerNodeType(Product);
