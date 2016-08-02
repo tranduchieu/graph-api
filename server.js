@@ -125,17 +125,34 @@ server.listen(SERVER_PORT, () => console.log(
   `Server is now running in ${process.env.NODE_ENV || 'development'} mode on http://localhost:${SERVER_PORT}`
 ));
 
-const base64 = 'V29ya2luZyBhdCBQYXJzZSBpcyBncmVhdCE=';
-const file = new Parse.File('myfile222333333.txt', { base64: base64 });
-file.save()
-.then(fileSaved => {
-  const Product = Parse.Object.extend('Product');
-  const product = new Product();
-  product.set('name', 'Chân váy');
-  product.set('image', fileSaved);
-  return product.save()
-  .then(console.log);
-})
-.catch(console.error);
+// const base64 = 'V29ya2luZyBhdCBQYXJzZSBpcyBncmVhdCE=';
+// const file = new Parse.File('myfile222333333.txt', { base64: base64 });
+// file.save()
+// .then(fileSaved => {
+//   const Product = Parse.Object.extend('Product');
+//   const product = new Product();
+//   product.set('name', 'Chân váy');
+//   product.set('image', fileSaved);
+//   return product.save()
+//   .then(console.log);
+// })
+// .catch(console.error);
 
 
+
+
+// const box = 'Áo Phông';
+// const Product = Parse.Object.extend('Product');
+// const queryProduct = new Parse.Query(Product);
+
+// // queryProduct.equalTo('objectId', 'ifGGpQHAmE');
+// queryProduct.equalTo('boxes', 'Đầm');
+// queryProduct.find()
+//   .then(productObj => {
+//     console.log(productObj);
+//     if (!productObj) return;
+//     // productObj.add('boxes', box);
+//     // return productObj.save();
+//   })
+//   .then(console.log)
+//   .catch(console.error);
