@@ -3,14 +3,25 @@ import Parse from 'parse/node';
 import { cursorToOffset } from 'graphql-relay';
 
 export const userByIdLoader = new DataLoader(ids => {
+  console.log(ids.length);
   const queryUser = new Parse.Query(Parse.User);
   queryUser.containedIn('objectId', ids);
 
-  return queryUser.find();
+  return queryUser.find()
+    .then(users => {
+      return ids.map(id => {
+        const userFilter = users.filter(user => {
+          return user.id === id;
+        });
+
+        const result = userFilter.length >= 1 ? userFilter[0] : null;
+        return result;
+      });
+    });
 });
 
 
-export const allUserLoader = new DataLoader(keys => {
+export const allUsersLoader = new DataLoader(keys => {
   return Promise.all(keys.map(key => {
     const args = JSON.parse(key);
     const { after, first, username } = args;
@@ -31,7 +42,7 @@ export const allUserLoader = new DataLoader(keys => {
 });
 
 // const queryUser = new Parse.Query(Parse.User);
-// queryUser.equalTo('username', 'tranduchieu2');
+// queryUser.equalTo('username', 'hieu');
 // const promise = queryUser.find();
 // // const promise = allUserLoader.load('allUsers');
 // promise
@@ -41,7 +52,7 @@ export const allUserLoader = new DataLoader(keys => {
 // .catch(console.error);
 
 // const promise1 = userByIdLoader.load('9Z399ohBdS');
-// const promise2 = userByIdLoader.load('m1HfcEtp8s');
+// const promise2 = userByIdLoader.load('CI35DkQo3C');
 
 // Promise.all([
 //   promise1,
