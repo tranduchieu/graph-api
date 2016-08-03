@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "mongodump": "docker exec -it graphapi_mongo_1 /bin/bash -c 'mongodump -o /data/backup'",
-    "mongorestore": "docker exec -it graphapi_mongo_1 /bin/bash -c 'mongorestore -o /data/backup'"
+    "mongorestore": "docker exec -it graphapi_mongo_1 /bin/bash -c 'mongorestore /data/backup'"
   },
   "repository": {
     "type": "git",
