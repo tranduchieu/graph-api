@@ -13,7 +13,7 @@ import parseDashboard from 'parse-dashboard';
 import graphHTTP from 'express-graphql';
 import Schema from './graphql/schema';
 // import loaders from './graphql/loaders';
-import FilesAdapter from './services/FilesAdapter';
+// import FilesAdapter from './services/FilesAdapter';
 
 const SERVER_PORT = process.env.PORT || 8080;
 const SERVER_HOST = process.env.HOST || 'localhost';
@@ -57,12 +57,12 @@ server.use(
     fileKey: 'f33fc1a9-9ba9-4589-95ca-9976c0d52cd5',
     serverURL: `http://${SERVER_HOST}:${SERVER_PORT}/parse`,
     sessionLength: SESSION_LENGTH,
-    // filesAdapter: new S3Adapter(
-    //   S3_ACCESS_KEY,
-    //   S3_SECRET_KEY,
-    //   S3_BUCKET,
-    //   { directAccess: true }
-    // ),
+    filesAdapter: new S3Adapter(
+      S3_ACCESS_KEY,
+      S3_SECRET_KEY,
+      S3_BUCKET,
+      { directAccess: true }
+    ),
     // filesAdapter: new FilesAdapter(),
   })
 );
@@ -137,8 +137,6 @@ server.listen(SERVER_PORT, () => console.log(
 //   .then(console.log);
 // })
 // .catch(console.error);
-
-
 
 
 // const box = 'Áo Phông';
