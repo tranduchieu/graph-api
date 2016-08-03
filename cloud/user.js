@@ -20,7 +20,7 @@ Parse.Cloud.afterSave(Parse.User, (req, res) => {
   Parse.Cloud.useMasterKey();
 
   const user = req.object;
-  const authData = req.object.get('authData2') || null;
+  const authData = req.object.get('authData') || null;
   const fbAuthData = authData.facebook || null;
 
   const Profile = Parse.Object.extend('Profile');
