@@ -1,6 +1,6 @@
 version: '2'
 services:
-  web:
+  node:
     build: .
     environment:
       NODE_ENV: development
@@ -32,3 +32,5 @@ services:
     image: mongo
     ports:
       - "27017:27017"
+    volumes:
+      - ./data/backup:/data/backup
