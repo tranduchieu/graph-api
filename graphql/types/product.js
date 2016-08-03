@@ -18,25 +18,6 @@ export function productResolver(_, { id }, { loaders }) {
   return loaders.product.load(id);
 }
 
-const ProductImageType = new GraphQLObjectType({
-  name: 'ProductImage',
-  description: 'Product image type',
-  fields: () => ({
-    position: {
-      type: GraphQLInt,
-    },
-    largeSizeSrc: {
-      type: GraphQLString,
-    },
-    mediumSizeSrc: {
-      type: GraphQLString,
-    },
-    smallSizeSrc: {
-      type: GraphQLString,
-    },
-  }),
-});
-
 const ProductAdditionalPropertiesType = new GraphQLObjectType({
   name: 'ProductAdditionalProperties',
   description: 'Product Additional Properties type',
@@ -94,9 +75,18 @@ const Product = new GraphQLObjectType({
       },
     },
     images: {
-      type: new GraphQLList(ProductImageType),
-      resolve(data) {
-        return data.get('images');
+      type: new GraphQLList(GraphQLString),
+      args: {
+        size: {
+          type: GraphQLString,
+        },
+      },
+      resolve(data, { size }) {
+        const images = data.get('images');
+        const imagesFilter = images.map(imagesObj => {
+          return imagesObj[size];
+        });
+        return imagesFilter;
       },
     },
     tags: {
