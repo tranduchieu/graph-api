@@ -13,6 +13,7 @@ import parseDashboard from 'parse-dashboard';
 import graphHTTP from 'express-graphql';
 import Schema from './graphql/schema';
 // import loaders from './graphql/loaders';
+// import FilesAdapter from './services/FilesAdapter';
 
 const SERVER_PORT = process.env.PORT || 8080;
 const SERVER_HOST = process.env.HOST || 'localhost';
@@ -62,6 +63,7 @@ server.use(
       S3_BUCKET,
       { directAccess: true }
     ),
+    // filesAdapter: new FilesAdapter(),
   })
 );
 
@@ -122,3 +124,33 @@ server.use(
 server.listen(SERVER_PORT, () => console.log(
   `Server is now running in ${process.env.NODE_ENV || 'development'} mode on http://localhost:${SERVER_PORT}`
 ));
+
+// const base64 = 'V29ya2luZyBhdCBQYXJzZSBpcyBncmVhdCE=';
+// const file = new Parse.File('myfile222333333.txt', { base64: base64 });
+// file.save()
+// .then(fileSaved => {
+//   const Product = Parse.Object.extend('Product');
+//   const product = new Product();
+//   product.set('name', 'Chân váy');
+//   product.set('image', fileSaved);
+//   return product.save()
+//   .then(console.log);
+// })
+// .catch(console.error);
+
+
+// const box = 'Áo Phông';
+// const Product = Parse.Object.extend('Product');
+// const queryProduct = new Parse.Query(Product);
+
+// // queryProduct.equalTo('objectId', 'ifGGpQHAmE');
+// queryProduct.equalTo('boxes', 'Đầm');
+// queryProduct.find()
+//   .then(productObj => {
+//     console.log(productObj);
+//     if (!productObj) return;
+//     // productObj.add('boxes', box);
+//     // return productObj.save();
+//   })
+//   .then(console.log)
+//   .catch(console.error);
