@@ -1,5 +1,5 @@
 /* global Parse */
-import _ from 'lodash';
+import randomAvatar from '../services/randomAvatar';
 
 // {
 // 	"facebook":{
@@ -16,45 +16,54 @@ import _ from 'lodash';
 // 	}
 // }
 
-Parse.Cloud.afterSave(Parse.User, (req, res) => {
-  Parse.Cloud.useMasterKey();
+// Profile trigger
+const mobilePhoneUniqueValidate = (mobilePhone) => {
+  return new Promise((resolve, reject) => {
+    // Nếu không có mobilePhone
+    if (!mobilePhone) return resolve();
 
+    const queryUser = new Parse.Query(Parse.User);
+    queryUser.equalTo('mobilePhone', mobilePhone);
+    return queryUser.first()
+      .then(user => {
+        if (user) return reject('Số điện thoại đã tồn tại');
+        return resolve();
+      })
+      .catch(err => {
+        throw err;
+      });
+  });
+};
+
+Parse.Cloud.beforeSave(Parse.User, (req, res) => {
   const user = req.object;
-  const authData = req.object.get('authData') || null;
-  const fbAuthData = authData.facebook || null;
+  const fbAuthData = (req.object.get('authData') || {}).facebook || {};
 
-  const Profile = Parse.Object.extend('Profile');
-  const profile = new Profile();
+  const email = fbAuthData.email || user.get('email') || null;
+  const emailVerified = user.get('emailVerified') || false;
+  const mobilePhone = user.get('mobilePhone') || null;
+  const mobilePhoneVerified = user.get('mobilePhoneVerified') || false;
+  const name = fbAuthData.name || user.get('name') || null;
+  // const avatarUrl = _.has(fbAuthData, 'picture.data.url') ?
+  //                               fbAuthData.picture.data.url : null ||
+  //                               user.get('avatarUrl') || randomAvatar();
+  const avatarUrl = (((fbAuthData || {}).picture || {}).data || {}).url ||
+                    user.get('avatarUrl') || randomAvatar();
+  const isCustomerOnly = user.get('isCustomerOnly') || false;
 
-  if (user.get('profile') || !fbAuthData) return res.success();
-
-  profile.set('name', fbAuthData.name || null);
-  profile.set('email', fbAuthData.email || null);
-  profile.set('avatarUrl', _.has(fbAuthData, 'picture.data.url') ?
-                                fbAuthData.picture.data.url : null);
-  profile.set('user', user);
-
-  return profile.save()
-    .then(profileObj => {
-      user.set('profile', profileObj);
-      return user.save();
-    })
+  return mobilePhoneUniqueValidate(mobilePhone)
     .then(() => {
+      user.set('name', name);
+      user.set('email', email);
+      user.set('emailVerified', emailVerified);
+      user.set('mobilePhone', mobilePhone);
+      user.set('mobilePhoneVerified', mobilePhoneVerified);
+      user.set('avatarUrl', avatarUrl);
+      user.set('isCustomerOnly', isCustomerOnly);
+
       return res.success();
     })
     .catch(err => {
       return res.error(err);
     });
 });
-
-// Profile trigger
-// const mobilePhoneUniqueValidate = function (mobilePhone) {
-//   return new Promise((resolve, reject) => {
-
-//   })
-// }
-
-// Parse.Cloud.beforeSave(Parse.File, (req, res) => {
-//   console.log(req.object);
-//   res.error();
-// });

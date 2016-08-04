@@ -13,6 +13,12 @@ import {
 import RelayRegistry from '../relay/RelayRegistry';
 
 import UserType from './user';
+import {
+  UrlType,
+} from './customTypes';
+import {
+  ProductStatusEnum,
+} from './enumTypes';
 
 export function productResolver(_, { id }, { loaders }) {
   return loaders.product.load(id);
@@ -61,9 +67,7 @@ const Product = new GraphQLObjectType({
       },
     },
     status: {
-      // ['draft', 'availableInStore', 'availableInOnline', 'availableAll',
-      // 'suspended', 'sold', 'closed']
-      type: GraphQLString,
+      type: ProductStatusEnum,
       resolve(data) {
         return data.get('status');
       },
@@ -75,7 +79,7 @@ const Product = new GraphQLObjectType({
       },
     },
     images: {
-      type: new GraphQLList(GraphQLString),
+      type: new GraphQLList(UrlType),
       args: {
         size: {
           type: GraphQLString,
