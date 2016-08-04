@@ -1,6 +1,7 @@
 import {
   GraphQLString,
   GraphQLObjectType,
+  GraphQLBoolean,
 } from 'graphql';
 
 import {
@@ -9,7 +10,11 @@ import {
 
 import RelayRegistry from '../relay/RelayRegistry';
 
-import ProfileType from './profile';
+import {
+  EmailType,
+  MobilePhoneType,
+  UrlType,
+} from './customTypes';
 
 // Resolver
 export function userResolver(_, { id }, { loaders }) {
@@ -30,10 +35,58 @@ const User = new GraphQLObjectType({
     password: {
       type: GraphQLString,
     },
-    profile: {
-      type: ProfileType,
+    isCustomerOnly: {
+      type: GraphQLBoolean,
       resolve(data) {
-        return data.profile;
+        return data.get('isCustomerOnly');
+      },
+    },
+    email: {
+      type: EmailType,
+      resolve(data) {
+        return data.get('email');
+      },
+    },
+    emailVerified: {
+      type: GraphQLBoolean,
+      resolve(data) {
+        return data.get('emailVerified');
+      },
+    },
+    mobilePhone: {
+      type: MobilePhoneType,
+      resolve(data) {
+        return data.get('mobilePhone');
+      },
+    },
+    mobilePhoneVerified: {
+      type: GraphQLBoolean,
+      resolve(data) {
+        return data.get('mobilePhoneVerified');
+      },
+    },
+    avatarUrl: {
+      type: UrlType,
+      resolve(data) {
+        return data.get('avatarUrl');
+      },
+    },
+    address: {
+      type: GraphQLString,
+      resolve(data) {
+        return data.get('address');
+      },
+    },
+    district: {
+      type: GraphQLString,
+      resolve(data) {
+        return data.get('district');
+      },
+    },
+    province: {
+      type: GraphQLString,
+      resolve(data) {
+        return data.get('province');
       },
     },
   }),
