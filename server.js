@@ -106,51 +106,63 @@ function extractTokenFromHeader(headers) {
 
 const loaders = require('./graphql/loaders');
 
+// server.use(
+//   '/graphql',
+//   graphHTTP(req => ({
+//     schema: Schema,
+//     pretty: true,
+//     graphiql: true,
+//     rootValue: {
+//       accessToken: extractTokenFromHeader(req.headers) ||
+//                       req.query.accessToken ||
+//                       null,
+//     },
+//     context: { loaders },
+//   }))
+// );
+
+
 server.use(
   '/graphql',
-  graphHTTP(req => ({
-    schema: Schema,
-    pretty: true,
-    graphiql: true,
-    rootValue: {
-      accessToken: extractTokenFromHeader(req.headers) ||
-                      req.query.accessToken ||
-                      null,
-    },
-    context: { loaders },
-  }))
+  graphHTTP(async (req) => {
+    const accessToken = extractTokenFromHeader(req.headers) ||
+                        req.query.accessToken ||
+                        null;
+    let me;
+    if (!accessToken) {
+      me = null;
+    } else {
+      const query = new Parse.Query(Parse.Session);
+      query.equalTo('sessionToken', accessToken);
+      query.include('user');
+      me = await query.first()
+      .then(session => {
+        if (!session) throw new Error('không tìm thấy ');
+
+        const user = session.get('user');
+        return { user, session };
+      })
+      .catch(err => {
+        throw err;
+      });
+    }
+
+    console.log(me);
+
+    return {
+      schema: Schema,
+      pretty: true,
+      graphiql: true,
+      rootValue: {
+        accessToken,
+      },
+      context: { loaders, me },
+    };
+  })
 );
 
 server.listen(SERVER_PORT, () => console.log(
   `Server is now running in ${process.env.NODE_ENV || 'development'} mode on http://localhost:${SERVER_PORT}`
 ));
 
-// const base64 = 'V29ya2luZyBhdCBQYXJzZSBpcyBncmVhdCE=';
-// const file = new Parse.File('myfile222333333.txt', { base64: base64 });
-// file.save()
-// .then(fileSaved => {
-//   const Product = Parse.Object.extend('Product');
-//   const product = new Product();
-//   product.set('name', 'Chân váy');
-//   product.set('image', fileSaved);
-//   return product.save()
-//   .then(console.log);
-// })
-// .catch(console.error);
-
-
-// const box = 'Áo Phông';
-// const Product = Parse.Object.extend('Product');
-// const queryProduct = new Parse.Query(Product);
-
-// // queryProduct.equalTo('objectId', 'ifGGpQHAmE');
-// queryProduct.equalTo('boxes', 'Đầm');
-// queryProduct.find()
-//   .then(productObj => {
-//     console.log(productObj);
-//     if (!productObj) return;
-//     // productObj.add('boxes', box);
-//     // return productObj.save();
-//   })
-//   .then(console.log)
-//   .catch(console.error);
+require('./testParse');

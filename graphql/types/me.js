@@ -4,37 +4,17 @@ import {
   GraphQLObjectType,
 } from 'graphql';
 
-import {
-  globalIdField,
-} from 'graphql-relay';
-
 import moment from 'moment';
 
+import UserType from './user';
 
-import RelayRegistry from '../relay/RelayRegistry';
-import ProfileType from './profile';
-
-// Resolver
-export function accountResolver(_, { id }, { loaders }) {
-  console.log('accountResolver', loaders);
-  return {};
-}
-
-const MeType = new GraphQLObjectType({
-  name: 'Me',
-  description: 'Me type',
+const SessionType = new GraphQLObjectType({
+  name: 'SessionType',
   fields: () => ({
-    id: globalIdField('Me'),
-    username: {
-      type: GraphQLString,
-      resolve(data) {
-        return data.get('username');
-      },
-    },
     sessionToken: {
       type: GraphQLString,
       resolve(data) {
-        return data.get('userSessionToken');
+        return data.get('sessionToken');
       },
     },
     expiresIn: {
@@ -46,15 +26,20 @@ const MeType = new GraphQLObjectType({
         return expiresIn;
       },
     },
-    profile: {
-      type: ProfileType,
-      resolve(data) {
-        console.log(data.get('profile'));
-        return data.get('profile');
-      },
+  }),
+});
+
+const MeType = new GraphQLObjectType({
+  name: 'Me',
+  description: 'Me type',
+  fields: () => ({
+    user: {
+      type: UserType,
+    },
+    session: {
+      type: SessionType,
     },
   }),
 });
 
-RelayRegistry.registerResolverForType(MeType, accountResolver);
-export default RelayRegistry.registerNodeType(MeType);
+export default MeType;
