@@ -26,6 +26,12 @@ const User = new GraphQLObjectType({
   description: 'User type',
   fields: () => ({
     id: globalIdField('User'),
+    name: {
+      type: GraphQLString,
+      resolve(data) {
+        return data.get('name');
+      },
+    },
     username: {
       type: GraphQLString,
       resolve(data) {
