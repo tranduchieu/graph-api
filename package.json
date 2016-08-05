@@ -40,6 +40,7 @@
     "graphiql": "^0.7.4",
     "graphql": "^0.6.2",
     "graphql-relay": "~0.4.2",
+    "jimp": "^0.2.24",
     "lodash": "^4.14.0",
     "moment": "^2.14.1",
     "parse": "~1.8.2",

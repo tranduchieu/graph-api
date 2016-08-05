@@ -5,7 +5,7 @@ import cors from 'cors';
 import Parse from 'parse/node';
 import {
   ParseServer,
-  S3Adapter,
+  // S3Adapter,
 }
 from 'parse-server';
 import parseDashboard from 'parse-dashboard';
@@ -13,7 +13,7 @@ import parseDashboard from 'parse-dashboard';
 import graphHTTP from 'express-graphql';
 import Schema from './graphql/schema';
 // import loaders from './graphql/loaders';
-// import FilesAdapter from './services/FilesAdapter';
+import MyFilesAdapter from './services/FilesAdapter';
 
 const SERVER_PORT = process.env.PORT || 8080;
 const SERVER_HOST = process.env.HOST || 'localhost';
@@ -25,9 +25,11 @@ const IS_DEVELOPMENT = process.env.NODE_ENV !== 'production';
 const DASHBOARD_AUTH = process.env.DASHBOARD_AUTH;
 const SESSION_LENGTH = process.env.SESSION_LENGTH || 2592000;
 
-const S3_ACCESS_KEY = process.env.S3_ACCESS_KEY || 'YOUR_S3_ACCESS_KEY';
-const S3_SECRET_KEY = process.env.S3_SECRET_KEY || 'YOUR_S3_SECRET_KEY';
-const S3_BUCKET = process.env.S3_BUCKET || 'YOUR_S3_BUCKET';
+// const S3_ACCESS_KEY = process.env.S3_ACCESS_KEY || 'YOUR_S3_ACCESS_KEY';
+// const S3_SECRET_KEY = process.env.S3_SECRET_KEY || 'YOUR_S3_SECRET_KEY';
+// const S3_BUCKET = process.env.S3_BUCKET || 'YOUR_S3_BUCKET';
+
+const filesSubDirectory = '';
 
 
 Parse.initialize(APP_ID);
@@ -57,13 +59,15 @@ server.use(
     fileKey: 'f33fc1a9-9ba9-4589-95ca-9976c0d52cd5',
     serverURL: `http://${SERVER_HOST}:${SERVER_PORT}/parse`,
     sessionLength: SESSION_LENGTH,
-    filesAdapter: new S3Adapter(
-      S3_ACCESS_KEY,
-      S3_SECRET_KEY,
-      S3_BUCKET,
-      { directAccess: true }
+    // filesAdapter: new S3Adapter(
+    //   S3_ACCESS_KEY,
+    //   S3_SECRET_KEY,
+    //   S3_BUCKET,
+    //   { directAccess: true }
+    // ),
+    filesAdapter: new MyFilesAdapter(
+      filesSubDirectory
     ),
-    // filesAdapter: new FilesAdapter(),
   })
 );
 
