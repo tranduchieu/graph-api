@@ -106,57 +106,38 @@ function extractTokenFromHeader(headers) {
 
 const loaders = require('./graphql/loaders');
 
-// server.use(
-//   '/graphql',
-//   graphHTTP(req => ({
-//     schema: Schema,
-//     pretty: true,
-//     graphiql: true,
-//     rootValue: {
-//       accessToken: extractTokenFromHeader(req.headers) ||
-//                       req.query.accessToken ||
-//                       null,
-//     },
-//     context: { loaders },
-//   }))
-// );
-
-
 server.use(
   '/graphql',
   graphHTTP(async (req) => {
     const accessToken = extractTokenFromHeader(req.headers) ||
                         req.query.accessToken ||
                         null;
-    let me;
+    let user;
     if (!accessToken) {
-      me = null;
+      user = null;
     } else {
       const query = new Parse.Query(Parse.Session);
       query.equalTo('sessionToken', accessToken);
       query.include('user');
-      me = await query.first()
+      user = await query.first()
       .then(session => {
-        if (!session) throw new Error('không tìm thấy ');
+        if (!session) throw new Error('accessToken không tồn tại');
 
-        const user = session.get('user');
-        return { user, session };
+        // const user = session.get('user');
+        // return { user, session };
+        return session.get('user');
       })
       .catch(err => {
         throw err;
       });
     }
 
-    console.log(me);
-
     return {
       schema: Schema,
       pretty: true,
       graphiql: true,
-      rootValue: {
-        accessToken,
-      },
-      context: { loaders, me },
+      rootValue: { accessToken },
+      context: { loaders, user },
     };
   })
 );
