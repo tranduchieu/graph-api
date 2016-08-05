@@ -11,15 +11,14 @@ import {
 } from 'graphql-relay';
 
 import UserType from '../types/user';
-import MeType from '../types/me';
 import { UserConnection } from '../connections/user';
 
 export default {
   me: {
-    type: MeType,
-    resolve({ accessToken }, args, { me }) {
+    type: UserType,
+    resolve({ accessToken }, args, { user }) {
       if (!accessToken) throw new Error('Không có accessToken');
-      return me;
+      return user;
     },
   },
   user: {
