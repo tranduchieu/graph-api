@@ -4,4 +4,4 @@ docker-compose.prod.yml
 logs
 data/db
 db.js
-services/FilesAdapter.js
+files/*
