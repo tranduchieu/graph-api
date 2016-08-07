@@ -5,7 +5,6 @@ import cors from 'cors';
 import Parse from 'parse/node';
 import {
   ParseServer,
-  // S3Adapter,
 }
 from 'parse-server';
 import parseDashboard from 'parse-dashboard';
@@ -13,7 +12,7 @@ import parseDashboard from 'parse-dashboard';
 import graphHTTP from 'express-graphql';
 import Schema from './graphql/schema';
 // import loaders from './graphql/loaders';
-import MyS3Adapter from './services/myS3Adapter';
+import S3Adapter from './services/myS3Adapter';
 
 
 const SERVER_PORT = process.env.PORT || 8080;
@@ -57,7 +56,7 @@ server.use(
     fileKey: 'f33fc1a9-9ba9-4589-95ca-9976c0d52cd5',
     serverURL: `http://${SERVER_HOST}:${SERVER_PORT}/parse`,
     sessionLength: SESSION_LENGTH,
-    filesAdapter: new MyS3Adapter(
+    filesAdapter: new S3Adapter(
       S3_ACCESS_KEY,
       S3_SECRET_KEY,
       S3_BUCKET,
