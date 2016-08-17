@@ -5,7 +5,6 @@ import cors from 'cors';
 import Parse from 'parse/node';
 import {
   ParseServer,
-  S3Adapter,
 }
 from 'parse-server';
 import parseDashboard from 'parse-dashboard';
@@ -13,6 +12,8 @@ import parseDashboard from 'parse-dashboard';
 import graphHTTP from 'express-graphql';
 import Schema from './graphql/schema';
 // import loaders from './graphql/loaders';
+import S3Adapter from './services/myS3Adapter';
+
 
 const SERVER_PORT = process.env.PORT || 8080;
 const SERVER_HOST = process.env.HOST || 'localhost';
@@ -27,7 +28,6 @@ const SESSION_LENGTH = process.env.SESSION_LENGTH || 2592000;
 const S3_ACCESS_KEY = process.env.S3_ACCESS_KEY || 'YOUR_S3_ACCESS_KEY';
 const S3_SECRET_KEY = process.env.S3_SECRET_KEY || 'YOUR_S3_SECRET_KEY';
 const S3_BUCKET = process.env.S3_BUCKET || 'YOUR_S3_BUCKET';
-
 
 Parse.initialize(APP_ID);
 Parse.serverURL = `http://localhost:${SERVER_PORT}/parse`;
@@ -106,19 +106,42 @@ const loaders = require('./graphql/loaders');
 
 server.use(
   '/graphql',
-  graphHTTP(req => ({
-    schema: Schema,
-    pretty: true,
-    graphiql: true,
-    rootValue: {
-      accessToken: extractTokenFromHeader(req.headers) ||
-                      req.query.accessToken ||
-                      null,
-    },
-    context: { loaders },
-  }))
+  graphHTTP(async (req) => {
+    const accessToken = extractTokenFromHeader(req.headers) ||
+                        req.query.accessToken ||
+                        null;
+    let user;
+    if (!accessToken) {
+      user = null;
+    } else {
+      const query = new Parse.Query(Parse.Session);
+      query.equalTo('sessionToken', accessToken);
+      query.include('user');
+      user = await query.first()
+      .then(session => {
+        if (!session) throw new Error('accessToken không tồn tại');
+
+        // const user = session.get('user');
+        // return { user, session };
+        return session.get('user');
+      })
+      .catch(err => {
+        throw err;
+      });
+    }
+
+    return {
+      schema: Schema,
+      pretty: true,
+      graphiql: true,
+      rootValue: { accessToken },
+      context: { loaders, user },
+    };
+  })
 );
 
 server.listen(SERVER_PORT, () => console.log(
   `Server is now running in ${process.env.NODE_ENV || 'development'} mode on http://localhost:${SERVER_PORT}`
 ));
+
+require('./testParse');

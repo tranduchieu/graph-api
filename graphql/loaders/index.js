@@ -1,5 +1,5 @@
 import {
-  allUserLoader,
+  allUsersLoader,
   userByIdLoader,
 } from './user';
 
@@ -8,9 +8,16 @@ import {
   profileByIdLoader,
 } from './profile';
 
+import {
+  allProductsLoader,
+  productByIdLoader,
+} from './product';
+
 module.exports = {
-  users: allUserLoader,
+  users: allUsersLoader,
   user: userByIdLoader,
   profiles: allProfilesLoader,
   profile: profileByIdLoader,
+  product: productByIdLoader,
+  products: allProductsLoader,
 };
