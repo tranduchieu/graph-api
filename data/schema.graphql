@@ -2,13 +2,9 @@ schema {
   query: Query
 }
 
-type Me {
-  id: ID!
-  username: String
-  sessionToken: String
-  expiresIn: Int
-  profile: Profile
-}
+scalar Email
+
+scalar MobilePhone
 
 interface Node {
   id: ID!
@@ -21,15 +17,47 @@ type PageInfo {
   endCursor: String
 }
 
-type Profile {
+type Product {
   id: ID!
+  description: String
+  sku: String
+  shop: String
+  boxes: [String]
+  status: ProductStatusEnumType
+  featured: Boolean
+  images(size: String): [URL]
+  tags: [String]
+  price: Int
+  salePrice: Int
+  weight: Int
+  additionalProperties: [ProductAdditionalProperties]
+  createdBy: User
+  updatedBy: User
+}
+
+type ProductAdditionalProperties {
   name: String
-  email: String
-  mobilePhone: String
-  avatarUrl: String
-  address: String
-  district: String
-  province: String
+  value: String
+}
+
+type ProductConnection {
+  pageInfo: PageInfo!
+  edges: [ProductEdge]
+}
+
+type ProductEdge {
+  node: Product
+  cursor: String!
+}
+
+enum ProductStatusEnumType {
+  DRAFT
+  AVAILABLE_IN_STORE
+  AVAILABLE_IN_ONLINE
+  AVAILABLE_IN_ALL
+  SUSPENDED
+  SOLD
+  CLOSED
 }
 
 type Query {
@@ -37,11 +65,22 @@ type Query {
   viewer: Viewer
 }
 
+scalar URL
+
 type User {
   id: ID!
+  name: String
   username: String
   password: String
-  profile: Profile
+  isCustomerOnly: Boolean
+  email: Email
+  emailVerified: Boolean
+  mobilePhone: MobilePhone
+  mobilePhoneVerified: Boolean
+  avatarUrl: URL
+  address: String
+  district: String
+  province: String
 }
 
 type UserConnection {
@@ -56,7 +95,9 @@ type UserEdge {
 
 type Viewer {
   id: ID!
-  me: Me
+  me: User
   user(id: ID!): User
   users(username: String, after: String, first: Int, before: String, last: Int): UserConnection
+  product(id: ID!): Product
+  products(sku: String, boxes: [String], after: String, first: Int, before: String, last: Int): ProductConnection
 }
