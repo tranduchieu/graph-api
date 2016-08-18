@@ -83,6 +83,7 @@ const Product = new GraphQLObjectType({
       args: {
         size: {
           type: GraphQLString,
+          defaultValue: 'large',
         },
       },
       resolve(data, { size }) {
