@@ -39,6 +39,7 @@
     "iflow-moment": "^1.1.13"
   },
   "dependencies": {
+    "@tranduchieu/short-parse-id": "0.0.2",
     "aws-sdk": "^2.5.1",
     "cors": "^2.7.1",
     "dataloader": "^1.2.0",
