@@ -1,6 +1,7 @@
 import {
   GraphQLID,
   GraphQLInt,
+  GraphQLBoolean,
   GraphQLList,
   GraphQLString,
   GraphQLNonNull,
@@ -17,6 +18,11 @@ import { omit } from 'lodash';
 import Parse from 'parse/node';
 
 import ProductType from '../types/product';
+import {
+  ShopEnumType,
+  ProductStatusEnum,
+} from '../types/enumTypes';
+
 import { ProductEdge } from '../connections/product';
 import ViewerQueries from '../queries/Viewer';
 
@@ -32,7 +38,43 @@ function getCursor(dataList, item) {
 const ProductCreateMutation = mutationWithClientMutationId({
   name: 'ProductCreate',
   inputFields: {
-
+    description: {
+      type: GraphQLString,
+    },
+    sku: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    shop: {
+      type: new GraphQLNonNull(ShopEnumType),
+    },
+    boxes: {
+      type: new GraphQLNonNull(GraphQLList),
+    },
+    status: {
+      type: new GraphQLNonNull(ProductStatusEnum),
+    },
+    featured: {
+      type: GraphQLBoolean,
+      defaultValue: false,
+    },
+    images: {
+      type: GraphQLList,
+    },
+    tags: {
+      type: GraphQLList,
+    },
+    price: {
+      type: new GraphQLNonNull(GraphQLInt),
+    },
+    salePrice: {
+      type: GraphQLInt,
+    },
+    weight: {
+      type: GraphQLInt,
+    },
+    additionalProperties: {
+      type: GraphQLList,
+    },
   },
   outputFields: {
     productEdge: {

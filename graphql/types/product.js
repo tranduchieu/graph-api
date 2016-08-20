@@ -17,6 +17,7 @@ import {
   UrlType,
 } from './customTypes';
 import {
+  ShopEnumType,
   ProductStatusEnum,
 } from './enumTypes';
 
@@ -55,7 +56,7 @@ const Product = new GraphQLObjectType({
       },
     },
     shop: {
-      type: GraphQLString,
+      type: ShopEnumType,
       resolve(data) {
         return data.get('shop');
       },
