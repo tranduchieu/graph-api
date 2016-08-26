@@ -16,6 +16,7 @@ import {
 
 import { omit } from 'lodash';
 import Parse from 'parse/node';
+import axios from 'axios';
 
 import ProductType from '../types/product';
 import {
@@ -88,10 +89,14 @@ const ProductCreateMutation = mutationWithClientMutationId({
     },
     viewer: ViewerQueries.viewer,
   },
-  mutateAndGetPayload(obj, { loaders }) {
+  async mutateAndGetPayload(obj, { loaders, user }) {
+    // const { description, sku, shop, boxes, status, featured, } = obj;
+    if (!user) throw new Error('Không có quyền tạo Sản phẩm');
+
+
     const product = omit(obj, ['clientMutationId']);
 
     const Product = Parse.Object.extend('Product');
-    
-  }
+    const newProduct = new Product();
+  },
 });

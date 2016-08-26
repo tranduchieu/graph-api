@@ -7,7 +7,7 @@ import {
   ParseServer,
 }
 from 'parse-server';
-import parseDashboard from 'parse-dashboard';
+import ParseDashboard from 'parse-dashboard';
 
 import graphHTTP from 'express-graphql';
 import Schema from './graphql/schema';
@@ -76,7 +76,7 @@ if (IS_DEVELOPMENT) {
   }
   server.use(
     '/dashboard',
-    parseDashboard({
+    new ParseDashboard({
       apps: [{
         serverURL: '/parse',
         appId: APP_ID,
