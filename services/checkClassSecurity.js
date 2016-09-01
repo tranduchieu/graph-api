@@ -34,6 +34,7 @@ const checkClassSecurity = (className: string, action: string, userId: string) =
       },
     })
     .then(res => {
+      console.log(res.data);
       const { classLevelPermissions } = res.data;
 
       let userPermissionStatus = false;
@@ -43,13 +44,15 @@ const checkClassSecurity = (className: string, action: string, userId: string) =
         }
       });
 
-      if (userPermissionStatus === true) return resolve();
-      return reject();
+      if (userPermissionStatus === true) return resolve(true);
+      return reject(new Error('User không được cấp quyền'));
     })
     .catch(reject);
   });
 };
 
-checkClassSecurity('Product', 'xxx')
-.then(console.log)
-.catch(console.error);
+// checkClassSecurity('Product', 'create', 'u9AF63PAEd')
+// .then(console.log)
+// .catch(console.error);
+
+export default checkClassSecurity;
