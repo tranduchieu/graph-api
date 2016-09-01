@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon --exec babel-node server.js",
+    "dev": "docker-compose -f docker-compose.dev.yml up",
     "update-schema": "babel-node --presets es2015,stage-0 ./scripts/updateSchema.js",
     "lint": "eslint .",
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
