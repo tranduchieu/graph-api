@@ -75,3 +75,23 @@
 // .catch(err => {
 //   console.error(err);
 // });
+
+// Logging In
+// ------------------------------------
+// Parse.User.logIn('tranduchieu', 'laclac')
+//   .then(user => {
+//     console.log(user.get('sessionToken'));
+//   })
+//   .catch(console.error);
+
+// Querying User
+// ----------------------------------
+
+// const query = new Parse.Query(Parse.User);
+// query.first({
+//   sessionToken: 'r:8730f50985bb6174b7451299af1ced8e',
+// })
+// .then(result => {
+//   console.log(result);
+// })
+// .catch(console.error);
