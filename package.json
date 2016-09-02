@@ -40,6 +40,7 @@
     "iflow-moment": "^1.1.13"
   },
   "dependencies": {
+    "@tranduchieu/graphql-custom-types": "^0.6.1",
     "@tranduchieu/short-parse-id": "0.0.2",
     "aws-sdk": "^2.5.1",
     "axios": "^0.13.1",
@@ -55,7 +56,7 @@
     "moment": "^2.14.1",
     "parse": "^1.8.5",
     "parse-dashboard": "^1.0.15",
-    "parse-server": "^2.2.17",
+    "parse-server": "^2.2.18",
     "react": "^15.3.0",
     "react-dom": "^15.3.0"
   },
