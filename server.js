@@ -14,7 +14,6 @@ import Schema from './graphql/schema';
 // import loaders from './graphql/loaders';
 import S3Adapter from './services/myS3Adapter';
 
-
 const SERVER_PORT = process.env.PORT || 8080;
 const SERVER_HOST = process.env.HOST || 'localhost';
 const APP_ID = process.env.APP_ID || 'oss-f8-app-2016';
@@ -55,6 +54,7 @@ server.use(
     masterKey: MASTER_KEY,
     fileKey: 'f33fc1a9-9ba9-4589-95ca-9976c0d52cd5',
     serverURL: `http://${SERVER_HOST}:${SERVER_PORT}/parse`,
+    facebookAppIds: ['124825337927566'],
     sessionLength: SESSION_LENGTH,
     filesAdapter: new S3Adapter(
       S3_ACCESS_KEY,
@@ -114,20 +114,28 @@ server.use(
     if (!accessToken) {
       user = null;
     } else {
-      const query = new Parse.Query(Parse.Session);
-      query.equalTo('sessionToken', accessToken);
-      query.include('user');
-      user = await query.first()
-      .then(session => {
-        if (!session) throw new Error('accessToken không tồn tại');
-
-        // const user = session.get('user');
-        // return { user, session };
-        return session.get('user');
-      })
-      .catch(err => {
-        throw err;
+      const query = new Parse.Query(Parse.User);
+      user = await query.first({
+        sessionToken: accessToken,
       });
+
+      // user = query.first()
+      // .then(userClass => {
+      //   if (!userClass) throw new Error('User không tồn tại');
+      //   return userClass;
+      // });
+      // .catch(err => {
+      //   throw err;
+      // });
+      // .catch(async err => {
+      //   switch (err.code) {
+      //     case Parse.Error.INVALID_SESSION_TOKEN:
+      //       await deleteToken(accessToken);
+      //       throw new Error('accessToken không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại để tiếp tục.');
+      //     default:
+      //       throw err;
+      //   }
+      // });
     }
 
     return {
