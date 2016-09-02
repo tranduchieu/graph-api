@@ -68,7 +68,3 @@ Parse.Cloud.beforeSave(Parse.User, (req, res) => {
     });
 });
 
-Parse.Cloud.afterSave(Parse.Role, (req, res) => {
-  console.log(req);
-  return res.success();
-});
