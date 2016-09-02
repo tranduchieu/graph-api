@@ -7,13 +7,12 @@ const bucketPrefix = process.env.S3_BUCKET_PREFIX || '';
 const s3Host = `${bucket}.s3.amazonaws.com`;
 
 Parse.Cloud.afterSave('Product', (req, res) => {
-  const boxes = req.object.get('boxes');
-  console.log(boxes);
+  // const boxes = req.object.get('boxes');
   return res.success();
 });
 
 const checkImgSrc = (imgSrc) => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     return Parse.Cloud.httpRequest({
       url: imgSrc,
     })
@@ -21,7 +20,7 @@ const checkImgSrc = (imgSrc) => {
       return resolve(imgSrc);
     })
     .catch(() => {
-      return resolve(null);
+      return reject(new Error(`Image URL ${imgSrc} not available`));
     });
   });
 };
@@ -76,9 +75,8 @@ Parse.Cloud.beforeSave('Product', async (req, res) => {
   let imagesUpdated;
   try {
     imagesUpdated = await updateImagesArray(images);
-    console.log('----->>>>>', imagesUpdated);
   } catch (error) {
-    console.error(error);
+    return res.error(error.message);
   }
   product.set('images', imagesUpdated);
 
