@@ -8,13 +8,13 @@ import {
   globalIdField,
 } from 'graphql-relay';
 
-import RelayRegistry from '../relay/RelayRegistry';
-
 import {
-  EmailType,
-  MobilePhoneType,
-  UrlType,
-} from './customTypes';
+  GraphQLEmail,
+  GraphQLURL,
+  GraphQLMobilePhone,
+} from '@tranduchieu/graphql-custom-types';
+
+import RelayRegistry from '../relay/RelayRegistry';
 
 // Resolver
 export function userResolver(_, { id }, { loaders }) {
@@ -48,7 +48,7 @@ const User = new GraphQLObjectType({
       },
     },
     email: {
-      type: EmailType,
+      type: GraphQLEmail,
       resolve(data) {
         return data.get('email');
       },
@@ -60,7 +60,7 @@ const User = new GraphQLObjectType({
       },
     },
     mobilePhone: {
-      type: MobilePhoneType,
+      type: GraphQLMobilePhone,
       resolve(data) {
         return data.get('mobilePhone');
       },
@@ -72,7 +72,7 @@ const User = new GraphQLObjectType({
       },
     },
     avatarUrl: {
-      type: UrlType,
+      type: GraphQLURL,
       resolve(data) {
         return data.get('avatarUrl');
       },

@@ -6,6 +6,8 @@ import {
   GraphQLBoolean,
 } from 'graphql';
 
+import { GraphQLURL } from '@tranduchieu/graphql-custom-types';
+
 import {
   globalIdField,
 } from 'graphql-relay';
@@ -13,10 +15,9 @@ import {
 import RelayRegistry from '../relay/RelayRegistry';
 
 import UserType from './user';
+
 import {
-  UrlType,
-} from './customTypes';
-import {
+  ShopEnumType,
   ProductStatusEnum,
 } from './enumTypes';
 
@@ -55,7 +56,7 @@ const Product = new GraphQLObjectType({
       },
     },
     shop: {
-      type: GraphQLString,
+      type: ShopEnumType,
       resolve(data) {
         return data.get('shop');
       },
@@ -79,11 +80,11 @@ const Product = new GraphQLObjectType({
       },
     },
     images: {
-      type: new GraphQLList(UrlType),
+      type: new GraphQLList(GraphQLURL),
       args: {
         size: {
           type: GraphQLString,
-          defaultValue: 'large',
+          defaultValue: 'main',
         },
       },
       resolve(data, { size }) {
@@ -126,14 +127,16 @@ const Product = new GraphQLObjectType({
     },
     createdBy: {
       type: UserType,
-      resolve(data) {
-        return data.get('createdBy');
+      resolve(data, args, { loaders }) {
+        const { id } = data.get('createdBy');
+        return loaders.user.load(id);
       },
     },
     updatedBy: {
       type: UserType,
-      resolve(data) {
-        return data.get('updatedBy');
+      resolve(data, args, { loaders }) {
+        const { id } = data.get('updatedBy');
+        return loaders.user.load(id);
       },
     },
   }),
