@@ -34,7 +34,6 @@ const checkClassSecurity = (className: string, action: string, userId: string) =
       },
     })
     .then(res => {
-      console.log(res.data);
       const { classLevelPermissions } = res.data;
 
       let userPermissionStatus = false;
