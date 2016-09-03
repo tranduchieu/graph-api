@@ -67,10 +67,27 @@ const updateImagesArray = (imgArray) => {
   });
 };
 
+const checkSKU = (sku) => {
+  return new Promise((resolve, reject) => {
+    if (!sku) return reject(new Error('Vui lòng nhập sku'));
+
+    const Product = Parse.Object.extend('Product');
+    const query = new Parse.Query(Product);
+    query.equalTo('sku', sku);
+    return query.first({ useMasterKey: true })
+      .then(productObj => {
+        if (!productObj) return resolve(true);
+        return reject(new Error(`sku ${sku} đã tồn tại`));
+      })
+      .catch(reject);
+  });
+};
+
 Parse.Cloud.beforeSave('Product', async (req, res) => {
   const product = req.object;
+
+  // Xử lý ảnh
   const images = product.get('images') || null;
-  // const imagesUpdated = await updateImagesArray(images);
 
   let imagesUpdated;
   try {
@@ -80,5 +97,12 @@ Parse.Cloud.beforeSave('Product', async (req, res) => {
   }
   product.set('images', imagesUpdated);
 
+  // Check sku
+  const sku = product.get('sku') || null;
+  try {
+    await checkSKU(sku);
+  } catch (error) {
+    return res.error(error.message);
+  }
   return res.success();
 });
