@@ -151,7 +151,7 @@ const ProductRemoveMutation = mutationWithClientMutationId({
 
     return loaders.product.load(localProductId)
     .then(res => {
-      return res.destroy()
+      return res.destroy({ useMasterKey: true })
       .then(item => {
         loaders.products.clearAll();
         loaders.product.clear(localProductId);
@@ -169,6 +169,40 @@ const ProductUpdateMutation = mutationWithClientMutationId({
     },
     description: {
       type: GraphQLString,
+    },
+    sku: {
+      type: GraphQLString,
+    },
+    shop: {
+      type: ShopEnumType,
+    },
+    boxes: {
+      type: new GraphQLList(GraphQLString),
+    },
+    status: {
+      type: ProductStatusEnum,
+    },
+    featured: {
+      type: GraphQLBoolean,
+      defaultValue: false,
+    },
+    images: {
+      type: new GraphQLList(GraphQLURL),
+    },
+    tags: {
+      type: new GraphQLList(GraphQLString),
+    },
+    price: {
+      type: GraphQLInt,
+    },
+    salePrice: {
+      type: GraphQLInt,
+    },
+    weight: {
+      type: GraphQLInt,
+    },
+    additionalProperties: {
+      type: new GraphQLList(AdditionalPropertiesType),
     },
   },
   outputFields: {
@@ -190,12 +224,17 @@ const ProductUpdateMutation = mutationWithClientMutationId({
     }
 
     const { id } = fromGlobalId(obj.id);
+    obj.updatedBy = user;
 
     return loaders.product.load(id)
     .then(productClass => {
-      if (obj.name) productClass.set('name', obj.name);
-      productClass.save()
+      Object.keys(obj).forEach(key => {
+        if (key !== 'id') productClass.set(key, obj[key]);
+      });
+
+      return productClass.save(null, { useMasterKey: true })
       .then(res => {
+        console.log(res.get('price'));
         loaders.products.clearAll();
         loaders.product.prime(id, res);
         return res;
