@@ -87,10 +87,11 @@ Parse.Cloud.beforeSave('Product', async (req, res) => {
   const product = req.object;
   let currentProduct;
 
-  const Product = Parse.Object.extend('Product');
-  const productQuery = new Parse.Query(Product);
-
-  if (product.id) currentProduct = await productQuery.get(product.id);
+  if (product.id) {
+    const Product = Parse.Object.extend('Product');
+    const productQuery = new Parse.Query(Product);
+    currentProduct = await productQuery.get(product.id);
+  }
 
   // Xử lý ảnh
   const images = product.get('images') || null;
