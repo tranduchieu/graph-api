@@ -30,8 +30,6 @@ import {
 import { ProductEdge } from '../connections/product';
 import ViewerQueries from '../queries/Viewer';
 
-import checkClassSecurity from '../../services/checkClassSecurity';
-
 const AdditionalPropertiesType = new GraphQLInputObjectType({
   name: 'ProductAdditionalPropertiesInput',
   fields: {
