@@ -85,6 +85,13 @@ const checkSKU = (sku) => {
 
 Parse.Cloud.beforeSave('Product', async (req, res) => {
   const product = req.object;
+  let currentProduct;
+
+  if (product.id) {
+    const Product = Parse.Object.extend('Product');
+    const productQuery = new Parse.Query(Product);
+    currentProduct = await productQuery.get(product.id);
+  }
 
   // Xử lý ảnh
   const images = product.get('images') || null;
@@ -99,10 +106,13 @@ Parse.Cloud.beforeSave('Product', async (req, res) => {
 
   // Check sku
   const sku = product.get('sku') || null;
-  try {
-    await checkSKU(sku);
-  } catch (error) {
-    return res.error(error.message);
+  if (currentProduct && currentProduct.get('sku') !== sku) {
+    try {
+      await checkSKU(sku);
+    } catch (error) {
+      return res.error(error.message);
+    }
   }
+
   return res.success();
 });

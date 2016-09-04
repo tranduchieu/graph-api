@@ -118,24 +118,6 @@ server.use(
       user = await query.first({
         sessionToken: accessToken,
       });
-
-      // user = query.first()
-      // .then(userClass => {
-      //   if (!userClass) throw new Error('User không tồn tại');
-      //   return userClass;
-      // });
-      // .catch(err => {
-      //   throw err;
-      // });
-      // .catch(async err => {
-      //   switch (err.code) {
-      //     case Parse.Error.INVALID_SESSION_TOKEN:
-      //       await deleteToken(accessToken);
-      //       throw new Error('accessToken không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại để tiếp tục.');
-      //     default:
-      //       throw err;
-      //   }
-      // });
     }
 
     return {
@@ -143,7 +125,7 @@ server.use(
       pretty: true,
       graphiql: true,
       rootValue: { accessToken },
-      context: { loaders, user },
+      context: { loaders, user, accessToken },
     };
   })
 );

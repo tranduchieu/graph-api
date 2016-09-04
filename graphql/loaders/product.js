@@ -32,7 +32,6 @@ export const allProductsLoader = new DataLoader(keys => {
 
     return queryProduct.find()
       .then(products => {
-        console.log(products);
         products.forEach(item => {
           productByIdLoader.prime(item.id, item);
         });
