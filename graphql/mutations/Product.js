@@ -97,22 +97,13 @@ const ProductCreateMutation = mutationWithClientMutationId({
     },
     viewer: ViewerQueries.viewer,
   },
-  async mutateAndGetPayload(obj, { loaders, user }) {
-    if (!user) throw new Error('Không có quyền tạo Sản phẩm');
-
-    // Check security Class
-    try {
-      await checkClassSecurity('Product', 'create', user.id);
-    } catch (error) {
-      throw error;
-    }
-
+  async mutateAndGetPayload(obj, { loaders, user, accessToken }) {
     const product = omit(obj, ['clientMutationId']);
     product.createdBy = product.updatedBy = user;
 
     const Product = Parse.Object.extend('Product');
     const newProduct = new Product();
-    return newProduct.save(product, { useMasterKey: true })
+    return newProduct.save(product, { sessionToken: accessToken })
     .then(data => {
       loaders.products.clearAll();
       loaders.product.prime(data.id, data);
@@ -137,21 +128,14 @@ const ProductRemoveMutation = mutationWithClientMutationId({
     },
     viewer: ViewerQueries.viewer,
   },
-  async mutateAndGetPayload({ id }, { loaders, user }) {
-    if (!user) throw new Error('Không có quyền xóa Sản phẩm');
-
-    // Check class security
-    try {
-      await checkClassSecurity('Product', 'delete', user.id);
-    } catch (error) {
-      throw error;
-    }
-
+  async mutateAndGetPayload({ id }, { loaders, accessToken }) {
     const { id: localProductId } = fromGlobalId(id);
 
     return loaders.product.load(localProductId)
     .then(res => {
-      return res.destroy({ useMasterKey: true })
+      if (!res) throw new Error('Product not found');
+
+      return res.destroy({ sessionToken: accessToken })
       .then(item => {
         loaders.products.clearAll();
         loaders.product.clear(localProductId);
@@ -213,28 +197,20 @@ const ProductUpdateMutation = mutationWithClientMutationId({
       },
     },
   },
-  async mutateAndGetPayload(obj, { loaders, user }) {
-    if (!user) throw new Error('Không có quyền cập nhật Sản phẩm');
-
-    // Check class security
-    try {
-      await checkClassSecurity('Product', 'update', user.id);
-    } catch (error) {
-      throw error;
-    }
-
+  async mutateAndGetPayload(obj, { loaders, user, accessToken }) {
     const { id } = fromGlobalId(obj.id);
     obj.updatedBy = user;
 
     return loaders.product.load(id)
-    .then(productClass => {
+    .then(productObj => {
+      if (!productObj) throw new Error('Product not found');
+
       Object.keys(obj).forEach(key => {
-        if (key !== 'id') productClass.set(key, obj[key]);
+        if (key !== 'id') productObj.set(key, obj[key]);
       });
 
-      return productClass.save(null, { useMasterKey: true })
+      return productObj.save(null, { sessionToken: accessToken })
       .then(res => {
-        console.log(res.get('price'));
         loaders.products.clearAll();
         loaders.product.prime(id, res);
         return res;
