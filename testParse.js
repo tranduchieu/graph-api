@@ -50,23 +50,43 @@
 // --------------------------------
 // const roleACL = new Parse.ACL();
 // roleACL.setPublicReadAccess(true);
-// var role = new Parse.Role('Administrator', roleACL);
+// const role = new Parse.Role('Sales', roleACL);
 // role.save();
 
 // add user to role
 // --------------------------------
-// const roleACL = new Parse.ACL();
-// const role = new Parse.Role('Administrator', roleACL);
-// // Query User
+// const roleQuery = new Parse.Query(Parse.Role);
+// roleQuery.equalTo('name', 'Manager');
+// roleQuery.first()
+// .then(role => {
+//   // Query User
+//   const queryUser = new Parse.Query(Parse.User);
+//   queryUser.equalTo('username', 'tranduchieu');
+//   queryUser.first()
+//     .then(user => {
+//       role.getUsers().add(user);
+//       role.save(null, { useMasterKey: true })
+//       .then(console.log)
+//       .catch(console.error);
+//     })
+//     .catch(console.error);
+// })
+// .catch(console.error);
+
+// Query roles by user
+// --------------------------------------------
 // const queryUser = new Parse.Query(Parse.User);
-// queryUser.equalTo('username', 'hieu');
+// queryUser.equalTo('username', 'tranduchieu');
 // queryUser.first()
 //   .then(user => {
-//     role.getUsers().add(user);
-//     role.save();
-//     return;
+//     const roleQuery = new Parse.Query(Parse.Role);
+//     roleQuery.equalTo('users', user);
+//     roleQuery.find()
+//     .then(roleObj => console.log(roleObj[2].get('name')))
+//     .catch(console.error);
 //   })
 //   .catch(console.error);
+
 
 // Parse.User.become('r:0e599429b398314e83faec822ec1c6ea')
 // .then(user => {
