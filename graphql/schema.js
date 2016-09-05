@@ -8,6 +8,7 @@ import { nodeField } from './relay/RelayNode';
 import ViewerQueries from './queries/Viewer';
 
 import ProductMutation from './mutations/Product';
+import ShortIdMutation from './mutations/ShortId';
 
 const Query = new GraphQLObjectType({
   name: 'Query',
@@ -25,6 +26,7 @@ const Mutation = new GraphQLObjectType({
     createProduct: ProductMutation.create,
     updateProduct: ProductMutation.update,
     removeProduct: ProductMutation.remove,
+    shortId: ShortIdMutation,
   },
 });
 
