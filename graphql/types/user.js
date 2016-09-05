@@ -2,6 +2,7 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLBoolean,
+  GraphQLList,
 } from 'graphql';
 
 import {
@@ -41,10 +42,10 @@ const User = new GraphQLObjectType({
     password: {
       type: GraphQLString,
     },
-    isCustomerOnly: {
-      type: GraphQLBoolean,
-      resolve(data) {
-        return data.get('isCustomerOnly');
+    roles: {
+      type: new GraphQLList(GraphQLString),
+      resolve({ id }, args, { loaders }) {
+        return loaders.rolesByUser.load(id);
       },
     },
     email: {

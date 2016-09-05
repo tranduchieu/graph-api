@@ -3,7 +3,6 @@ import Parse from 'parse/node';
 import { cursorToOffset } from 'graphql-relay';
 
 export const userByIdLoader = new DataLoader(ids => {
-  console.log(ids.length);
   const queryUser = new Parse.Query(Parse.User);
   queryUser.containedIn('objectId', ids);
 
@@ -41,6 +40,23 @@ export const allUsersLoader = new DataLoader(keys => {
   }));
 });
 
+export const rolesByUserLoader = new DataLoader(userIds => {
+  return Promise.all(userIds.map(id => userByIdLoader.load(id)))
+  .then(userObjs => {
+    return Promise.all(
+      userObjs.map(user => {
+        const roleQuery = new Parse.Query(Parse.Role);
+        roleQuery.equalTo('users', user);
+        roleQuery.select('name');
+        return roleQuery.find()
+          .then(rolesByUser => rolesByUser.map(role => {
+            return role.get('name');
+          }));
+      })
+    );
+  });
+});
+
 // const queryUser = new Parse.Query(Parse.User);
 // queryUser.equalTo('username', 'hieu');
 // const promise = queryUser.find();
@@ -51,13 +67,15 @@ export const allUsersLoader = new DataLoader(keys => {
 // })
 // .catch(console.error);
 
-// const promise1 = userByIdLoader.load('9Z399ohBdS');
-// const promise2 = userByIdLoader.load('CI35DkQo3C');
+// const promise1 = rolesByUserLoader.load('u9AF63PAEd');
+// const promise2 = rolesByUserLoader.load('8JqQOYbX81');
 
 // Promise.all([
 //   promise1,
 //   promise2,
 // ])
-// .then(console.log)
+// .then(result => {
+//   console.log(result);
+// })
 // .catch(console.error);
 
