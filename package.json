@@ -34,7 +34,7 @@
     "eslint": "^3.3.1",
     "eslint-config-airbnb-base": "^5.0.0",
     "eslint-plugin-import": "^1.13.0",
-    "flow-bin": "^0.30.0",
+    "flow-bin": "^0.32.0",
     "flow-graphql": "^0.6.7",
     "iflow-lodash": "^1.1.23",
     "iflow-moment": "^1.1.13"
