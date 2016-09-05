@@ -1,6 +1,7 @@
 import {
   allUsersLoader,
   userByIdLoader,
+  rolesByUserLoader,
 } from './user';
 
 import {
@@ -16,6 +17,7 @@ import {
 module.exports = {
   users: allUsersLoader,
   user: userByIdLoader,
+  rolesByUser: rolesByUserLoader,
   profiles: allProfilesLoader,
   profile: profileByIdLoader,
   product: productByIdLoader,

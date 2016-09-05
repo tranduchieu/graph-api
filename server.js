@@ -134,4 +134,7 @@ server.listen(SERVER_PORT, () => console.log(
   `Server is now running in ${process.env.NODE_ENV || 'development'} mode on http://localhost:${SERVER_PORT}`
 ));
 
-require('./testParse');
+if (IS_DEVELOPMENT) {
+  require('./parse-example');
+}
+

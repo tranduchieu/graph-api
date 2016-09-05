@@ -44,9 +44,6 @@ Parse.Cloud.beforeSave(Parse.User, (req, res) => {
   const mobilePhone = user.get('mobilePhone') || null;
   const mobilePhoneVerified = user.get('mobilePhoneVerified') || false;
   const name = fbAuthData.name || user.get('name') || null;
-  // const avatarUrl = _.has(fbAuthData, 'picture.data.url') ?
-  //                               fbAuthData.picture.data.url : null ||
-  //                               user.get('avatarUrl') || randomAvatar();
   const avatarUrl = (((fbAuthData || {}).picture || {}).data || {}).url ||
                     user.get('avatarUrl') || randomAvatar();
   const isCustomerOnly = user.get('isCustomerOnly') || false;
@@ -66,5 +63,31 @@ Parse.Cloud.beforeSave(Parse.User, (req, res) => {
     .catch(err => {
       return res.error(err);
     });
+});
+
+const addUserRole = (userObj, roleName) => {
+  const roleQuery = new Parse.Query(Parse.Role);
+  roleQuery.equalTo('name', roleName);
+  return roleQuery.first()
+  .then(role => {
+    role.getUsers().add(userObj);
+    return role.save(null, { useMasterKey: true });
+  });
+};
+
+Parse.Cloud.afterSave(Parse.User, async (req, res) => {
+  const userObj = req.object;
+  const uuidRegex = '^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$';
+
+  const roleName = new RegExp(uuidRegex).test(userObj.get('username')) ?
+                    'Customer' :
+                    'User';
+  try {
+    await addUserRole(userObj, roleName);
+  } catch (error) {
+    return res.error(error.message);
+  }
+
+  return res.success();
 });
 
