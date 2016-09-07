@@ -17,8 +17,8 @@ const ShortIdMutation = mutationWithClientMutationId({
       resolve: (payload) => payload.shortId,
     },
   },
-  mutateAndGetPayload(data, args, { accessToken }) {
-    const shortId = ShortId.getOne(accessToken);
+  async mutateAndGetPayload(args, { accessToken }) {
+    const shortId = await ShortId.getOne(accessToken);
     return { shortId };
   },
 });
