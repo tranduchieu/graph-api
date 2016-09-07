@@ -38,6 +38,21 @@ const ProductAdditionalPropertiesType = new GraphQLObjectType({
   }),
 });
 
+const MultipleProductsType = new GraphQLObjectType({
+  name: 'MultipleProductsType',
+  fields: {
+    name: {
+      type: GraphQLString,
+    },
+    priority: {
+      type: GraphQLInt,
+    },
+    prices: {
+      type: new GraphQLList(GraphQLInt),
+    },
+  },
+});
+
 const Product = new GraphQLObjectType({
   name: 'Product',
   description: 'Product type',
@@ -49,10 +64,10 @@ const Product = new GraphQLObjectType({
         return data.get('description');
       },
     },
-    sku: {
+    code: {
       type: GraphQLString,
       resolve(data) {
-        return data.get('sku');
+        return data.get('code');
       },
     },
     shop: {
@@ -123,6 +138,12 @@ const Product = new GraphQLObjectType({
       type: new GraphQLList(ProductAdditionalPropertiesType),
       resolve(data) {
         return data.get('additionalProperties');
+      },
+    },
+    forMultipleProducts: {
+      type: MultipleProductsType,
+      resolve(data) {
+        return data.get('forMultipleProducts');
       },
     },
     createdBy: {

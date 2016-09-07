@@ -5,6 +5,9 @@ import {
 export const ShopEnumType = new GraphQLEnumType({
   name: 'ShopEnumType',
   values: {
+    TO_CU: {
+      value: 'Tổ Cú',
+    },
     HOANG_QUOC_VIET: {
       value: 'Tổ Cú Hoàng Quốc Việt',
     },
@@ -47,6 +50,40 @@ export const ProductStatusEnum = new GraphQLEnumType({
     CLOSED: {
       value: 'closed',
       description: 'Sản phẩm đã đóng',
+    },
+  },
+});
+
+export const OrderStatusEnum = new GraphQLEnumType({
+  name: 'OrderStatusEnum',
+  values: {
+    PENDING: {
+      value: 'pending',
+      description: 'Chờ thanh toán',
+    },
+    PARTIALLY_PAID: {
+      value: 'partiallyPaid',
+      description: 'Thanh toán một phần',
+    },
+    PAID: {
+      value: 'paid',
+      description: 'Đã thanh toán',
+    },
+    SENDING: {
+      value: 'sending',
+      description: 'Đang gửi hàng',
+    },
+    COMPLETED: {
+      value: 'completed',
+      description: 'Đã hoàn thành',
+    },
+    FAILED: {
+      value: 'failed',
+      description: 'Thất bại',
+    },
+    CANCELED: {
+      value: 'canceled',
+      description: 'Đã hủy',
     },
   },
 });

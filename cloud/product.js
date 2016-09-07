@@ -67,17 +67,17 @@ const updateImagesArray = (imgArray) => {
   });
 };
 
-const checkSKU = (sku) => {
+const checkcode = (code) => {
   return new Promise((resolve, reject) => {
-    if (!sku) return reject(new Error('Vui lòng nhập sku'));
+    if (!code) return reject(new Error('Vui lòng nhập code'));
 
     const Product = Parse.Object.extend('Product');
     const query = new Parse.Query(Product);
-    query.equalTo('sku', sku);
+    query.equalTo('code', code);
     return query.first({ useMasterKey: true })
       .then(productObj => {
         if (!productObj) return resolve(true);
-        return reject(new Error(`sku ${sku} đã tồn tại`));
+        return reject(new Error(`code ${code} đã tồn tại`));
       })
       .catch(reject);
   });
@@ -104,11 +104,11 @@ Parse.Cloud.beforeSave('Product', async (req, res) => {
   }
   product.set('images', imagesUpdated);
 
-  // Check sku
-  const sku = product.get('sku') || null;
-  if (currentProduct && currentProduct.get('sku') !== sku) {
+  // Check code
+  const code = product.get('code') || null;
+  if (currentProduct && currentProduct.get('code') !== code) {
     try {
-      await checkSKU(sku);
+      await checkcode(code);
     } catch (error) {
       return res.error(error.message);
     }

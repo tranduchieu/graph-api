@@ -249,7 +249,7 @@
               "description": null,
               "args": [
                 {
-                  "name": "sku",
+                  "name": "code",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -741,7 +741,7 @@
               "deprecationReason": null
             },
             {
-              "name": "sku",
+              "name": "code",
               "description": null,
               "args": [],
               "type": {

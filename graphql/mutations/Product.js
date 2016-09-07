@@ -48,7 +48,7 @@ const ProductCreateMutation = mutationWithClientMutationId({
     description: {
       type: GraphQLString,
     },
-    sku: {
+    code: {
       type: new GraphQLNonNull(GraphQLString),
     },
     shop: {
@@ -152,7 +152,7 @@ const ProductUpdateMutation = mutationWithClientMutationId({
     description: {
       type: GraphQLString,
     },
-    sku: {
+    code: {
       type: GraphQLString,
     },
     shop: {

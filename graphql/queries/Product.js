@@ -37,7 +37,7 @@ export default {
   products: {
     type: ProductConnection,
     args: {
-      sku: {
+      code: {
         type: GraphQLString,
       },
       boxes: {
