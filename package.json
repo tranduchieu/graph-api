@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@tranduchieu/graphql-custom-types": "^0.6.1",
-    "@tranduchieu/short-parse-id": "0.0.2",
+    "@tranduchieu/short-parse-id": "0.0.4",
     "aws-sdk": "^2.5.1",
     "axios": "^0.13.1",
     "cors": "^2.7.1",
