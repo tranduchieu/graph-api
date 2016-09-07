@@ -14,7 +14,21 @@ import {
   productByIdLoader,
 } from './product';
 
+import {
+  addressByIdLoader,
+  allAddressesLoader,
+  addressesByUserIdLoader,
+} from './address';
+
+import {
+  orderByIdLoader,
+  allOrdersLoader,
+} from './order';
+
 module.exports = {
+  addresses: allAddressesLoader,
+  addressesByUser: addressesByUserIdLoader,
+  address: addressByIdLoader,
   users: allUsersLoader,
   user: userByIdLoader,
   rolesByUser: rolesByUserLoader,
@@ -22,4 +36,6 @@ module.exports = {
   profile: profileByIdLoader,
   product: productByIdLoader,
   products: allProductsLoader,
+  order: orderByIdLoader,
+  orders: allOrdersLoader,
 };
