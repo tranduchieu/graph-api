@@ -14,6 +14,7 @@ import {
   GraphQLURL,
   GraphQLMobilePhone,
 } from '@tranduchieu/graphql-custom-types';
+import AddressType from './address';
 
 import RelayRegistry from '../relay/RelayRegistry';
 
@@ -78,22 +79,29 @@ const User = new GraphQLObjectType({
         return data.get('avatarUrl');
       },
     },
-    address: {
-      type: GraphQLString,
-      resolve(data) {
-        return data.get('address');
+    addresses: {
+      type: new GraphQLList(AddressType),
+      args: {
+        isDefault: {
+          type: GraphQLBoolean,
+        },
+      },
+      async resolve(data, { isDefault }, { loaders }) {
+        const addressesByUser = await loaders.addressesByUser.load(data.id);
+        if (isDefault) {
+          return addressesByUser.filter(address => address.get('isDefault') === true);
+        }
+        if (isDefault === false) {
+          return addressesByUser.filter(address => address.get('isDefault') === false);
+        }
+
+        return addressesByUser;
       },
     },
-    district: {
-      type: GraphQLString,
+    tags: {
+      type: new GraphQLList(GraphQLString),
       resolve(data) {
-        return data.get('district');
-      },
-    },
-    province: {
-      type: GraphQLString,
-      resolve(data) {
-        return data.get('province');
+        return data.get('tags');
       },
     },
   }),
