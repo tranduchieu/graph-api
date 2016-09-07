@@ -1,7 +1,9 @@
+import Parse from 'parse/node';
 import {
   GraphQLID,
   GraphQLNonNull,
   GraphQLString,
+  GraphQLInt,
   GraphQLList,
 } from 'graphql';
 
@@ -12,6 +14,10 @@ import {
 } from 'graphql-relay';
 
 import ProductType from '../types/product';
+import {
+  ShopEnumType,
+  ProductStatusEnum,
+} from '../types/enumTypes';
 import { ProductConnection } from '../connections/product';
 
 export default {
@@ -41,6 +47,25 @@ export default {
     },
     resolve(root, args, { loaders }) {
       return connectionFromPromisedArray(loaders.products.load(JSON.stringify(args)), {});
+    },
+  },
+  productsCount: {
+    type: GraphQLInt,
+    args: {
+      status: {
+        type: ProductStatusEnum,
+      },
+      shop: {
+        type: ShopEnumType,
+      },
+    },
+    resolve(root, args) {
+      const Product = Parse.Object.extend('Product');
+      const query = new Parse.Query(Product);
+      Object.keys(args).forEach(key => {
+        query.equalTo(key, args[key]);
+      });
+      return query.count();
     },
   },
 };

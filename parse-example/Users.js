@@ -9,3 +9,12 @@
 // user.signUp()
 // .then(console.log)
 // .catch(console.error);
+
+// Query User
+// -------------------------
+// const queryUser = new Parse.Query(Parse.User);
+// queryUser.include('addresses');
+// queryUser.get('u9AF63PAEd')
+// .then(userObj => {
+//   console.log(userObj.get('addresses'));
+// });
