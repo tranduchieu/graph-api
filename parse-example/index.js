@@ -1,2 +1,4 @@
-require('./User');
-require('./Role');
+require('./Users');
+require('./Roles');
+require('./Relations');
+require('./Queries');
