@@ -17,6 +17,7 @@ const Viewer = new GraphQLObjectType({
     users: UserQueries.users,
     product: ProductQueries.product,
     products: ProductQueries.products,
+    productsCount: ProductQueries.productsCount,
   }),
 });
 
