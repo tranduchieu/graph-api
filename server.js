@@ -110,13 +110,17 @@ server.use(
     const accessToken = extractTokenFromHeader(req.headers) ||
                         req.query.accessToken ||
                         null;
+    console.log(accessToken);
     let user;
     if (!accessToken) {
       user = null;
     } else {
-      const query = new Parse.Query(Parse.User);
-      user = await query.first({
-        sessionToken: accessToken,
+      const query = new Parse.Query('_Session');
+      query.equalTo('sessionToken', accessToken);
+      query.include('user');
+      user = await query.first({ useMasterKey: true })
+      .then(session => {
+        return session.get('user');
       });
     }
 
