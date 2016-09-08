@@ -43,16 +43,22 @@ const Product = new GraphQLObjectType({
   description: 'Product type',
   fields: () => ({
     id: globalIdField('Product'),
+    name: {
+      type: GraphQLString,
+      resolve(data) {
+        return data.get('data');
+      },
+    },
     description: {
       type: GraphQLString,
       resolve(data) {
         return data.get('description');
       },
     },
-    sku: {
+    code: {
       type: GraphQLString,
       resolve(data) {
-        return data.get('sku');
+        return data.get('code');
       },
     },
     shop: {
@@ -111,6 +117,12 @@ const Product = new GraphQLObjectType({
       type: GraphQLInt,
       resolve(data) {
         return data.get('salePrice');
+      },
+    },
+    additionalPrices: {
+      type: new GraphQLList(GraphQLInt),
+      resolve(data) {
+        return data.get('additionalPrices');
       },
     },
     weight: {

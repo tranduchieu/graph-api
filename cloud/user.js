@@ -46,7 +46,6 @@ Parse.Cloud.beforeSave(Parse.User, (req, res) => {
   const name = fbAuthData.name || user.get('name') || null;
   const avatarUrl = (((fbAuthData || {}).picture || {}).data || {}).url ||
                     user.get('avatarUrl') || randomAvatar();
-  const isCustomerOnly = user.get('isCustomerOnly') || false;
 
   return mobilePhoneUniqueValidate(mobilePhone)
     .then(() => {
@@ -56,7 +55,6 @@ Parse.Cloud.beforeSave(Parse.User, (req, res) => {
       user.set('mobilePhone', mobilePhone);
       user.set('mobilePhoneVerified', mobilePhoneVerified);
       user.set('avatarUrl', avatarUrl);
-      user.set('isCustomerOnly', isCustomerOnly);
 
       return res.success();
     })

@@ -23,10 +23,10 @@ export const productByIdLoader = new DataLoader(ids => {
 export const allProductsLoader = new DataLoader(keys => {
   return Promise.all(keys.map(key => {
     const args = JSON.parse(key);
-    const { after, first, sku } = args;
+    const { after, first, code } = args;
     const Product = Parse.Object.extend('Product');
     const queryProduct = new Parse.Query(Product);
-    if (sku) queryProduct.equalTo('sku', sku);
+    if (code) queryProduct.equalTo('code', code);
     queryProduct.skip(after ? cursorToOffset(after) + 1 : 0);
     queryProduct.limit(first || 20);
 

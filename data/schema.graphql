@@ -20,7 +20,7 @@ type PageInfo {
 type Product {
   id: ID!
   description: String
-  sku: String
+  code: String
   shop: String
   boxes: [String]
   status: ProductStatusEnumType
@@ -99,5 +99,5 @@ type Viewer {
   user(id: ID!): User
   users(username: String, after: String, first: Int, before: String, last: Int): UserConnection
   product(id: ID!): Product
-  products(sku: String, boxes: [String], after: String, first: Int, before: String, last: Int): ProductConnection
+  products(code: String, boxes: [String], after: String, first: Int, before: String, last: Int): ProductConnection
 }
