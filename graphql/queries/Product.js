@@ -30,7 +30,6 @@ export default {
     },
     resolve(root, { id }, { loaders }) {
       const { id: productId } = fromGlobalId(id);
-      console.log(productId);
       return loaders.product.load(productId);
     },
   },
