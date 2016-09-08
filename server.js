@@ -110,7 +110,6 @@ server.use(
     const accessToken = extractTokenFromHeader(req.headers) ||
                         req.query.accessToken ||
                         null;
-    console.log(accessToken);
     let user;
     if (!accessToken) {
       user = null;
