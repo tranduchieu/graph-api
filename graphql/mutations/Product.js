@@ -166,7 +166,6 @@ const ProductUpdateMutation = mutationWithClientMutationId({
     },
     featured: {
       type: GraphQLBoolean,
-      defaultValue: false,
     },
     images: {
       type: new GraphQLList(GraphQLURL),
