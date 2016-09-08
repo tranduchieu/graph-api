@@ -57,6 +57,16 @@ export const rolesByUserLoader = new DataLoader(userIds => {
   });
 });
 
+export const addressesByUserLoader = new DataLoader(userIds => {
+  return Promise.all(userIds.map(userId => {
+    return userByIdLoader.load(userId)
+    .then(userObj => {
+      const addressesRelation = userObj.relation('addresses');
+      return addressesRelation.query().find();
+    });
+  }));
+});
+
 // const queryUser = new Parse.Query(Parse.User);
 // queryUser.equalTo('username', 'hieu');
 // const promise = queryUser.find();

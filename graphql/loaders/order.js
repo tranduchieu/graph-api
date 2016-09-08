@@ -39,3 +39,13 @@ export const allOrdersLoader = new DataLoader(keys => {
       });
   }));
 });
+
+export const linesByOrderLoader = new DataLoader(orderIds => {
+  return Promise.all(orderIds.map(orderId => {
+    return orderByIdLoader.load(orderId)
+    .then(userObj => {
+      const linesRelation = userObj.relation('lines');
+      return linesRelation.query().find();
+    });
+  }));
+});
