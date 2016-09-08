@@ -38,26 +38,17 @@ const ProductAdditionalPropertiesType = new GraphQLObjectType({
   }),
 });
 
-const MultipleProductsType = new GraphQLObjectType({
-  name: 'MultipleProductsType',
-  fields: {
-    name: {
-      type: GraphQLString,
-    },
-    priority: {
-      type: GraphQLInt,
-    },
-    prices: {
-      type: new GraphQLList(GraphQLInt),
-    },
-  },
-});
-
 const Product = new GraphQLObjectType({
   name: 'Product',
   description: 'Product type',
   fields: () => ({
     id: globalIdField('Product'),
+    name: {
+      type: GraphQLString,
+      resolve(data) {
+        return data.get('data');
+      },
+    },
     description: {
       type: GraphQLString,
       resolve(data) {
@@ -128,6 +119,12 @@ const Product = new GraphQLObjectType({
         return data.get('salePrice');
       },
     },
+    additionalPrices: {
+      type: new GraphQLList(GraphQLInt),
+      resolve(data) {
+        return data.get('additionalPrices');
+      },
+    },
     weight: {
       type: GraphQLInt,
       resolve(data) {
@@ -138,12 +135,6 @@ const Product = new GraphQLObjectType({
       type: new GraphQLList(ProductAdditionalPropertiesType),
       resolve(data) {
         return data.get('additionalProperties');
-      },
-    },
-    forMultipleProducts: {
-      type: MultipleProductsType,
-      resolve(data) {
-        return data.get('forMultipleProducts');
       },
     },
     createdBy: {
