@@ -6,6 +6,7 @@ import { globalIdField } from 'graphql-relay';
 
 import UserQueries from '../queries/User';
 import ProductQueries from '../queries/Product';
+import OrderQueries from '../queries/Order';
 
 const Viewer = new GraphQLObjectType({
   name: 'Viewer',
@@ -18,6 +19,10 @@ const Viewer = new GraphQLObjectType({
     product: ProductQueries.product,
     products: ProductQueries.products,
     productsCount: ProductQueries.productsCount,
+    order: OrderQueries.order,
+    orders: OrderQueries.orders,
+    ordersByCustomer: OrderQueries.ordersByCustomer,
+    ordersCount: OrderQueries.ordersCount,
   }),
 });
 

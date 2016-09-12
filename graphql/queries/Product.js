@@ -39,6 +39,12 @@ export default {
       code: {
         type: GraphQLString,
       },
+      shop: {
+        type: ShopEnumType,
+      },
+      status: {
+        type: ProductStatusEnum,
+      },
       boxes: {
         type: new GraphQLList(GraphQLString),
       },

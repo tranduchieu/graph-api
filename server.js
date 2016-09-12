@@ -119,6 +119,7 @@ server.use(
       query.include('user');
       user = await query.first({ useMasterKey: true })
       .then(session => {
+        if (!session) throw new Error('invalid session token');
         return session.get('user');
       });
     }

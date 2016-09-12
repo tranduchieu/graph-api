@@ -6,11 +6,6 @@ const bucket = process.env.S3_BUCKET || 'ecolab-server';
 const bucketPrefix = process.env.S3_BUCKET_PREFIX || '';
 const s3Host = `${bucket}.s3.amazonaws.com`;
 
-Parse.Cloud.afterSave('Product', (req, res) => {
-  // const boxes = req.object.get('boxes');
-  return res.success();
-});
-
 const checkImgSrc = (imgSrc) => {
   return new Promise((resolve, reject) => {
     return Parse.Cloud.httpRequest({
@@ -106,7 +101,7 @@ Parse.Cloud.beforeSave('Product', async (req, res) => {
 
   // Check code
   const code = product.get('code') || null;
-  if (currentProduct && currentProduct.get('code') !== code) {
+  if (!currentProduct || (currentProduct && currentProduct.get('code') !== code)) {
     try {
       await checkcode(code);
     } catch (error) {
@@ -114,5 +109,12 @@ Parse.Cloud.beforeSave('Product', async (req, res) => {
     }
   }
 
+  return res.success();
+});
+
+// After Save
+// ======================================
+Parse.Cloud.afterSave('Product', (req, res) => {
+  // const boxes = req.object.get('boxes');
   return res.success();
 });

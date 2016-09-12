@@ -22,10 +22,22 @@ const Address = new GraphQLObjectType({
         return data.get('fullName');
       },
     },
+    company: {
+      type: GraphQLString,
+      resolve(data) {
+        return data.get('company');
+      },
+    },
     address: {
       type: GraphQLString,
       resolve(data) {
         return data.get('address');
+      },
+    },
+    ward: {
+      type: GraphQLString,
+      resolve(data) {
+        return data.get('ward');
       },
     },
     district: {

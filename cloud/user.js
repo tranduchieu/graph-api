@@ -26,41 +26,44 @@ const mobilePhoneUniqueValidate = (mobilePhone) => {
     queryUser.equalTo('mobilePhone', mobilePhone);
     return queryUser.first()
       .then(user => {
-        if (user) return reject('Số điện thoại đã tồn tại');
+        if (user) return reject(new Error('Số điện thoại đã tồn tại'));
         return resolve();
       })
-      .catch(err => {
-        throw err;
-      });
+      .catch(reject);
   });
 };
 
-Parse.Cloud.beforeSave(Parse.User, (req, res) => {
+Parse.Cloud.beforeSave(Parse.User, async (req, res) => {
   const user = req.object;
+  let currentUser;
+  if (user.id) {
+    const userQuery = new Parse.Query(Parse.User);
+    currentUser = await userQuery.get(user.id);
+  }
+
   const fbAuthData = (req.object.get('authData') || {}).facebook || {};
 
   const email = fbAuthData.email || user.get('email') || null;
-  const emailVerified = user.get('emailVerified') || false;
-  const mobilePhone = user.get('mobilePhone') || null;
-  const mobilePhoneVerified = user.get('mobilePhoneVerified') || false;
   const name = fbAuthData.name || user.get('name') || null;
   const avatarUrl = (((fbAuthData || {}).picture || {}).data || {}).url ||
                     user.get('avatarUrl') || randomAvatar();
 
-  return mobilePhoneUniqueValidate(mobilePhone)
-    .then(() => {
-      user.set('name', name);
-      user.set('email', email);
-      user.set('emailVerified', emailVerified);
-      user.set('mobilePhone', mobilePhone);
-      user.set('mobilePhoneVerified', mobilePhoneVerified);
-      user.set('avatarUrl', avatarUrl);
+  // Check mobilePhone
+  const mobilePhone = user.get('mobilePhone') || null;
+  if (!currentUser || (currentUser && currentUser.get('mobilePhone') !== mobilePhone)) {
+    try {
+      await mobilePhoneUniqueValidate(mobilePhone);
+    } catch (error) {
+      return res.error(error.message);
+    }
+  }
 
-      return res.success();
-    })
-    .catch(err => {
-      return res.error(err);
-    });
+  // Set fields & res success
+  user.set('name', name);
+  user.set('email', email);
+  user.set('avatarUrl', avatarUrl);
+
+  return res.success();
 });
 
 const addUserRole = (userObj, roleName) => {

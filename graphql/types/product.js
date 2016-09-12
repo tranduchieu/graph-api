@@ -6,7 +6,7 @@ import {
   GraphQLBoolean,
 } from 'graphql';
 
-import { GraphQLURL } from '@tranduchieu/graphql-custom-types';
+import { GraphQLURL, GraphQLDateTime } from '@tranduchieu/graphql-custom-types';
 
 import {
   globalIdField,
@@ -137,11 +137,23 @@ const Product = new GraphQLObjectType({
         return data.get('additionalProperties');
       },
     },
+    createdAt: {
+      type: GraphQLDateTime,
+      resolve(data) {
+        return data.get('createdAt');
+      },
+    },
     createdBy: {
       type: UserType,
       resolve(data, args, { loaders }) {
         const { id } = data.get('createdBy');
         return loaders.user.load(id);
+      },
+    },
+    updatedAt: {
+      type: GraphQLDateTime,
+      resolve(data) {
+        return data.get('updatedAt');
       },
     },
     updatedBy: {
