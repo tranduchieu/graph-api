@@ -27,6 +27,7 @@ export const allUsersLoader = new DataLoader(keys => {
 
     const queryUser = new Parse.Query(Parse.User);
     if (username) queryUser.equalTo('username', username);
+    queryUser.descending('createdAt');
     queryUser.skip(after ? cursorToOffset(after) + 1 : 0);
     queryUser.limit(first || 20);
 
