@@ -6,11 +6,6 @@ import {
 } from './user';
 
 import {
-  allProfilesLoader,
-  profileByIdLoader,
-} from './profile';
-
-import {
   allProductsLoader,
   productByIdLoader,
 } from './product';
@@ -26,8 +21,6 @@ module.exports = {
   user: userByIdLoader,
   addressesByUser: addressesByUserLoader,
   rolesByUser: rolesByUserLoader,
-  profiles: allProfilesLoader,
-  profile: profileByIdLoader,
   product: productByIdLoader,
   products: allProductsLoader,
   order: orderByIdLoader,

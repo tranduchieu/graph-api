@@ -3,7 +3,6 @@ import {
   GraphQLObjectType,
   GraphQLList,
   GraphQLInt,
-  GraphQLBoolean,
 } from 'graphql';
 
 import { globalIdField } from 'graphql-relay';
@@ -23,6 +22,7 @@ const OrderLine = new GraphQLObjectType({
   name: 'OrderLine',
   description: 'OrderLine type',
   fields: {
+    id: globalIdField('OrderLine'),
     product: {
       type: ProductType,
       resolve(data, args, { loaders }) {
@@ -53,14 +53,6 @@ const OrderLine = new GraphQLObjectType({
       resolve(data) {
         return data.get('weight');
       },
-      // resolve(data, args, { loaders }) {
-      //   const { id: productId } = data.get('product');
-      //   return loaders.product.load(productId)
-      //     .then(productObj => {
-      //       if (!productObj || !productObj.get('weight')) return null;
-      //       return productObj.get('weight') * data.get('amount');
-      //     });
-      // },
     },
   },
 });
@@ -69,6 +61,7 @@ const Order = new GraphQLObjectType({
   name: 'Order',
   description: 'Order type',
   fields: {
+    id: globalIdField('Order'),
     code: {
       type: GraphQLString,
       resolve(data) {
@@ -158,6 +151,7 @@ const Order = new GraphQLObjectType({
     note: {
       type: GraphQLString,
       async resolve(data, args, { loaders, user }) {
+        console.log(user);
         if (!user) return null;
         const roles = await loaders.rolesByUser.load(user.id);
         const validRoles = roles.filter(role => {
