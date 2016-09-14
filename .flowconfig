@@ -10,6 +10,7 @@ flow-typed/npm/express_v4.x.x.js
 flow-typed/npm/axios_v0.13.x.js
 
 [libs]
+interfaces/
 
 [options]
 module.system=haste
