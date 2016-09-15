@@ -87,3 +87,21 @@ export const OrderStatusEnum = new GraphQLEnumType({
     },
   },
 });
+
+export const BoxTypesEnum = new GraphQLEnumType({
+  name: 'BoxTypesEnum',
+  values: {
+    PRODUCT: {
+      value: 'product',
+      description: 'Box dạng Sản phẩm',
+    },
+    ARTICLE: {
+      value: 'article',
+      description: 'Box dạng Bài viết',
+    },
+    PHOTO: {
+      value: 'photo',
+      description: 'Box dạng Ảnh',
+    },
+  },
+});
