@@ -7,6 +7,7 @@ import { globalIdField } from 'graphql-relay';
 import UserQueries from '../queries/User';
 import ProductQueries from '../queries/Product';
 import OrderQueries from '../queries/Order';
+import BoxQueries from '../queries/Box';
 
 const Viewer = new GraphQLObjectType({
   name: 'Viewer',
@@ -16,6 +17,9 @@ const Viewer = new GraphQLObjectType({
     me: UserQueries.me,
     user: UserQueries.user,
     users: UserQueries.users,
+    box: BoxQueries.box,
+    boxes: BoxQueries.boxes,
+    boxesCount: BoxQueries.boxesCount,
     product: ProductQueries.product,
     products: ProductQueries.products,
     productsCount: ProductQueries.productsCount,

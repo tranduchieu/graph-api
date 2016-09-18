@@ -9,7 +9,7 @@ import {
   globalIdField,
 } from 'graphql-relay';
 
-import { GraphQLDateTime } from '@tranduchieu/graphql-custom-types';
+import { GraphQLDateTime, GraphQLURL } from '@tranduchieu/graphql-custom-types';
 import { BoxTypesEnum } from './enumTypes';
 
 import RelayRegistry from '../relay/RelayRegistry';
@@ -53,14 +53,14 @@ const Box = new GraphQLObjectType({
         return data.get('position');
       },
     },
-    available: {
+    visible: {
       type: GraphQLBoolean,
       resolve(data) {
         return data.get('available');
       },
     },
     coverImageSrc: {
-      type: GraphQLString,
+      type: GraphQLURL,
       resolve(data) {
         return data.get('coverImageSrc');
       },
