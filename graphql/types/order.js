@@ -6,6 +6,7 @@ import {
 } from 'graphql';
 
 import { globalIdField } from 'graphql-relay';
+import { GraphQLDateTime } from '@tranduchieu/graphql-custom-types';
 
 import RelayRegistry from '../relay/RelayRegistry';
 
@@ -162,11 +163,23 @@ const Order = new GraphQLObjectType({
         return data.get('note');
       },
     },
+    createdAt: {
+      type: GraphQLDateTime,
+      resolve(data) {
+        return data.get('createdAt');
+      },
+    },
     createdBy: {
       type: UserType,
       resolve(data, args, { loaders }) {
         const { id } = data.get('createdBy');
         return loaders.user.load(id);
+      },
+    },
+    updatedAt: {
+      type: GraphQLDateTime,
+      resolve(data) {
+        return data.get('updatedAt');
       },
     },
     updatedBy: {

@@ -1,5 +1,6 @@
 import {
   GraphQLString,
+  GraphQLBoolean,
   GraphQLInt,
   GraphQLObjectType,
 } from 'graphql';
@@ -7,6 +8,9 @@ import {
 import {
   globalIdField,
 } from 'graphql-relay';
+
+import { GraphQLDateTime, GraphQLURL } from '@tranduchieu/graphql-custom-types';
+import { BoxTypesEnum } from './enumTypes';
 
 import RelayRegistry from '../relay/RelayRegistry';
 
@@ -26,15 +30,9 @@ const Box = new GraphQLObjectType({
       },
     },
     type: {
-      type: GraphQLString,
+      type: BoxTypesEnum,
       resolve(data) {
         return data.get('type');
-      },
-    },
-    position: {
-      type: GraphQLInt,
-      resolve(data) {
-        return data.get('position');
       },
     },
     description: {
@@ -43,10 +41,40 @@ const Box = new GraphQLObjectType({
         return data.get('description');
       },
     },
+    featured: {
+      type: GraphQLBoolean,
+      resolve(data) {
+        return data.get('featured');
+      },
+    },
+    position: {
+      type: GraphQLInt,
+      resolve(data) {
+        return data.get('position');
+      },
+    },
+    visible: {
+      type: GraphQLBoolean,
+      resolve(data) {
+        return data.get('available');
+      },
+    },
     coverImageSrc: {
-      type: GraphQLString,
+      type: GraphQLURL,
       resolve(data) {
         return data.get('coverImageSrc');
+      },
+    },
+    createdAt: {
+      type: GraphQLDateTime,
+      resolve(data) {
+        return data.get('createdAt');
+      },
+    },
+    updatedAt: {
+      type: GraphQLDateTime,
+      resolve(data) {
+        return data.get('updatedAt');
       },
     },
   }),
