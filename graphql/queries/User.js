@@ -10,6 +10,8 @@ import {
   connectionFromPromisedArray,
 } from 'graphql-relay';
 
+import latenize from '../../services/latenize';
+
 import UserType from '../types/user';
 import { UserConnection } from '../connections/user';
 
@@ -28,10 +30,25 @@ export default {
         type: new GraphQLNonNull(GraphQLID),
       },
     },
-    resolve(_, { id }, { loaders }) {
+    resolve(_, { id }, { loaders, user, roles }) {
       const { id: userId } = fromGlobalId(id);
 
-      return loaders.user.load(userId);
+      return loaders.user.load(userId)
+      .then(userObj => {
+        if (!userObj) throw new Error('User not found');
+
+        // Check quyen admin
+        const validRoles = roles.filter(role => {
+          return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
+        });
+
+        if (validRoles.length === 0 &&
+            !(userObj.get('ACL').permissionsById[user.id] || {}).read) {
+          throw new Error('Permission denied for action get this User.');
+        }
+
+        return userObj;
+      });
     },
   },
   users: {
@@ -40,9 +57,24 @@ export default {
       username: {
         type: GraphQLString,
       },
+      nameStartsWith: {
+        type: GraphQLString,
+      },
+      mobilePhoneStartsWith: {
+        type: GraphQLString,
+      },
       ...connectionArgs,
     },
-    resolve(_, args, { loaders }) {
+    resolve(_, args, { loaders, user, roles }) {
+      if (!user) throw new Error('Guest không có quyền query Users');
+      // Check quyền admin
+      const validRoles = roles.filter(role => {
+        return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
+      });
+      if (validRoles.length === 0) throw new Error('Permission denied for action find on class User.');
+
+      if (args.nameStartsWith) args.nameStartsWith = latenize(args.nameStartsWith).toLowerCase();
+
       return connectionFromPromisedArray(loaders.users.load(JSON.stringify(args)), {});
     },
   },

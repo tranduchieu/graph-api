@@ -7,7 +7,7 @@ export const productByIdLoader = new DataLoader(ids => {
   const queryProduct = new Parse.Query(Product);
   queryProduct.containedIn('objectId', ids);
 
-  return queryProduct.find()
+  return queryProduct.find({ useMasterKey: true })
     .then(products => {
       return ids.map(id => {
         const productFilter = products.filter(product => {
@@ -28,13 +28,13 @@ export const allProductsLoader = new DataLoader(keys => {
     const queryProduct = new Parse.Query(Product);
     if (code) queryProduct.equalTo('code', code);
     if (shop) queryProduct.equalTo('shop', shop);
-    if (status) queryProduct.equalTo('status', status);
+    if (status) queryProduct.containedIn('status', status);
     if (boxes) queryProduct.containedIn('boxes', boxes);
     queryProduct.descending('createdAt');
     queryProduct.skip(after ? cursorToOffset(after) + 1 : 0);
     queryProduct.limit(first || 20);
 
-    return queryProduct.find()
+    return queryProduct.find({ useMasterKey: true })
       .then(products => {
         products.forEach(item => {
           productByIdLoader.prime(item.id, item);

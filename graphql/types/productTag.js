@@ -7,6 +7,8 @@ import {
   globalIdField,
 } from 'graphql-relay';
 
+import { GraphQLDateTime } from '@tranduchieu/graphql-custom-types';
+
 import RelayRegistry from '../relay/RelayRegistry';
 
 export function productTagResolver(_, { id }, { loaders }) {
@@ -30,10 +32,16 @@ const ProductTag = new GraphQLObjectType({
         return data.get('description');
       },
     },
-    image: {
-      type: GraphQLString,
+    createdAt: {
+      type: GraphQLDateTime,
       resolve(data) {
-        return data.get('image');
+        return data.get('createdAt');
+      },
+    },
+    updatedAt: {
+      type: GraphQLDateTime,
+      resolve(data) {
+        return data.get('updatedAt');
       },
     },
   }),

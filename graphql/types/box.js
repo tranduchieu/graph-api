@@ -56,7 +56,7 @@ const Box = new GraphQLObjectType({
     visible: {
       type: GraphQLBoolean,
       resolve(data) {
-        return data.get('available');
+        return data.get('visible');
       },
     },
     coverImageSrc: {

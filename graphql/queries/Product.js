@@ -28,9 +28,24 @@ export default {
         type: new GraphQLNonNull(GraphQLID),
       },
     },
-    resolve(root, { id }, { loaders }) {
+    resolve(root, { id }, { loaders, roles }) {
       const { id: productId } = fromGlobalId(id);
-      return loaders.product.load(productId);
+      return loaders.product.load(productId)
+      .then(productObj => {
+        if (!productObj) throw new Error('Product not found');
+
+        const validRoles = roles.filter(role => {
+          return ['Boss', 'Administrator', 'Manager'].indexOf(role) !== -1;
+        });
+
+        if (validRoles.length === 0 &&
+            (productObj.get('status') === 'draft' ||
+            productObj.get('status') === 'closed')) {
+          throw new Error('Permission denied for action get this Product.');
+        }
+
+        return productObj;
+      });
     },
   },
   products: {
@@ -43,14 +58,30 @@ export default {
         type: ShopEnumType,
       },
       status: {
-        type: ProductStatusEnum,
+        type: new GraphQLList(ProductStatusEnum),
       },
       boxes: {
         type: new GraphQLList(GraphQLString),
       },
       ...connectionArgs,
     },
-    resolve(root, args, { loaders }) {
+    resolve(root, args, { loaders, roles }) {
+      const validRoles = roles.filter(role => {
+        return ['Boss', 'Administrator', 'Manager'].indexOf(role) !== -1;
+      });
+
+      if (validRoles.length === 0 &&
+          args.status &&
+          (args.status.indexOf('draft') !== -1 ||
+          args.status.indexOf('closed') !== -1)) {
+        throw new Error('Permission denied for action find Products status is Draft or Closed.');
+      }
+
+      if (validRoles.length === 0 &&
+          (!args.status || args.status.length === 0)) {
+        args.status = ['availableInStore', 'availableInOnline', 'availableInAll', 'suspended', 'sold'];
+      }
+
       return connectionFromPromisedArray(loaders.products.load(JSON.stringify(args)), {});
     },
   },
@@ -70,7 +101,7 @@ export default {
       Object.keys(args).forEach(key => {
         query.equalTo(key, args[key]);
       });
-      return query.count();
+      return query.count({ useMasterKey: true });
     },
   },
 };

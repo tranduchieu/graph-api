@@ -13,6 +13,8 @@ import {
   connectionFromPromisedArray,
 } from 'graphql-relay';
 
+import latenize from '../../services/latenize';
+
 import BoxType from '../types/box';
 import { BoxTypesEnum } from '../types/enumTypes';
 
@@ -26,9 +28,21 @@ export default {
         type: new GraphQLNonNull(GraphQLID),
       },
     },
-    resolve(root, { id }, { loaders }) {
+    resolve(root, { id }, { loaders, roles }) {
       const { id: boxId } = fromGlobalId(id);
-      return loaders.box.load(boxId);
+      return loaders.box.load(boxId)
+      .then(boxObj => {
+        if (!boxObj) throw new Error('Box not found');
+        const validRoles = roles.filter(role => {
+          return ['Boss', 'Administrator', 'Manager'].indexOf(role) !== -1;
+        });
+
+        if (validRoles.length === 0 && boxObj.get('visible') === false) {
+          throw new Error('Permission denied for action get this Box.');
+        }
+
+        return boxObj;
+      });
     },
   },
   boxes: {
@@ -42,8 +56,14 @@ export default {
       },
       ...connectionArgs,
     },
-    resolve(root, args, { loaders }) {
-      if (args.nameStartsWith) args.nameStartsWith = args.nameStartsWith.toLowerCase();
+    resolve(root, args, { loaders, roles }) {
+      const validRoles = roles.filter(role => {
+        return ['Boss', 'Administrator', 'Manager'].indexOf(role) !== -1;
+      });
+
+      if (validRoles.length === 0) args.visible = true;
+      if (args.nameStartsWith) args.nameStartsWith = latenize(args.nameStartsWith).toLowerCase();
+
       return connectionFromPromisedArray(loaders.boxes.load(JSON.stringify(args)), {});
     },
   },
@@ -65,7 +85,7 @@ export default {
         query.equalTo(key, args[key]);
       });
 
-      return query.count();
+      return query.count({ useMasterKey: true });
     },
   },
 };

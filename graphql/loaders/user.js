@@ -6,7 +6,7 @@ export const userByIdLoader = new DataLoader(ids => {
   const queryUser = new Parse.Query(Parse.User);
   queryUser.containedIn('objectId', ids);
 
-  return queryUser.find()
+  return queryUser.find({ useMasterKey: true })
     .then(users => {
       return ids.map(id => {
         const userFilter = users.filter(user => {
@@ -23,15 +23,18 @@ export const userByIdLoader = new DataLoader(ids => {
 export const allUsersLoader = new DataLoader(keys => {
   return Promise.all(keys.map(key => {
     const args = JSON.parse(key);
-    const { after, first, username } = args;
+    const { after, first, username, nameStartsWith, mobilePhoneStartsWith } = args;
 
     const queryUser = new Parse.Query(Parse.User);
     if (username) queryUser.equalTo('username', username);
+    if (nameStartsWith) queryUser.startsWith('nameToLowerCase', nameStartsWith);
+    if (mobilePhoneStartsWith) queryUser.startsWith('mobilePhone', mobilePhoneStartsWith);
+
     queryUser.descending('createdAt');
     queryUser.skip(after ? cursorToOffset(after) + 1 : 0);
     queryUser.limit(first || 20);
 
-    return queryUser.find()
+    return queryUser.find({ useMasterKey: true })
       .then(users => {
         users.forEach(item => {
           userByIdLoader.prime(item.id, item);
@@ -49,7 +52,7 @@ export const rolesByUserLoader = new DataLoader(userIds => {
         const roleQuery = new Parse.Query(Parse.Role);
         roleQuery.equalTo('users', user);
         roleQuery.select('name');
-        return roleQuery.find()
+        return roleQuery.find({ useMasterKey: true })
           .then(rolesByUser => rolesByUser.map(role => {
             return role.get('name');
           }));
@@ -63,7 +66,7 @@ export const addressesByUserLoader = new DataLoader(userIds => {
     return userByIdLoader.load(userId)
     .then(userObj => {
       const addressesRelation = userObj.relation('addresses');
-      return addressesRelation.query().find();
+      return addressesRelation.query().find({ useMasterKey: true });
     });
   }));
 });
