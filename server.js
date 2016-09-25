@@ -124,12 +124,17 @@ server.use(
       });
     }
 
+    let roles = [];
+    if (user) {
+      roles = await loaders.rolesByUser.load(user.id);
+    }
+
     return {
       schema: Schema,
       pretty: true,
       graphiql: true,
       rootValue: { accessToken },
-      context: { loaders, user, accessToken },
+      context: { loaders, accessToken, user, roles },
     };
   })
 );
