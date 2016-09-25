@@ -55,7 +55,7 @@ export default {
         type: GraphQLString,
       },
       shop: {
-        type: ShopEnumType,
+        type: new GraphQLList(ShopEnumType),
       },
       status: {
         type: new GraphQLList(ProductStatusEnum),
@@ -89,17 +89,17 @@ export default {
     type: GraphQLInt,
     args: {
       status: {
-        type: ProductStatusEnum,
+        type: new GraphQLList(ProductStatusEnum),
       },
       shop: {
-        type: ShopEnumType,
+        type: new GraphQLList(ShopEnumType),
       },
     },
     resolve(root, args) {
       const Product = Parse.Object.extend('Product');
       const query = new Parse.Query(Product);
       Object.keys(args).forEach(key => {
-        query.equalTo(key, args[key]);
+        query.containedIn(key, args[key]);
       });
       return query.count({ useMasterKey: true });
     },
