@@ -23,3 +23,15 @@
 //   console.log(result);
 //   console.log(result.get('ACL').permissionsById.u9AF63PAEd.read);
 // });
+
+// Check ACL
+// -------------------
+// const Address = Parse.Object.extend('Address');
+// const addressQuery = new Parse.Query(Address);
+// addressQuery.get('LMOPHa4Ijb', { sessionToken: 'r:0f812cc6ade98156fd65f84fb53ad03c' })
+// .then(res => {
+//   if (!res) throw new Error('Product not found');
+//   return res.destroy({ useMasterKey: true })
+//   .then(console.log);
+// })
+// .catch(console.error);
