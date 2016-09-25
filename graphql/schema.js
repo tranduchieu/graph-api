@@ -9,6 +9,7 @@ import ViewerQueries from './queries/Viewer';
 
 import ProductMutation from './mutations/Product';
 import ShortIdMutation from './mutations/ShortId';
+import AddressMutation from './mutations/Address';
 
 const Query = new GraphQLObjectType({
   name: 'Query',
@@ -23,6 +24,8 @@ const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   description: 'This is a root Mutation',
   fields: {
+    createAddress: AddressMutation.create,
+    removeAddress: AddressMutation.remove,
     createProduct: ProductMutation.create,
     updateProduct: ProductMutation.update,
     removeProduct: ProductMutation.remove,

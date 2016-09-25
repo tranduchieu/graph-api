@@ -95,17 +95,29 @@ const ProductCreateMutation = mutationWithClientMutationId({
     },
     viewer: ViewerQueries.viewer,
   },
-  async mutateAndGetPayload(obj, { loaders, user, accessToken }) {
+  async mutateAndGetPayload(obj, { loaders, user, roles, accessToken }) {
+    if (!user) throw new Error('Guest không có quyền tạo Sản phẩm');
+
+    // Check quyền admin
+    const validRoles = roles.filter(role => {
+      return ['Boss', 'Administrator', 'Manager'].indexOf(role) !== -1;
+    });
+
+    if (validRoles.length === 0) throw new Error('Không có quyền tạo Sản phẩm');
+
     const product = omit(obj, ['clientMutationId']);
     product.createdBy = product.updatedBy = user;
 
     const Product = Parse.Object.extend('Product');
     const newProduct = new Product();
+    const acl = new Parse.ACL();
+    acl.setPublicReadAccess(true);
+    newProduct.setACL(acl);
     return newProduct.save(product, { sessionToken: accessToken })
-    .then(data => {
+    .then(productSavedObj => {
       loaders.products.clearAll();
-      loaders.product.prime(data.id, data);
-      return data;
+      loaders.product.prime(productSavedObj.id, productSavedObj);
+      return productSavedObj;
     });
   },
 });
@@ -126,7 +138,16 @@ const ProductRemoveMutation = mutationWithClientMutationId({
     },
     viewer: ViewerQueries.viewer,
   },
-  async mutateAndGetPayload({ id }, { loaders, accessToken }) {
+  async mutateAndGetPayload({ id }, { loaders, user, roles, accessToken }) {
+    if (!user) throw new Error('Guest không có quyền xóa Sản phẩm');
+
+    // Check quyền admin
+    const validRoles = roles.filter(role => {
+      return ['Boss', 'Administrator', 'Manager'].indexOf(role) !== -1;
+    });
+
+    if (validRoles.length === 0) throw new Error('Không có quyền xóa Sản phẩm');
+
     const { id: localProductId } = fromGlobalId(id);
 
     return loaders.product.load(localProductId)
@@ -134,10 +155,10 @@ const ProductRemoveMutation = mutationWithClientMutationId({
       if (!res) throw new Error('Product not found');
 
       return res.destroy({ sessionToken: accessToken })
-      .then(item => {
+      .then(productDeletedObj => {
         loaders.products.clearAll();
         loaders.product.clear(localProductId);
-        return Object.assign({}, item, { id });
+        return Object.assign({}, productDeletedObj, { id });
       });
     });
   },
@@ -194,7 +215,16 @@ const ProductUpdateMutation = mutationWithClientMutationId({
       },
     },
   },
-  async mutateAndGetPayload(obj, { loaders, user, accessToken }) {
+  async mutateAndGetPayload(obj, { loaders, user, roles, accessToken }) {
+    if (!user) throw new Error('Guest không có quyền xóa Sản phẩm');
+
+    // Check quyền admin
+    const validRoles = roles.filter(role => {
+      return ['Boss', 'Administrator', 'Manager'].indexOf(role) !== -1;
+    });
+
+    if (validRoles.length === 0) throw new Error('Không có quyền cập nhật Sản phẩm');
+
     const { id } = fromGlobalId(obj.id);
     obj.updatedBy = user;
 
@@ -207,10 +237,10 @@ const ProductUpdateMutation = mutationWithClientMutationId({
       });
 
       return productObj.save(null, { sessionToken: accessToken })
-      .then(res => {
+      .then(productUpdatedObj => {
         loaders.products.clearAll();
-        loaders.product.prime(id, res);
-        return res;
+        loaders.product.prime(id, productUpdatedObj);
+        return productUpdatedObj;
       });
     });
   },

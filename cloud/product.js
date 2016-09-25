@@ -1,4 +1,4 @@
-/* global Parse */
+/* global Parse, @flow */
 import url from 'url';
 import path from 'path';
 
@@ -85,7 +85,7 @@ Parse.Cloud.beforeSave('Product', async (req, res) => {
   if (product.id) {
     const Product = Parse.Object.extend('Product');
     const productQuery = new Parse.Query(Product);
-    currentProduct = await productQuery.get(product.id);
+    currentProduct = await productQuery.get(product.id, { useMasterKey: true });
   }
 
   // Xử lý ảnh
@@ -112,9 +112,38 @@ Parse.Cloud.beforeSave('Product', async (req, res) => {
   return res.success();
 });
 
-// After Save
+// After Save triggers
 // ======================================
-Parse.Cloud.afterSave('Product', (req, res) => {
-  // const boxes = req.object.get('boxes');
+// - Create boxes
+// - Create tags
+
+const createBoxes = (boxes: string[]): Promise<Object[]> => {
+  const createBoxesPromise = boxes.map(box => {
+    const Box = Parse.Object.extend('Box');
+    const newBox = new Box();
+    newBox.set('name', box);
+    newBox.set('type', 'product');
+    newBox.set('visible', true);
+    return newBox.save(null, { useMasterKey: true });
+  });
+  return Promise.all(createBoxesPromise);
+};
+
+const createTags = (tags: string[]): Promise<Object[]> => {
+  const createTagsPromise = tags.map(tag => {
+    const ProductTag = Parse.Object.extend('ProductTag');
+    const newTag = new ProductTag();
+    newTag.set('name', tag);
+    return newTag.save(null, { useMasterKey: true });
+  });
+  return Promise.all(createTagsPromise);
+};
+
+Parse.Cloud.afterSave('Product', async (req, res) => {
+  const boxes: string[] = req.object.get('boxes');
+  const tags: string[] = req.object.get('tags');
+  await createBoxes(boxes);
+  await createTags(tags);
+
   return res.success();
 });

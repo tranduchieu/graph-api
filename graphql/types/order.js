@@ -13,7 +13,6 @@ import RelayRegistry from '../relay/RelayRegistry';
 import { ShopEnumType, OrderStatusEnum } from './enumTypes';
 import UserType from './user';
 import ProductType from './product';
-import AddressType from './address';
 
 export function orderResolver(_, { id }, { loaders }) {
   return loaders.order.load(id);
@@ -58,6 +57,34 @@ const OrderLine = new GraphQLObjectType({
   },
 });
 
+const ShippingAddress = new GraphQLObjectType({
+  name: 'ShippingAddress',
+  description: 'Shipping Address Type',
+  fields: {
+    fullName: {
+      type: GraphQLString,
+    },
+    company: {
+      type: GraphQLString,
+    },
+    address: {
+      type: GraphQLString,
+    },
+    ward: {
+      type: GraphQLString,
+    },
+    district: {
+      type: GraphQLString,
+    },
+    province: {
+      type: GraphQLString,
+    },
+    phone: {
+      type: GraphQLString,
+    },
+  },
+});
+
 const Order = new GraphQLObjectType({
   name: 'Order',
   description: 'Order type',
@@ -83,10 +110,9 @@ const Order = new GraphQLObjectType({
       },
     },
     shippingAddress: {
-      type: AddressType,
-      resolve(data, args, { loaders }) {
-        const { id } = data.get('shipTo');
-        return loaders.address.load(id);
+      type: ShippingAddress,
+      resolve(data) {
+        return data.get('shippingAddress');
       },
     },
     shippingCost: {

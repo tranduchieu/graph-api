@@ -5,6 +5,7 @@ import {
 } from 'graphql';
 
 import { globalIdField } from 'graphql-relay';
+import { GraphQLDateTime } from '@tranduchieu/graphql-custom-types';
 
 import RelayRegistry from '../relay/RelayRegistry';
 
@@ -62,6 +63,18 @@ const Address = new GraphQLObjectType({
       type: GraphQLBoolean,
       resolve(data) {
         return data.get('isDefault');
+      },
+    },
+    createdAt: {
+      type: GraphQLDateTime,
+      resolve(data) {
+        return data.get('createdAt');
+      },
+    },
+    updatedAt: {
+      type: GraphQLDateTime,
+      resolve(data) {
+        return data.get('updatedAt');
       },
     },
   },

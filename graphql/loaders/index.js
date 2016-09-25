@@ -6,6 +6,11 @@ import {
 } from './user';
 
 import {
+  addressByIdLoader,
+  allAddressesLoader,
+} from './address';
+
+import {
   boxByIdLoader,
   allBoxesLoader,
 } from './box';
@@ -14,6 +19,11 @@ import {
   allProductsLoader,
   productByIdLoader,
 } from './product';
+
+import {
+  productTagByIdLoader,
+  allProductTagsLoader,
+} from './productTag';
 
 import {
   orderByIdLoader,
@@ -26,10 +36,14 @@ module.exports = {
   user: userByIdLoader,
   addressesByUser: addressesByUserLoader,
   rolesByUser: rolesByUserLoader,
+  address: addressByIdLoader,
+  addresses: allAddressesLoader,
   box: boxByIdLoader,
   boxes: allBoxesLoader,
   product: productByIdLoader,
   products: allProductsLoader,
+  productTag: productTagByIdLoader,
+  productTags: allProductTagsLoader,
   order: orderByIdLoader,
   orders: allOrdersLoader,
   linesByOrder: linesByOrderLoader,

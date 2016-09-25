@@ -25,9 +25,25 @@ export default {
         type: new GraphQLNonNull(GraphQLID),
       },
     },
-    resolve(root, { id }, { loaders }) {
+    resolve(root, { id }, { loaders, user, roles }) {
+      if (!user) throw new Error('Guest không có quyền query Addresses');
+
       const { id: orderId } = fromGlobalId(id);
-      return loaders.order.load(orderId);
+      return loaders.order.load(orderId)
+      .then(orderObj => {
+        // Check quyền admin
+        const validRoles = roles.filter(role => {
+          return ['Boss', 'Administrator', 'Manager'].indexOf(role) !== -1;
+        });
+
+        if (validRoles.length === 0 &&
+            !(orderObj.get('ACL').permissionsById[user.id] || {}).read &&
+            orderObj.get('createdBy').id !== user.id) {
+          throw new Error('Permission denied for action get this Address.');
+        }
+
+        return orderObj;
+      });
     },
   },
   orders: {
@@ -104,7 +120,7 @@ export default {
         }
         query.equalTo(key, args[key]);
       });
-      return query.count();
+      return query.count({ useMasterKey: true });
     },
   },
 };
