@@ -154,7 +154,7 @@ const ProductRemoveMutation = mutationWithClientMutationId({
     .then(res => {
       if (!res) throw new Error('Product not found');
 
-      return res.destroy({ sessionToken: accessToken })
+      return res.destroy({ sessionToken: accessToken, useMasterKey: true })
       .then(productDeletedObj => {
         loaders.products.clearAll();
         loaders.product.clear(localProductId);
@@ -236,7 +236,7 @@ const ProductUpdateMutation = mutationWithClientMutationId({
         if (key !== 'id') productObj.set(key, obj[key]);
       });
 
-      return productObj.save(null, { sessionToken: accessToken })
+      return productObj.save(null, { sessionToken: accessToken, useMasterKey: true })
       .then(productUpdatedObj => {
         loaders.products.clearAll();
         loaders.product.prime(id, productUpdatedObj);
