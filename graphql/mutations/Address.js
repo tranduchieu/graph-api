@@ -105,12 +105,11 @@ const AddressRemoveMutation = mutationWithClientMutationId({
     },
     viewer: ViewerQueries.viewer,
   },
-  async mutateAndGetPayload({ id }, { loaders, user, accessToken }) {
+  async mutateAndGetPayload({ id }, { loaders, user, roles, accessToken }) {
     // Check user
     if (!user) throw new Error('Guest không có quyền xóa Address');
 
     // Check quyền admin
-    const roles = await loaders.rolesByUser.load(user.id);
     const validRoles = roles.filter(role => {
       return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
     });
