@@ -13,8 +13,10 @@ import {
   GraphQLEmail,
   GraphQLURL,
   GraphQLMobilePhone,
+  GraphQLDateTime,
 } from '@tranduchieu/graphql-custom-types';
 import AddressType from './address';
+import { ShopEnumType } from './enumTypes';
 
 import RelayRegistry from '../relay/RelayRegistry';
 
@@ -102,6 +104,56 @@ const User = new GraphQLObjectType({
       type: new GraphQLList(GraphQLString),
       resolve(data) {
         return data.get('tags');
+      },
+    },
+    note: {
+      type: GraphQLString,
+      resolve(data, args, { user, roles }) {
+        if (!user) return null;
+        const validRoles = roles.filter(role => {
+          return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
+        });
+
+        if (validRoles.length === 0) return null;
+        return data.get('note');
+      },
+    },
+    staffWorkplaces: {
+      description: 'Những nơi nhân viên được sắp xếp làm việc',
+      type: new GraphQLList(ShopEnumType),
+      resolve(data, args, { user, roles }) {
+        if (!user) return null;
+        const validRoles = roles.filter(role => {
+          return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
+        });
+
+        if (validRoles.length === 0) return null;
+        return data.get('workplaces');
+      },
+    },
+    staffWorkingIn: {
+      description: 'Nhân viên đang làm việc tại',
+      type: ShopEnumType,
+      resolve(data, args, { user, roles }) {
+        if (!user) return null;
+        const validRoles = roles.filter(role => {
+          return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
+        });
+
+        if (validRoles.length === 0) return null;
+        return data.get('workingIn');
+      },
+    },
+    createdAt: {
+      type: GraphQLDateTime,
+      resolve(data) {
+        return data.get('createdAt');
+      },
+    },
+    updatedAt: {
+      type: GraphQLDateTime,
+      resolve(data) {
+        return data.get('updatedAt');
       },
     },
   }),

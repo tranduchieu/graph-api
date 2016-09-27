@@ -1,4 +1,4 @@
-/* global Parse */
+/* global Parse, @flow */
 import randomAvatar from '../services/randomAvatar';
 
 // {
@@ -15,6 +15,11 @@ import randomAvatar from '../services/randomAvatar';
 // 		}
 // 	}
 // }
+
+// BeforeSave triggers
+// ===================================
+// - Check mobilePhone
+// - Add fbAuthData
 
 // Profile trigger
 const mobilePhoneUniqueValidate = (mobilePhone) => {
@@ -43,7 +48,7 @@ Parse.Cloud.beforeSave(Parse.User, async (req, res) => {
 
   const fbAuthData = (req.object.get('authData') || {}).facebook || {};
 
-  const email = fbAuthData.email || user.get('email') || null;
+  const email = fbAuthData.email || user.get('email');
   const name = fbAuthData.name || user.get('name') || null;
   const avatarUrl = (((fbAuthData || {}).picture || {}).data || {}).url ||
                     user.get('avatarUrl') || randomAvatar();
@@ -61,10 +66,16 @@ Parse.Cloud.beforeSave(Parse.User, async (req, res) => {
   // Set fields & res success
   user.set('name', name);
   user.set('email', email);
+  user.set('emailVerified', user.get('emailVerified') || false);
+  user.set('mobilePhoneVerified', user.get('mobilePhoneVerified') || false);
   user.set('avatarUrl', avatarUrl);
 
   return res.success();
 });
+
+// AfterSave triggers
+// ======================================
+// - Add roles
 
 const addUserRole = (userObj, roleName) => {
   const roleQuery = new Parse.Query(Parse.Role);
