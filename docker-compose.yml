@@ -4,8 +4,8 @@ services:
     build: .
     environment:
       NODE_ENV: development
-      SERVER_PORT: "8080"
-      SERVER_HOST: localhost
+      PORT: "8080"
+      HOST: localhost
       # Parse server
       VERBOSE:
       APP_ID:
