@@ -177,10 +177,8 @@ const Order = new GraphQLObjectType({
     },
     note: {
       type: GraphQLString,
-      async resolve(data, args, { loaders, user }) {
-        console.log(user);
+      resolve(data, args, { user, roles }) {
         if (!user) return null;
-        const roles = await loaders.rolesByUser.load(user.id);
         const validRoles = roles.filter(role => {
           return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
         });

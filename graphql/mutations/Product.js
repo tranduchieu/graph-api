@@ -216,7 +216,7 @@ const ProductUpdateMutation = mutationWithClientMutationId({
     },
   },
   async mutateAndGetPayload(obj, { loaders, user, roles, accessToken }) {
-    if (!user) throw new Error('Guest không có quyền xóa Sản phẩm');
+    if (!user) throw new Error('Guest không có quyền cập nhật Sản phẩm');
 
     // Check quyền admin
     const validRoles = roles.filter(role => {
