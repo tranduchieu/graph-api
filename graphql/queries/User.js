@@ -2,6 +2,7 @@ import {
   GraphQLID,
   GraphQLNonNull,
   GraphQLString,
+  GraphQLList,
 } from 'graphql';
 
 import {
@@ -54,10 +55,10 @@ export default {
   users: {
     type: UserConnection,
     args: {
-      username: {
-        type: GraphQLString,
+      name: {
+        type: new GraphQLList(new GraphQLNonNull(GraphQLString)),
       },
-      nameStartsWith: {
+      username: {
         type: GraphQLString,
       },
       mobilePhoneStartsWith: {
@@ -73,7 +74,11 @@ export default {
       });
       if (validRoles.length === 0) throw new Error('Permission denied for action find on class User.');
 
-      if (args.nameStartsWith) args.nameStartsWith = latenize(args.nameStartsWith).toLowerCase();
+      if (args.name) {
+        args.name = args.name.map(item => {
+          return latenize(item).toLowerCase();
+        });
+      }
 
       return connectionFromPromisedArray(loaders.users.load(JSON.stringify(args)), {});
     },

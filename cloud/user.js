@@ -1,5 +1,6 @@
 /* global Parse, @flow */
 import randomAvatar from '../services/randomAvatar';
+import latenize from '../services/latenize';
 
 // {
 // 	"facebook":{
@@ -18,8 +19,9 @@ import randomAvatar from '../services/randomAvatar';
 
 // BeforeSave triggers
 // ===================================
-// - Check mobilePhone
-// - Add fbAuthData
+// [x] Check mobilePhone
+// [x] Add fbAuthData
+// [x] set name toLowerCase
 
 // Profile trigger
 const mobilePhoneUniqueValidate = (mobilePhone) => {
@@ -70,12 +72,20 @@ Parse.Cloud.beforeSave(Parse.User, async (req, res) => {
   user.set('mobilePhoneVerified', user.get('mobilePhoneVerified') || false);
   user.set('avatarUrl', avatarUrl);
 
+  let nameToWords = [];
+  if (name) {
+    nameToWords = name.match(/[^ ]+/g).map(item => {
+      return latenize(item).toLowerCase();
+    });
+    user.set('nameToWords', nameToWords);
+  }
+
   return res.success();
 });
 
 // AfterSave triggers
 // ======================================
-// - Add roles
+// [x] Add roles
 
 const addUserRole = (userObj, roleName) => {
   const roleQuery = new Parse.Query(Parse.Role);
@@ -89,6 +99,7 @@ const addUserRole = (userObj, roleName) => {
 
 Parse.Cloud.afterSave(Parse.User, async (req, res) => {
   const userObj = req.object;
+
   const uuidRegex = '^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$';
 
   const roleName = new RegExp(uuidRegex).test(userObj.get('username')) ?

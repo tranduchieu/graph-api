@@ -23,11 +23,11 @@ export const userByIdLoader = new DataLoader(ids => {
 export const allUsersLoader = new DataLoader(keys => {
   return Promise.all(keys.map(key => {
     const args = JSON.parse(key);
-    const { after, first, username, nameStartsWith, mobilePhoneStartsWith } = args;
+    const { after, first, username, name, mobilePhoneStartsWith } = args;
 
     const queryUser = new Parse.Query(Parse.User);
     if (username) queryUser.equalTo('username', username);
-    if (nameStartsWith) queryUser.startsWith('nameToLowerCase', nameStartsWith);
+    if (name) queryUser.containsAll('nameToWords', name);
     if (mobilePhoneStartsWith) queryUser.startsWith('mobilePhone', mobilePhoneStartsWith);
 
     queryUser.descending('createdAt');
