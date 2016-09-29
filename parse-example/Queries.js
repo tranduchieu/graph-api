@@ -36,3 +36,11 @@
 // .then(console.log);
 
 // console.log(require('node-uuid').v4());
+
+// Search user by name words
+// -------------------------------
+// const queryUser = new Parse.Query(Parse.User);
+// queryUser.containedIn('nameToWords', ['kieu', 'phuc']);
+// queryUser.find({ useMasterKey: true })
+// .then(console.log)
+// .catch(console.error);
