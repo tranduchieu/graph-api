@@ -28,3 +28,11 @@
 //   console.log(orderObj.get('createdBy'));
 // });
 
+// Query array in Object
+// -------------------------
+// const orderQuery = new Parse.Query('Order');
+// orderQuery.equalTo('lines2.productId', 'zzz');
+// orderQuery.find({ useMasterKey: true })
+// .then(console.log);
+
+// console.log(require('node-uuid').v4());
