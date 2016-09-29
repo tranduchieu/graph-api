@@ -71,6 +71,9 @@ export default {
       if (validRoles.length === 1 && validRoles.indexOf('Sales') !== -1) {
         args.createdBy = user.id;
       }
+
+      if (args.code) args.code = args.code.toLowerCase();
+
       return connectionFromPromisedArray(loaders.orders.load(JSON.stringify(args)), {});
     },
   },

@@ -63,13 +63,13 @@ const BoxCreateMutation = mutationWithClientMutationId({
     },
     viewer: ViewerQueries.viewer,
   },
-  async mutateAndGetPayload(obj, { loaders, user, roles, accessToken }) {
+  async mutateAndGetPayload(obj, { loaders, user, roles, accessToken, useMasterKey }) {
     // Check quyền admin
     const validRoles = roles.filter(role => {
       return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
     });
 
-    if (!user && validRoles.length === 0 && accessToken !== masterKey) {
+    if (!useMasterKey && (!user || validRoles.length === 0)) {
       throw new Error('Không có quyền tạo Box');
     }
 

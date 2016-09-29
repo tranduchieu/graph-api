@@ -82,6 +82,8 @@ export default {
         args.status = ['availableInStore', 'availableInOnline', 'availableInAll', 'suspended', 'sold'];
       }
 
+      if (args.code) args.code = args.code.toLowerCase();
+
       return connectionFromPromisedArray(loaders.products.load(JSON.stringify(args)), {});
     },
   },

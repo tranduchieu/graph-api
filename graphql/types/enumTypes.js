@@ -17,6 +17,9 @@ export const ShopEnumType = new GraphQLEnumType({
     NGUYEN_TRAI: {
       value: 'Tổ Cú Nguyễn Trãi',
     },
+    ONLINE: {
+      value: 'Tổ Cú Online',
+    },
   },
 });
 

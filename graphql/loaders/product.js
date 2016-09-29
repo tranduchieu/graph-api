@@ -26,7 +26,7 @@ export const allProductsLoader = new DataLoader(keys => {
     const { after, first, code, shop, status, boxes } = args;
     const Product = Parse.Object.extend('Product');
     const queryProduct = new Parse.Query(Product);
-    if (code) queryProduct.equalTo('code', code);
+    if (code) queryProduct.startsWith('code', code);
     if (shop) queryProduct.containedIn('shop', shop);
     if (status) queryProduct.containedIn('status', status);
     if (boxes) queryProduct.containedIn('boxes', boxes);
