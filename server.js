@@ -110,7 +110,10 @@ server.use(
     const accessToken = extractTokenFromHeader(req.headers) ||
                         req.query.accessToken ||
                         null;
-    const masterKey = req.headers.masterKey || req.query.masterKey || null;
+    const masterkey = req.headers.masterkey || req.query.masterkey || null;
+    let useMasterKey = false;
+    if (masterkey === MASTER_KEY) useMasterKey = true;
+
     let user;
     if (!accessToken) {
       user = null;
@@ -135,7 +138,7 @@ server.use(
       pretty: true,
       graphiql: true,
       rootValue: { accessToken },
-      context: { loaders, accessToken, masterKey, user, roles },
+      context: { loaders, accessToken, useMasterKey, user, roles },
     };
   })
 );
