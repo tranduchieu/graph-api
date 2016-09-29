@@ -22,8 +22,6 @@ import {
 import { BoxEdge } from '../connections/box';
 import ViewerQueries from '../queries/Viewer';
 
-const masterKey = process.env.MASTER_KEY || '';
-
 const BoxCreateMutation = mutationWithClientMutationId({
   name: 'BoxCreate',
   inputFields: {
