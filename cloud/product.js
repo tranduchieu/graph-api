@@ -2,7 +2,7 @@
 import url from 'url';
 import path from 'path';
 
-const masterKey = process.env.MASTER_KEY || '';
+const masterkey = process.env.MASTER_KEY || '';
 const SERVER_PORT = process.env.PORT || 8080;
 const SERVER_HOST = process.env.HOST || 'localhost';
 const GraphQLurl = `http://${SERVER_HOST}:${SERVER_PORT}/graphql`;
@@ -121,17 +121,17 @@ Parse.Cloud.beforeSave('Product', async (req, res) => {
 // - Create boxes
 // - Create tags
 
-const createBoxes = (boxes: string[]): Promise<Object[]> => {
-  const createBoxesPromise = boxes.map(box => {
-    const Box = Parse.Object.extend('Box');
-    const newBox = new Box();
-    newBox.set('name', box);
-    newBox.set('type', 'product');
-    newBox.set('visible', true);
-    return newBox.save(null, { useMasterKey: true });
-  });
-  return Promise.all(createBoxesPromise);
-};
+// const createBoxes = (boxes: string[]): Promise<Object[]> => {
+//   const createBoxesPromise = boxes.map(box => {
+//     const Box = Parse.Object.extend('Box');
+//     const newBox = new Box();
+//     newBox.set('name', box);
+//     newBox.set('type', 'product');
+//     newBox.set('visible', true);
+//     return newBox.save(null, { useMasterKey: true });
+//   });
+//   return Promise.all(createBoxesPromise);
+// };
 
 const createTags = (tags: string[]): Promise<Object[]> => {
   const createTagsPromise = tags.map(tag => {
@@ -143,22 +143,13 @@ const createTags = (tags: string[]): Promise<Object[]> => {
   return Promise.all(createTagsPromise);
 };
 
-Parse.Cloud.afterSave('Product', async (req, res) => {
-  const boxes: string[] = req.object.get('boxes');
-  const tags: string[] = req.object.get('tags');
-  await createBoxes(boxes);
-  await createTags(tags);
-
-  return res.success();
-});
-
-const createBoxes2 = (boxes: string[]): Promise<Object[]> => {
+const createBoxes = (boxes: string[]): Promise<Object[]> => {
   const createBoxesPromise = boxes.map(box => {
     return Parse.Cloud.httpRequest({
       method: 'POST',
       url: GraphQLurl,
       headers: {
-        Authorization: `Bearer ${masterKey}`,
+        masterkey,
       },
       params: {
         query: `mutation CreateBoxMutation($input: BoxCreateInput!) {
@@ -187,8 +178,20 @@ const createBoxes2 = (boxes: string[]): Promise<Object[]> => {
   return Promise.all(createBoxesPromise);
 };
 
-createBoxes2(['Áo gió'])
-.then(console.log)
-.catch(error => {
-  console.log(error.text);
+Parse.Cloud.afterSave('Product', async (req, res) => {
+  const boxes: string[] = req.object.get('boxes');
+  const tags: string[] = req.object.get('tags');
+  await createBoxes(boxes);
+  await createTags(tags);
+
+  return res.success();
 });
+
+// createBoxes2(['Áo da'])
+// .then(result => {
+//   console.log(result[0].text);
+// })
+// .catch(error => {
+//   console.log(error.text);
+// });
+
