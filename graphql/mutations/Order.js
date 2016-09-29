@@ -1,16 +1,10 @@
 import {
   GraphQLID,
   GraphQLInt,
-  GraphQLBoolean,
   GraphQLList,
   GraphQLString,
   GraphQLNonNull,
-  GraphQLInputObjectType,
 } from 'graphql';
-
-import {
-  GraphQLURL,
-} from '@tranduchieu/graphql-custom-types';
 
 import {
   fromGlobalId,
@@ -21,7 +15,7 @@ import {
 import { omit } from 'lodash';
 import Parse from 'parse/node';
 
-import OrderType from '../types/order';
+// import OrderType from '../types/order';
 import { OrderLineInputType } from '../types/orderLine';
 import {
   ShopEnumType,
