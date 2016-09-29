@@ -3,7 +3,8 @@ import latenize from '../services/latenize';
 
 // Before Save triggers
 // ======================================
-// - Check box name
+// [x] Check box name
+// [x] Set name toLowerCase
 
 const checkBoxName = (boxName: string): Promise<boolean> => {
   const boxQuery = new Parse.Query('Box');
