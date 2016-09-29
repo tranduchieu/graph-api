@@ -3,6 +3,7 @@ import {
   GraphQLList,
   GraphQLString,
   GraphQLNonNull,
+  GraphQLInputObjectType,
 } from 'graphql';
 
 import {
@@ -23,6 +24,7 @@ import {
 
 import UserType from '../types/user';
 import { ShopEnumType } from '../types/enumTypes';
+import { AddressInputType } from '../types/address';
 
 import { UserEdge } from '../connections/user';
 import ViewerQueries from '../queries/Viewer';
@@ -47,6 +49,9 @@ const UserCreateMutation = mutationWithClientMutationId({
     },
     avatarUrl: {
       type: GraphQLURL,
+    },
+    addresses: {
+      type: new GraphQLList(AddressInputType),
     },
     tags: {
       type: new GraphQLList(GraphQLString),
@@ -147,6 +152,9 @@ const UserUpdateMutation = mutationWithClientMutationId({
     tags: {
       type: new GraphQLList(GraphQLString),
     },
+    addresses: {
+      type: new GraphQLList(AddressInputType),
+    },
     note: {
       type: GraphQLString,
     },
@@ -182,8 +190,10 @@ const UserUpdateMutation = mutationWithClientMutationId({
     const userObjById = await loaders.user.load(id);
     if (!userObjById) throw new Error('Không tìm thấy User');
 
-    Object.keys(obj).forEach(key => {
-      if (key !== 'id') userObjById.set(key, obj[key]);
+    const userInput = omit(obj, ['clientMutationId', 'id']);
+
+    Object.keys(userInput).forEach(key => {
+      userObjById.set(key, userInput[key]);
     });
 
     const userObjUpdated = userObjById.save(null, { sessionToken: accessToken, useMasterKey: true });

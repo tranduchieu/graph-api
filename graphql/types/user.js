@@ -15,7 +15,7 @@ import {
   GraphQLMobilePhone,
   GraphQLDateTime,
 } from '@tranduchieu/graphql-custom-types';
-import AddressType from './address';
+import { AddressType } from './address';
 import { ShopEnumType } from './enumTypes';
 
 import RelayRegistry from '../relay/RelayRegistry';
@@ -83,21 +83,8 @@ const User = new GraphQLObjectType({
     },
     addresses: {
       type: new GraphQLList(AddressType),
-      args: {
-        isDefault: {
-          type: GraphQLBoolean,
-        },
-      },
-      async resolve(data, { isDefault }, { loaders }) {
-        const addressesByUser = await loaders.addressesByUser.load(data.id);
-        if (isDefault) {
-          return addressesByUser.filter(address => address.get('isDefault') === true);
-        }
-        if (isDefault === false) {
-          return addressesByUser.filter(address => address.get('isDefault') === false);
-        }
-
-        return addressesByUser;
+      resolve(data) {
+        return data.get('addresses');
       },
     },
     tags: {

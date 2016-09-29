@@ -2,13 +2,7 @@ import {
   allUsersLoader,
   userByIdLoader,
   rolesByUserLoader,
-  addressesByUserLoader,
 } from './user';
-
-import {
-  addressByIdLoader,
-  allAddressesLoader,
-} from './address';
 
 import {
   boxByIdLoader,
@@ -34,10 +28,7 @@ import {
 module.exports = {
   users: allUsersLoader,
   user: userByIdLoader,
-  addressesByUser: addressesByUserLoader,
   rolesByUser: rolesByUserLoader,
-  address: addressByIdLoader,
-  addresses: allAddressesLoader,
   box: boxByIdLoader,
   boxes: allBoxesLoader,
   product: productByIdLoader,

@@ -12,78 +12,12 @@ import RelayRegistry from '../relay/RelayRegistry';
 
 import { ShopEnumType, OrderStatusEnum } from './enumTypes';
 import UserType from './user';
-import ProductType from './product';
+import { AddressType } from './address';
+import { OrderLineType } from './orderLine';
 
 export function orderResolver(_, { id }, { loaders }) {
   return loaders.order.load(id);
 }
-
-const OrderLine = new GraphQLObjectType({
-  name: 'OrderLine',
-  description: 'OrderLine type',
-  fields: {
-    id: globalIdField('OrderLine'),
-    product: {
-      type: ProductType,
-      resolve(data, args, { loaders }) {
-        const { id } = data.get('product');
-        return loaders.product.load(id);
-      },
-    },
-    unitPrice: {
-      type: GraphQLInt,
-      resolve(data) {
-        return data.get('unitPrice');
-      },
-    },
-    quantity: {
-      type: GraphQLInt,
-      resolve(data) {
-        return data.get('quantity');
-      },
-    },
-    amount: {
-      type: GraphQLInt,
-      resolve(data) {
-        return data.get('amount');
-      },
-    },
-    weight: {
-      type: GraphQLInt,
-      resolve(data) {
-        return data.get('weight');
-      },
-    },
-  },
-});
-
-const ShippingAddress = new GraphQLObjectType({
-  name: 'ShippingAddress',
-  description: 'Shipping Address Type',
-  fields: {
-    fullName: {
-      type: GraphQLString,
-    },
-    company: {
-      type: GraphQLString,
-    },
-    address: {
-      type: GraphQLString,
-    },
-    ward: {
-      type: GraphQLString,
-    },
-    district: {
-      type: GraphQLString,
-    },
-    province: {
-      type: GraphQLString,
-    },
-    phone: {
-      type: GraphQLString,
-    },
-  },
-});
 
 const Order = new GraphQLObjectType({
   name: 'Order',
@@ -110,7 +44,7 @@ const Order = new GraphQLObjectType({
       },
     },
     shippingAddress: {
-      type: ShippingAddress,
+      type: AddressType,
       resolve(data) {
         return data.get('shippingAddress');
       },
@@ -134,9 +68,9 @@ const Order = new GraphQLObjectType({
       },
     },
     lines: {
-      type: new GraphQLList(OrderLine),
-      resolve({ id }, args, { loaders }) {
-        return loaders.linesByOrder.load(id);
+      type: new GraphQLList(OrderLineType),
+      resolve(data) {
+        return data.get('lines');
       },
     },
     subTotal: {
