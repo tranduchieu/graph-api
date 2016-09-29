@@ -160,7 +160,7 @@ const UserUpdateMutation = mutationWithClientMutationId({
     staffWorkplaces: {
       type: new GraphQLList(ShopEnumType),
     },
-    staffWorkingIn: {
+    staffWorkingAt: {
       type: ShopEnumType,
     },
   },

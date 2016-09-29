@@ -118,7 +118,7 @@ const User = new GraphQLObjectType({
         return data.get('workplaces');
       },
     },
-    staffWorkingIn: {
+    staffWorkingAt: {
       description: 'Nhân viên đang làm việc tại',
       type: ShopEnumType,
       resolve(data, args, { user, roles }) {

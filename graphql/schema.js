@@ -11,6 +11,7 @@ import ProductMutation from './mutations/Product';
 import ShortIdMutation from './mutations/ShortId';
 import UserMutation from './mutations/User';
 import OrderMutation from './mutations/Order';
+import BoxMutation from './mutations/Box';
 
 const Query = new GraphQLObjectType({
   name: 'Query',
@@ -28,6 +29,7 @@ const Mutation = new GraphQLObjectType({
     createUser: UserMutation.create,
     removeUser: UserMutation.remove,
     updateUser: UserMutation.update,
+    createBox: BoxMutation.create,
     createProduct: ProductMutation.create,
     updateProduct: ProductMutation.update,
     removeProduct: ProductMutation.remove,

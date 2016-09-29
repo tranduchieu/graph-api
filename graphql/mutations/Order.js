@@ -119,7 +119,7 @@ const OrderCreateMutation = mutationWithClientMutationId({
       line.productId = localProductId;
       return line;
     });
-    console.log(orderInput.lines);
+
     const Order = Parse.Object.extend('Order');
     const newOrder = new Order();
 

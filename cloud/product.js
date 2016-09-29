@@ -2,6 +2,11 @@
 import url from 'url';
 import path from 'path';
 
+const masterKey = process.env.MASTER_KEY || '';
+const SERVER_PORT = process.env.PORT || 8080;
+const SERVER_HOST = process.env.HOST || 'localhost';
+const GraphQLurl = `http://${SERVER_HOST}:${SERVER_PORT}/graphql`;
+
 const bucket = process.env.S3_BUCKET || 'ecolab-server';
 const bucketPrefix = process.env.S3_BUCKET_PREFIX || '';
 const s3Host = `${bucket}.s3.amazonaws.com`;
@@ -145,4 +150,45 @@ Parse.Cloud.afterSave('Product', async (req, res) => {
   await createTags(tags);
 
   return res.success();
+});
+
+const createBoxes2 = (boxes: string[]): Promise<Object[]> => {
+  const createBoxesPromise = boxes.map(box => {
+    return Parse.Cloud.httpRequest({
+      method: 'POST',
+      url: GraphQLurl,
+      headers: {
+        Authorization: `Bearer ${masterKey}`,
+      },
+      params: {
+        query: `mutation CreateBoxMutation($input: BoxCreateInput!) {
+          createBox(input: $input) {
+            boxEdge {
+              node {
+                id
+                name
+                description
+                featured
+              }
+            }
+          }
+        }`,
+        operationName: 'CreateBoxMutation',
+        variables: `{
+          "input": {
+            "name": "${box}",
+            "type": "PRODUCT",
+            "clientMutationId": "abc"
+          }
+        }`,
+      },
+    });
+  });
+  return Promise.all(createBoxesPromise);
+};
+
+createBoxes2(['Áo gió'])
+.then(console.log)
+.catch(error => {
+  console.log(error.text);
 });
