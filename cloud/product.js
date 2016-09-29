@@ -48,7 +48,6 @@ const updateImagesArray = (imgArray) => {
 
     return Promise.all(newImgArrayPromise)
     .then(result => {
-      console.log(result);
       return result.map(imgSubArray => {
         return {
           main: imgSubArray[0],
