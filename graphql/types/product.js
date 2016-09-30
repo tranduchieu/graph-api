@@ -95,6 +95,9 @@ const Product = new GraphQLObjectType({
       },
       resolve(data, { size }) {
         const images = data.get('images');
+
+        if (images.length === 0) return images;
+
         const imagesFilter = images.map(imagesObj => {
           return imagesObj[size];
         });

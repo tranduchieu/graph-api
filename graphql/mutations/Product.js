@@ -66,21 +66,26 @@ const ProductCreateMutation = mutationWithClientMutationId({
     },
     images: {
       type: new GraphQLList(GraphQLURL),
+      defaultValue: [],
     },
     tags: {
       type: new GraphQLList(GraphQLString),
+      defaultValue: [],
     },
     price: {
       type: new GraphQLNonNull(GraphQLInt),
     },
     salePrice: {
       type: GraphQLInt,
+      defaultValue: null,
     },
     weight: {
       type: GraphQLInt,
+      defaultValue: 0,
     },
     additionalProperties: {
       type: new GraphQLList(AdditionalPropertiesType),
+      defaultValue: [],
     },
   },
   outputFields: {
