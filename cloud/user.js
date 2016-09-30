@@ -74,14 +74,16 @@ Parse.Cloud.beforeSave(Parse.User, async (req, res) => {
   user.set('mobilePhoneVerified', user.get('mobilePhoneVerified') || false);
   user.set('avatarUrl', avatarUrl);
   user.set('staffWorkplaces', user.get('staffWorkplaces') || []);
+  user.set('addresses', user.get('addresses') || []);
+  user.set('tags', user.get('tags') || []);
 
   let nameToWords = [];
   if (name) {
     nameToWords = name.match(/[^ ]+/g).map(item => {
-      return latenize(item).toLowerCase();
+      return latenize(item).toLowerCase().replace(/[^\w\s]/gi, '').replace(/\u000b/g, '');
     });
-    user.set('nameToWords', nameToWords);
   }
+  user.set('nameToWords', nameToWords);
 
   return res.success();
 });
