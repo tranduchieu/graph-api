@@ -50,6 +50,8 @@ Parse.Cloud.beforeSave(Parse.User, async (req, res) => {
 
   const fbAuthData = (req.object.get('authData') || {}).facebook || {};
 
+  if (fbAuthData && !fbAuthData.email) fbAuthData.email = `${fbAuthData.id}@fakemail.com`;
+
   const email = fbAuthData.email || user.get('email');
   const name = fbAuthData.name || user.get('name') || null;
   const avatarUrl = (((fbAuthData || {}).picture || {}).data || {}).url ||

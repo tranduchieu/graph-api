@@ -74,8 +74,9 @@ const UserCreateMutation = mutationWithClientMutationId({
   async mutateAndGetPayload(obj) {
     const userInput = omit(obj, ['clientMutationId']);
 
-    // Fake username & password
+    // Fake username, email & password
     if (!userInput.username) userInput.username = nodeUUID.v4();
+    if (!userInput.email) userInput.email = `${nodeUUID.v4()}@fakemail.com`;
     if (!userInput.password) userInput.password = nodeUUID.v4();
 
     const newUser = new Parse.User();
