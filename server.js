@@ -151,5 +151,6 @@ server.listen(SERVER_PORT, () => console.log(
 
 if (IS_DEVELOPMENT) {
   require('./parse-example');
+  // require('./services/import-csv');
 }
 
