@@ -129,8 +129,10 @@ server.use(
     }
 
     let roles = [];
+    let staffWorkingAt = null;
     if (user) {
       roles = await loaders.rolesByUser.load(user.id);
+      staffWorkingAt = user.get('staffWorkingAt');
     }
 
     return {
@@ -138,7 +140,7 @@ server.use(
       pretty: true,
       graphiql: true,
       rootValue: { accessToken },
-      context: { loaders, accessToken, useMasterKey, user, roles },
+      context: { loaders, accessToken, useMasterKey, user, roles, staffWorkingAt },
     };
   })
 );
