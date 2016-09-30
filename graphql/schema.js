@@ -37,6 +37,7 @@ const Mutation = new GraphQLObjectType({
     createProductTag: ProductTagMutation.create,
     shortId: ShortIdMutation,
     createOrder: OrderMutation.create,
+    updateOrder: OrderMutation.update,
   },
 });
 

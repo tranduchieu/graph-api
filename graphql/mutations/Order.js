@@ -15,7 +15,7 @@ import {
 import { omit } from 'lodash';
 import Parse from 'parse/node';
 
-// import OrderType from '../types/order';
+import OrderType from '../types/order';
 import { OrderLineInputType } from '../types/orderLine';
 import {
   ShopEnumType,
@@ -136,6 +136,59 @@ const OrderCreateMutation = mutationWithClientMutationId({
   },
 });
 
+const OrderUpdateMutation = mutationWithClientMutationId({
+  name: 'OrderUpdate',
+  inputFields: {
+    id: {
+      type: new GraphQLNonNull(GraphQLID),
+    },
+    status: {
+      type: OrderStatusEnum,
+    },
+    note: {
+      type: GraphQLString,
+    },
+  },
+  outputFields: {
+    order: {
+      type: OrderType,
+      resolve(order) {
+        return order;
+      },
+    },
+  },
+  async mutateAndGetPayload(obj, { loaders, user, roles, accessToken }) {
+    if (!user) throw new Error('Guest không có quyền cập nhật Order');
+
+    // Check quyền admin
+    const validRoles = roles.filter(role => {
+      return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
+    });
+
+    if (validRoles.length === 0) throw new Error('Không có quyền cập nhật Order');
+
+    const { id: orderLocalId } = fromGlobalId(obj.id);
+    const orderObjById = await loaders.order.load(orderLocalId);
+    if (!orderObjById) throw new Error('Order not found');
+
+    obj.updatedBy = user;
+
+    Object.keys(obj).forEach(key => {
+      if (key !== 'id') orderObjById.set(key, obj[key]);
+    });
+
+    const orderUpdated = await orderObjById.save(null, {
+      sessionToken: accessToken, useMasterKey: true,
+    });
+
+    loaders.orders.clearAll();
+    loaders.order.prime(orderLocalId, orderUpdated);
+
+    return orderUpdated;
+  },
+});
+
 export default {
   create: OrderCreateMutation,
+  update: OrderUpdateMutation,
 };
