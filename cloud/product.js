@@ -133,15 +133,15 @@ Parse.Cloud.beforeSave('Product', async (req, res) => {
 //   return Promise.all(createBoxesPromise);
 // };
 
-const createTags = (tags: string[]): Promise<Object[]> => {
-  const createTagsPromise = tags.map(tag => {
-    const ProductTag = Parse.Object.extend('ProductTag');
-    const newTag = new ProductTag();
-    newTag.set('name', tag);
-    return newTag.save(null, { useMasterKey: true });
-  });
-  return Promise.all(createTagsPromise);
-};
+// const createTags = (tags: string[]): Promise<Object[]> => {
+//   const createTagsPromise = tags.map(tag => {
+//     const ProductTag = Parse.Object.extend('ProductTag');
+//     const newTag = new ProductTag();
+//     newTag.set('name', tag);
+//     return newTag.save(null, { useMasterKey: true });
+//   });
+//   return Promise.all(createTagsPromise);
+// };
 
 const createBoxes = (boxes: string[]): Promise<Object[]> => {
   const createBoxesPromise = boxes.map(box => {
@@ -178,6 +178,39 @@ const createBoxes = (boxes: string[]): Promise<Object[]> => {
   return Promise.all(createBoxesPromise);
 };
 
+const createTags = (tags: string[]): Promise<Object[]> => {
+  const createTagsPromise = tags.map(tag => {
+    return Parse.Cloud.httpRequest({
+      method: 'POST',
+      url: GraphQLurl,
+      headers: {
+        masterkey,
+      },
+      params: {
+        query: `mutation CreateProductTagMutation($input: ProductTagCreateInput!) {
+          createProductTag(input: $input) {
+            productTagEdge {
+              node {
+                id
+                name
+                description
+              }
+            }
+          }
+        }`,
+        operationName: 'CreateProductTagMutation',
+        variables: `{
+          "input": {
+            "name": "${tag}",
+            "clientMutationId": "abc"
+          }
+        }`,
+      },
+    });
+  });
+  return Promise.all(createTagsPromise);
+};
+
 Parse.Cloud.afterSave('Product', async (req, res) => {
   const boxes: string[] = req.object.get('boxes');
   const tags: string[] = req.object.get('tags');
@@ -187,11 +220,11 @@ Parse.Cloud.afterSave('Product', async (req, res) => {
   return res.success();
 });
 
-// createBoxes2(['Áo da'])
-// .then(result => {
-//   console.log(result[0].text);
-// })
-// .catch(error => {
-//   console.log(error.text);
-// });
+createTags(['Hồng'])
+.then(result => {
+  console.log(result[0].text);
+})
+.catch(error => {
+  console.log(error.text);
+});
 
