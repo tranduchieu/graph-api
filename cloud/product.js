@@ -220,11 +220,11 @@ Parse.Cloud.afterSave('Product', async (req, res) => {
   return res.success();
 });
 
-createTags(['Hồng'])
-.then(result => {
-  console.log(result[0].text);
-})
-.catch(error => {
-  console.log(error.text);
-});
+// createTags(['Hồng'])
+// .then(result => {
+//   console.log(result[0].text);
+// })
+// .catch(error => {
+//   console.log(error.text);
+// });
 
