@@ -3,6 +3,7 @@ import {
   GraphQLID,
   GraphQLNonNull,
   GraphQLString,
+  GraphQLList,
   GraphQLInt,
 } from 'graphql';
 
@@ -53,14 +54,14 @@ export default {
         type: GraphQLString,
       },
       shop: {
-        type: ShopEnumType,
+        type: new GraphQLList(ShopEnumType),
       },
       status: {
-        type: OrderStatusEnum,
+        type: new GraphQLList(OrderStatusEnum),
       },
       ...connectionArgs,
     },
-    async resolve(root, args, { loaders, user }) {
+    async resolve(root, args, { loaders, user, staffWorkingAt }) {
       if (!user) throw new Error('Permission denied for action find on class Order.');
       const roles = await loaders.rolesByUser.load(user.id);
       const validRoles = roles.filter(role => {
@@ -73,6 +74,7 @@ export default {
       }
 
       if (args.code) args.code = args.code.toLowerCase();
+      if (staffWorkingAt) args.shop = [staffWorkingAt];
 
       return connectionFromPromisedArray(loaders.orders.load(JSON.stringify(args)), {});
     },

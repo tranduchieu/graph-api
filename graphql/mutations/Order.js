@@ -92,7 +92,7 @@ const OrderCreateMutation = mutationWithClientMutationId({
     },
     viewer: ViewerQueries.viewer,
   },
-  async mutateAndGetPayload(obj, { loaders, user, roles, accessToken }) {
+  async mutateAndGetPayload(obj, { loaders, user, roles, accessToken, staffWorkingAt }) {
     if (!user) throw new Error('Guest không có quyền tạo Order');
 
     // Check quyền admin
@@ -103,6 +103,10 @@ const OrderCreateMutation = mutationWithClientMutationId({
     const { id: localCustomerId } = fromGlobalId(obj.customer);
     if (validRoles.length === 0 && user.id !== localCustomerId) {
       throw new Error('Không có quyền tạo Order cho khách hàng khác');
+    }
+
+    if (staffWorkingAt && obj.shop !== staffWorkingAt) {
+      throw new Error('Shop trong Hóa đơn không đúng với nơi bạn đang làm việc');
     }
 
     const orderInput = omit(obj, ['clientMutationId']);

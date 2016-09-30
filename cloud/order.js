@@ -52,10 +52,13 @@ const checkCode = async (code: string) => {
   return true;
 };
 
-const checkProductStatus = async (productId: string): Promise<boolean> => {
+const checkProductStatus = async (productId: string, shopOnOrder: string): Promise<boolean> => {
   const productQuery = new Parse.Query('Product');
   const productObj = await productQuery.get(productId);
   if (!productObj) throw new Error(`Product ${productId} not found`);
+  if (shopOnOrder !== 'Tổ Cú Online' && productObj.get('shop') !== shopOnOrder) {
+    throw new Error(`Sản phẩm ${productObj.get('code')} đang ở shop ${productObj.get('shop')}`);
+  }
   const productStatus = productObj.get('status');
   if (productStatus.indexOf('available') === -1) {
     throw new Error(`Product ${productId} not available for order`);
@@ -66,13 +69,14 @@ const checkProductStatus = async (productId: string): Promise<boolean> => {
 
 Parse.Cloud.beforeSave('Order', async (req, res) => {
   const order: Object = req.object;
+  const shop = order.get('shop');
   let currentOrder;
 
   if (order.id) {
     const orderQuery = new Parse.Query('Order');
     currentOrder = await orderQuery.get(order.id, { useMasterKey: true });
   }
-  console.log(currentOrder);
+
   // Check code
   const code = order.get('code');
   if (!currentOrder || (currentOrder && currentOrder.get('code') !== code)) {
@@ -88,7 +92,7 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
     const lines: Object[] = order.get('lines');
     const checkProductPromises = [];
     lines.map(line => {
-      checkProductPromises.push(checkProductStatus(line.productId));
+      checkProductPromises.push(checkProductStatus(line.productId, shop));
       return line;
     });
     try {

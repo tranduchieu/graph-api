@@ -28,8 +28,8 @@ export const allOrdersLoader = new DataLoader(keys => {
     const Order = Parse.Object.extend('Order');
     const queryOrder = new Parse.Query(Order);
     if (code) queryOrder.equalTo('code', code);
-    if (shop) queryOrder.equalTo('shop', shop);
-    if (status) queryOrder.equalTo('status', status);
+    if (shop) queryOrder.containedIn('shop', shop);
+    if (status) queryOrder.containedIn('status', status);
     if (createdBy) {
       const user = await userByIdLoader.load(createdBy);
       queryOrder.equalTo('createdBy', user);
