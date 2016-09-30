@@ -51,9 +51,11 @@ const UserCreateMutation = mutationWithClientMutationId({
     },
     addresses: {
       type: new GraphQLList(AddressInputType),
+      defaultValue: [],
     },
     tags: {
       type: new GraphQLList(GraphQLString),
+      defaultValue: [],
     },
     note: {
       type: GraphQLString,

@@ -73,6 +73,7 @@ Parse.Cloud.beforeSave(Parse.User, async (req, res) => {
   user.set('emailVerified', user.get('emailVerified') || false);
   user.set('mobilePhoneVerified', user.get('mobilePhoneVerified') || false);
   user.set('avatarUrl', avatarUrl);
+  user.set('staffWorkplaces', user.get('staffWorkplaces') || []);
 
   let nameToWords = [];
   if (name) {
