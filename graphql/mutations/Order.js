@@ -23,7 +23,7 @@ import {
 } from '../types/enumTypes';
 
 import { OrderEdge } from '../connections/order';
-import ViewerQueries from '../queries/Viewer';
+import UserType from '../types/user';
 import { AddressInputType } from '../types/address';
 
 const OrderCreateMutation = mutationWithClientMutationId({
@@ -90,7 +90,12 @@ const OrderCreateMutation = mutationWithClientMutationId({
         };
       },
     },
-    viewer: ViewerQueries.viewer,
+    viewer: {
+      type: UserType,
+      resolve(root, args, { user }) {
+        return user || {};
+      },
+    },
   },
   async mutateAndGetPayload(obj, { loaders, user, roles, accessToken, staffWorkingAt }) {
     if (!user) throw new Error('Guest không có quyền tạo Order');
@@ -136,6 +141,12 @@ const OrderCreateMutation = mutationWithClientMutationId({
 
     loaders.orders.clearAll();
     loaders.order.prime(orderObjSaved.id, orderObjSaved);
+
+    loaders.products.clearAll();
+    orderObjSaved.get('lines').forEach(line => {
+      return loaders.loaders.clear(line.productId);
+    });
+
     return orderObjSaved;
   },
 });

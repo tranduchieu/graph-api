@@ -26,9 +26,9 @@ import {
   ShopEnumType,
   ProductStatusEnum,
 } from '../types/enumTypes';
+import UserType from '../types/user';
 
 import { ProductEdge } from '../connections/product';
-import ViewerQueries from '../queries/Viewer';
 
 const AdditionalPropertiesType = new GraphQLInputObjectType({
   name: 'ProductAdditionalPropertiesInput',
@@ -98,9 +98,14 @@ const ProductCreateMutation = mutationWithClientMutationId({
         };
       },
     },
-    viewer: ViewerQueries.viewer,
+    viewer: {
+      type: UserType,
+      resolve(root, args, { user }) {
+        return user || {};
+      },
+    },
   },
-  async mutateAndGetPayload(obj, { loaders, user, roles, accessToken }) {
+  mutateAndGetPayload(obj, { loaders, user, roles, accessToken }) {
     if (!user) throw new Error('Guest không có quyền tạo Sản phẩm');
 
     // Check quyền admin
@@ -141,9 +146,14 @@ const ProductRemoveMutation = mutationWithClientMutationId({
         return id;
       },
     },
-    viewer: ViewerQueries.viewer,
+    viewer: {
+      type: UserType,
+      resolve(root, args, { user }) {
+        return user || {};
+      },
+    },
   },
-  async mutateAndGetPayload({ id }, { loaders, user, roles, accessToken }) {
+  mutateAndGetPayload({ id }, { loaders, user, roles, accessToken }) {
     if (!user) throw new Error('Guest không có quyền xóa Sản phẩm');
 
     // Check quyền admin
@@ -220,7 +230,7 @@ const ProductUpdateMutation = mutationWithClientMutationId({
       },
     },
   },
-  async mutateAndGetPayload(obj, { loaders, user, roles, accessToken }) {
+  mutateAndGetPayload(obj, { loaders, user, roles, accessToken }) {
     if (!user) throw new Error('Guest không có quyền cập nhật Sản phẩm');
 
     // Check quyền admin

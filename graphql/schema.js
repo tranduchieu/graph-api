@@ -5,7 +5,12 @@ import {
 
 import { nodeField } from './relay/RelayNode';
 
-import ViewerQueries from './queries/Viewer';
+import UserType from './types/user';
+
+import ProductQueries from './queries/Product';
+import ProductTagQueries from './queries/ProductTag';
+import OrderQueries from './queries/Order';
+import BoxQueries from './queries/Box';
 
 import ProductMutation from './mutations/Product';
 import ShortIdMutation from './mutations/ShortId';
@@ -19,14 +24,23 @@ const Query = new GraphQLObjectType({
   description: 'This is a root Query',
   fields: () => ({
     node: nodeField,
-    viewer: ViewerQueries.viewer,
+    viewer: {
+      type: UserType,
+      resolve(root, args, { user }) {
+        return user || {};
+      },
+    },
+    product: ProductQueries.product,
+    productTag: ProductTagQueries.productTag,
+    box: BoxQueries.box,
+    order: OrderQueries.order,
   }),
 });
 
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   description: 'This is a root Mutation',
-  fields: {
+  fields: () => ({
     createUser: UserMutation.create,
     removeUser: UserMutation.remove,
     updateUser: UserMutation.update,
@@ -38,7 +52,7 @@ const Mutation = new GraphQLObjectType({
     shortId: ShortIdMutation,
     createOrder: OrderMutation.create,
     updateOrder: OrderMutation.update,
-  },
+  }),
 });
 
 const Schema = new GraphQLSchema({

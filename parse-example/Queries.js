@@ -1,4 +1,4 @@
-// import Parse from 'parse/node';
+import Parse from 'parse/node';
 
 // Counting
 // -----------------------
@@ -39,8 +39,8 @@
 
 // Search user by name words
 // -------------------------------
-// const queryUser = new Parse.Query(Parse.User);
-// queryUser.containedIn('nameToWords', ['kieu', 'phuc']);
-// queryUser.find({ useMasterKey: true })
-// .then(console.log)
-// .catch(console.error);
+const queryUser = new Parse.Query(Parse.User);
+queryUser.containedIn('nameToWords', ['kieu', 'phuc']);
+queryUser.find({ useMasterKey: true })
+.then(console.log)
+.catch(console.error);

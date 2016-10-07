@@ -108,3 +108,21 @@ export const BoxTypesEnum = new GraphQLEnumType({
     },
   },
 });
+
+export const SearchTypesEnum = new GraphQLEnumType({
+  name: 'SearchTypesEnum',
+  values: {
+    PRODUCT: {
+      value: 'product',
+      description: 'Tìm kiểm dạng Sản phẩm',
+    },
+    ORDER: {
+      value: 'order',
+      description: 'Tìm kiếm dạng Hóa đơn',
+    },
+    USER: {
+      value: 'user',
+      description: 'Tìm kiếm dạng Người dùng, khách hàng',
+    },
+  },
+});

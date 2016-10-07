@@ -12,7 +12,7 @@ import { omit } from 'lodash';
 import Parse from 'parse/node';
 
 import { ProductTagEdge } from '../connections/productTag';
-import ViewerQueries from '../queries/Viewer';
+import UserType from '../types/user';
 
 const ProductTagCreateMutation = mutationWithClientMutationId({
   name: 'ProductTagCreate',
@@ -34,7 +34,12 @@ const ProductTagCreateMutation = mutationWithClientMutationId({
         };
       },
     },
-    viewer: ViewerQueries.viewer,
+    viewer: {
+      type: UserType,
+      resolve(root, args, { user }) {
+        return user || {};
+      },
+    },
   },
   async mutateAndGetPayload(obj, { loaders, user, roles, accessToken, useMasterKey }) {
     // Check quyền admin

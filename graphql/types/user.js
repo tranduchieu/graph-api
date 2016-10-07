@@ -20,6 +20,12 @@ import { ShopEnumType } from './enumTypes';
 
 import RelayRegistry from '../relay/RelayRegistry';
 
+import ProductQueries from '../queries/Product';
+import ProductTagQueries from '../queries/ProductTag';
+import OrderQueries from '../queries/Order';
+import BoxQueries from '../queries/Box';
+// import UserQueries from '../queries/User';
+
 // Resolver
 export function userResolver(_, { id }, { loaders }) {
   return loaders.user.load(id);
@@ -143,6 +149,16 @@ const User = new GraphQLObjectType({
         return data.get('updatedAt');
       },
     },
+    products: ProductQueries.products,
+    productsCount: ProductQueries.productsCount,
+    productTags: ProductTagQueries.productTags,
+    producTagsCount: ProductTagQueries.productTagsCount,
+    boxes: BoxQueries.boxes,
+    boxesCount: BoxQueries.boxesCount,
+    orders: OrderQueries.orders,
+    ordersByCustomer: OrderQueries.ordersByCustomer,
+    ordersCount: OrderQueries.ordersCount,
+    // users: UserQueries.users,
   }),
 });
 

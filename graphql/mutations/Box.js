@@ -18,9 +18,9 @@ import { GraphQLURL } from '@tranduchieu/graphql-custom-types';
 import {
   BoxTypesEnum,
 } from '../types/enumTypes';
+import UserType from '../types/user';
 
 import { BoxEdge } from '../connections/box';
-import ViewerQueries from '../queries/Viewer';
 
 const BoxCreateMutation = mutationWithClientMutationId({
   name: 'BoxCreate',
@@ -59,7 +59,12 @@ const BoxCreateMutation = mutationWithClientMutationId({
         };
       },
     },
-    viewer: ViewerQueries.viewer,
+    viewer: {
+      type: UserType,
+      resolve(root, args, { user }) {
+        return user || {};
+      },
+    },
   },
   async mutateAndGetPayload(obj, { loaders, user, roles, accessToken, useMasterKey }) {
     // Check quyền admin

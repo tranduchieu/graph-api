@@ -22,7 +22,7 @@ export function orderResolver(_, { id }, { loaders }) {
 const Order = new GraphQLObjectType({
   name: 'Order',
   description: 'Order type',
-  fields: {
+  fields: () => ({
     id: globalIdField('Order'),
     code: {
       type: GraphQLString,
@@ -147,7 +147,7 @@ const Order = new GraphQLObjectType({
         return loaders.user.load(id);
       },
     },
-  },
+  }),
 });
 
 RelayRegistry.registerResolverForType(Order, orderResolver);

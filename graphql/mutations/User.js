@@ -26,7 +26,6 @@ import { ShopEnumType } from '../types/enumTypes';
 import { AddressInputType } from '../types/address';
 
 import { UserEdge } from '../connections/user';
-import ViewerQueries from '../queries/Viewer';
 
 const UserCreateMutation = mutationWithClientMutationId({
   name: 'UserCreate',
@@ -71,9 +70,14 @@ const UserCreateMutation = mutationWithClientMutationId({
         };
       },
     },
-    viewer: ViewerQueries.viewer,
+    viewer: {
+      type: UserType,
+      resolve(root, args, { user }) {
+        return user || {};
+      },
+    },
   },
-  async mutateAndGetPayload(obj) {
+  mutateAndGetPayload(obj) {
     const userInput = omit(obj, ['clientMutationId']);
 
     // Fake username, email & password
@@ -101,7 +105,12 @@ const UserRemoveMutation = mutationWithClientMutationId({
         return id;
       },
     },
-    viewer: ViewerQueries.viewer,
+    viewer: {
+      type: UserType,
+      resolve(root, args, { user }) {
+        return user || {};
+      },
+    },
   },
   async mutateAndGetPayload({ id }, { loaders, user, roles, accessToken }) {
     // Check user
@@ -198,7 +207,7 @@ const UserUpdateMutation = mutationWithClientMutationId({
       userObjById.set(key, userInput[key]);
     });
 
-    const userObjUpdated = userObjById.save(null, { sessionToken: accessToken, useMasterKey: true });
+    const userObjUpdated = await userObjById.save(null, { sessionToken: accessToken, useMasterKey: true });
     loaders.users.clearAll();
     loaders.user.prime(id, userObjUpdated);
 
