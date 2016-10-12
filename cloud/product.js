@@ -1,6 +1,7 @@
 /* global Parse, @flow */
 import url from 'url';
 import path from 'path';
+import latenize from '../services/latenize';
 
 const masterkey = process.env.MASTER_KEY || '';
 const SERVER_PORT = process.env.PORT || 8080;
@@ -84,6 +85,8 @@ const checkcode = (code) => {
 
 Parse.Cloud.beforeSave('Product', async (req, res) => {
   const product = req.object;
+  const name = product.get('name') || null;
+  const description = product.get('description') || null;
   let currentProduct;
 
   if (product.id) {
@@ -112,6 +115,28 @@ Parse.Cloud.beforeSave('Product', async (req, res) => {
       return res.error(error.message);
     }
   }
+
+  // Set nameToWords
+  let nameToWords = [];
+  if (name) {
+    nameToWords = latenize(name)
+                  .replace(/[^\w\s]/gi, '')
+                  .replace(/\u000b/g, '')
+                  .toLowerCase()
+                  .match(/[^ ]+/g);
+  }
+  product.set('nameToWords', nameToWords);
+
+  // Set descriptionToWords
+  let descriptionToWords = [];
+  if (description) {
+    descriptionToWords = latenize(description)
+                        .replace(/[^\w\s]/gi, '')
+                        .replace(/\u000b/g, '')
+                        .toLowerCase()
+                        .match(/[^ ]+/g);
+  }
+  product.set('descriptionToWords', descriptionToWords);
 
   return res.success();
 });
