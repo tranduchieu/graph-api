@@ -11,8 +11,8 @@
     "lint": "eslint .",
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "mongodump": "docker exec -it graphapi_mongo_1 /bin/bash -c 'mongodump -o /data/backup'",
-    "mongorestore": "docker exec -it graphapi_mongo_1 /bin/bash -c 'mongorestore /data/backup'"
+    "mongodump-dev": "docker exec -it graphapi_mongo_1 /bin/bash -c 'mongodump -d dev -o /data/backup'",
+    "mongorestore-dev": "docker exec -it graphapi_mongo_1 /bin/bash -c 'mongorestore -d dev /data/backup/dev'"
   },
   "repository": {
     "type": "git",
