@@ -79,9 +79,11 @@ Parse.Cloud.beforeSave(Parse.User, async (req, res) => {
 
   let nameToWords = [];
   if (name) {
-    nameToWords = name.match(/[^ ]+/g).map(item => {
-      return latenize(item).toLowerCase().replace(/[^\w\s]/gi, '').replace(/\u000b/g, '');
-    });
+    nameToWords = latenize(name)
+                  .replace(/[^\w\s]/gi, '')
+                  .replace(/\u000b/g, '')
+                  .toLowerCase()
+                  .match(/[^ ]+/g);
   }
   user.set('nameToWords', nameToWords);
 
