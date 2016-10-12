@@ -25,6 +25,11 @@ import {
   linesByOrderLoader,
 } from './order';
 
+import {
+  searchsLoader,
+  searchsCountLoader,
+} from './search';
+
 module.exports = {
   users: allUsersLoader,
   user: userByIdLoader,
@@ -38,4 +43,6 @@ module.exports = {
   order: orderByIdLoader,
   orders: allOrdersLoader,
   linesByOrder: linesByOrderLoader,
+  searchs: searchsLoader,
+  searchsCount: searchsCountLoader,
 };

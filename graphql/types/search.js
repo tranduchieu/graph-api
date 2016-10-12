@@ -15,7 +15,7 @@ const resolveType = (data) => {
 
 const SearchableType = new GraphQLUnionType({
   name: 'SearchableType',
-  types: [UserType, ProducType, OrderType],
+  types: () => ([UserType, ProducType, OrderType]),
   resolveType,
 });
 

@@ -1,21 +1,14 @@
-import Parse from 'parse/node';
 import {
-  GraphQLID,
   GraphQLNonNull,
   GraphQLString,
-  GraphQLBoolean,
   GraphQLInt,
 } from 'graphql';
 
 import {
-  fromGlobalId,
   connectionArgs,
   connectionFromPromisedArray,
 } from 'graphql-relay';
 
-import latenize from '../../services/latenize';
-
-import SearchableType from '../types/search';
 import { SearchTypesEnum } from '../types/enumTypes';
 
 import { SearchConnection } from '../connections/search';
@@ -34,10 +27,28 @@ export default {
         type: GraphQLInt,
         defaultValue: 0,
       },
+      limit: {
+        type: GraphQLInt,
+        defaultValue: 20,
+      },
       ...connectionArgs,
     },
     resolve(root, args, { loaders }) {
-
+      return connectionFromPromisedArray(loaders.searchs.load(JSON.stringify(args)), {});
+    },
+  },
+  searchsCount: {
+    type: GraphQLInt,
+    args: {
+      text: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      type: {
+        type: new GraphQLNonNull(SearchTypesEnum),
+      },
+    },
+    resolve(root, args, { loaders }) {
+      return loaders.searchsCount.load(JSON.stringify(args));
     },
   },
 };

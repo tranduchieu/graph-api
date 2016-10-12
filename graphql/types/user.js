@@ -24,6 +24,7 @@ import ProductQueries from '../queries/Product';
 import ProductTagQueries from '../queries/ProductTag';
 import OrderQueries from '../queries/Order';
 import BoxQueries from '../queries/Box';
+import SearchQueries from '../queries/Search';
 // import UserQueries from '../queries/User';
 
 // Resolver
@@ -159,6 +160,8 @@ const User = new GraphQLObjectType({
     ordersByCustomer: OrderQueries.ordersByCustomer,
     ordersCount: OrderQueries.ordersCount,
     // users: UserQueries.users,
+    searchs: SearchQueries.searchs,
+    searchsCount: SearchQueries.searchsCount,
   }),
 });
 
