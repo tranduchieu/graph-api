@@ -21,7 +21,7 @@ export const boxByIdLoader = new DataLoader(ids => {
 });
 
 export const allBoxesLoader = new DataLoader(keys => {
-  return Promise.all(keys.map(async key => {
+  return Promise.all(keys.map(key => {
     const args = JSON.parse(key);
     const { after, first, type, visible, nameStartsWith } = args;
     const Box = Parse.Object.extend('Box');
