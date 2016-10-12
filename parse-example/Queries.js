@@ -1,4 +1,5 @@
-import Parse from 'parse/node';
+// import Parse from 'parse/node';
+// import latenize from '../services/latenize';
 
 // Counting
 // -----------------------
@@ -39,8 +40,37 @@ import Parse from 'parse/node';
 
 // Search user by name words
 // -------------------------------
-const queryUser = new Parse.Query(Parse.User);
-queryUser.containedIn('nameToWords', ['kieu', 'phuc']);
-queryUser.find({ useMasterKey: true })
-.then(console.log)
-.catch(console.error);
+// const queryUser = new Parse.Query(Parse.User);
+// queryUser.containedIn('nameToWords', ['kieu', 'phuc']);
+// queryUser.find({ useMasterKey: true })
+// .then(console.log)
+// .catch(console.error);
+
+// Search in User class
+// [x] Search containsAll nameToWords
+// [x] Search startsWith username
+// [x] Search startsWith mobilePhone
+
+// const searchUserQuery = (searchText) => {
+//   let splitWords = [];
+//   splitWords = searchText.match(/[^ ]+/g).map(item => {
+//     return latenize(item).toLowerCase().replace(/[^\w\s]/gi, '').replace(/\u000b/g, '');
+//   });
+
+//   const queryNameToWords = new Parse.Query(Parse.User);
+//   queryNameToWords.containsAll('nameToWords', splitWords);
+
+//   const queryUserName = new Parse.Query(Parse.User);
+//   queryUserName.startsWith('username', searchText);
+
+//   const queryMobilePhone = new Parse.Query(Parse.User);
+//   queryMobilePhone.startsWith('mobilePhone', searchText);
+
+//   const mainQuery = Parse.Query.or(queryNameToWords, queryUserName, queryMobilePhone);
+//   return mainQuery;
+// };
+
+// searchUserQuery('tran')
+// .count()
+// .then(console.log)
+// .catch(console.error);
