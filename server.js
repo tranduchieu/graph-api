@@ -97,7 +97,7 @@ function extractTokenFromHeader(headers) {
 
   // retrieve token
   const token = authArr[1];
-  // 	if (token.length != TOKEN_LENGTH * 2) throw new Error('Token length is not the expected one');
+  // if (token.length != TOKEN_LENGTH * 2) throw new Error('Token length is not the expected one');
 
   return token;
 }
@@ -106,6 +106,11 @@ const loaders = require('./graphql/loaders');
 
 server.use(
   '/graphql',
+  (req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+  },
   graphHTTP(async (req) => {
     const accessToken = extractTokenFromHeader(req.headers) ||
                         req.query.accessToken ||
