@@ -18,6 +18,7 @@ import {
 import { AddressType } from './address';
 import { ShopEnumType } from './enumTypes';
 
+import { nodeInterface } from '../relay/RelayNode';
 import RelayRegistry from '../relay/RelayRegistry';
 
 import ProductQueries from '../queries/Product';
@@ -163,6 +164,7 @@ const User = new GraphQLObjectType({
     searchs: SearchQueries.searchs,
     searchsCount: SearchQueries.searchsCount,
   }),
+  interfaces: [nodeInterface],
 });
 
 RelayRegistry.registerResolverForType(User, userResolver);

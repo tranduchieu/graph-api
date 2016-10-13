@@ -12,6 +12,7 @@ import {
 import { GraphQLDateTime, GraphQLURL } from '@tranduchieu/graphql-custom-types';
 import { BoxTypesEnum } from './enumTypes';
 
+import { nodeInterface } from '../relay/RelayNode';
 import RelayRegistry from '../relay/RelayRegistry';
 
 export function boxResolver(_, { id }, { loaders }) {
@@ -78,6 +79,7 @@ const Box = new GraphQLObjectType({
       },
     },
   }),
+  interfaces: [nodeInterface],
 });
 
 RelayRegistry.registerResolverForType(Box, boxResolver);

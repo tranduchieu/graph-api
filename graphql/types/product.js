@@ -12,6 +12,7 @@ import {
   globalIdField,
 } from 'graphql-relay';
 
+import { nodeInterface } from '../relay/RelayNode';
 import RelayRegistry from '../relay/RelayRegistry';
 
 import UserType from './user';
@@ -173,6 +174,7 @@ const Product = new GraphQLObjectType({
       },
     },
   }),
+  interfaces: [nodeInterface],
 });
 
 RelayRegistry.registerResolverForType(Product, productResolver);

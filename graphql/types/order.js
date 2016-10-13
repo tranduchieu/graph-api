@@ -8,6 +8,7 @@ import {
 import { globalIdField } from 'graphql-relay';
 import { GraphQLDateTime } from '@tranduchieu/graphql-custom-types';
 
+import { nodeInterface } from '../relay/RelayNode';
 import RelayRegistry from '../relay/RelayRegistry';
 
 import { ShopEnumType, OrderStatusEnum } from './enumTypes';
@@ -148,6 +149,7 @@ const Order = new GraphQLObjectType({
       },
     },
   }),
+  interfaces: [nodeInterface],
 });
 
 RelayRegistry.registerResolverForType(Order, orderResolver);
