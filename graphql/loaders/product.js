@@ -24,6 +24,7 @@ export const allProductsLoader = new DataLoader(keys => {
   return Promise.all(keys.map(key => {
     const args = JSON.parse(key);
     const { after, first, skip, limit, code, shop, status, boxes } = args;
+    console.log(skip);
     const Product = Parse.Object.extend('Product');
     const queryProduct = new Parse.Query(Product);
     if (code) queryProduct.startsWith('code', code);
@@ -31,7 +32,7 @@ export const allProductsLoader = new DataLoader(keys => {
     if (status) queryProduct.containedIn('status', status);
     if (boxes) queryProduct.containedIn('boxes', boxes);
     queryProduct.descending('createdAt');
-    queryProduct.skip(skip || after ? cursorToOffset(after) + 1 : 0);
+    queryProduct.skip(skip || (after ? cursorToOffset(after) + 1 : 0));
     queryProduct.limit(limit || first || 20);
 
     return queryProduct.find({ useMasterKey: true })
