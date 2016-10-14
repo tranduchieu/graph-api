@@ -26,7 +26,7 @@ import ProductTagQueries from '../queries/ProductTag';
 import OrderQueries from '../queries/Order';
 import BoxQueries from '../queries/Box';
 import SearchQueries from '../queries/Search';
-// import UserQueries from '../queries/User';
+import UserQueries from '../queries/User';
 
 // Resolver
 export function userResolver(_, { id }, { loaders }) {
@@ -160,7 +160,7 @@ const User = new GraphQLObjectType({
     orders: OrderQueries.orders,
     ordersByCustomer: OrderQueries.ordersByCustomer,
     ordersCount: OrderQueries.ordersCount,
-    // users: UserQueries.users,
+    users: UserQueries.users,
     searchs: SearchQueries.searchs,
     searchsCount: SearchQueries.searchsCount,
   }),

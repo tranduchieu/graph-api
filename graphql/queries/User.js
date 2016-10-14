@@ -17,6 +17,12 @@ import UserType from '../types/user';
 import { UserConnection } from '../connections/user';
 
 export default {
+  viewer: {
+    type: UserType,
+    resolve(root, args, { user }) {
+      return user || {};
+    },
+  },
   me: {
     type: UserType,
     resolve({ accessToken }, args, { user }) {

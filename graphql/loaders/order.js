@@ -27,7 +27,7 @@ export const allOrdersLoader = new DataLoader(keys => {
     const { after, first, code, shop, status, createdBy, customer } = args;
     const Order = Parse.Object.extend('Order');
     const queryOrder = new Parse.Query(Order);
-    if (code) queryOrder.equalTo('code', code);
+    if (code) queryOrder.startsWith('code', code);
     if (shop) queryOrder.containedIn('shop', shop);
     if (status) queryOrder.containedIn('status', status);
     if (createdBy) {

@@ -5,8 +5,7 @@ import {
 
 import { nodeField } from './relay/RelayNode';
 
-import UserType from './types/user';
-
+import UserQueries from './queries/User';
 import ProductQueries from './queries/Product';
 import ProductTagQueries from './queries/ProductTag';
 import OrderQueries from './queries/Order';
@@ -24,12 +23,7 @@ const Query = new GraphQLObjectType({
   description: 'This is a root Query',
   fields: () => ({
     node: nodeField,
-    viewer: {
-      type: UserType,
-      resolve(root, args, { user }) {
-        return user || {};
-      },
-    },
+    viewer: UserQueries.viewer,
     product: ProductQueries.product,
     productTag: ProductTagQueries.productTag,
     box: BoxQueries.box,
