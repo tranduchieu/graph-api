@@ -54,6 +54,14 @@ export default {
       visible: {
         type: GraphQLBoolean,
       },
+      skip: {
+        type: GraphQLInt,
+        defaultValue: 0,
+      },
+      limit: {
+        type: GraphQLInt,
+        defaultValue: 20,
+      },
       ...connectionArgs,
     },
     resolve(root, args, { loaders, roles }) {

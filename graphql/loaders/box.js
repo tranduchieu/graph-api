@@ -23,7 +23,7 @@ export const boxByIdLoader = new DataLoader(ids => {
 export const allBoxesLoader = new DataLoader(keys => {
   return Promise.all(keys.map(key => {
     const args = JSON.parse(key);
-    const { after, first, type, visible, nameStartsWith } = args;
+    const { after, first, skip, limit, type, visible, nameStartsWith } = args;
     const Box = Parse.Object.extend('Box');
     const queryBox = new Parse.Query(Box);
     if (type) queryBox.equalTo('type', type);
@@ -31,8 +31,8 @@ export const allBoxesLoader = new DataLoader(keys => {
     if (nameStartsWith) queryBox.startsWith('nameToLowerCase', nameStartsWith);
 
     queryBox.descending('createdAt');
-    queryBox.skip(after ? cursorToOffset(after) + 1 : 0);
-    queryBox.limit(first || 20);
+    queryBox.skip(skip || (after ? cursorToOffset(after) + 1 : 0));
+    queryBox.limit(limit || first || 20);
 
     return queryBox.find({ useMasterKey: true })
       .then(boxes => {

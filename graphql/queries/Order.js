@@ -91,6 +91,14 @@ export default {
       status: {
         type: OrderStatusEnum,
       },
+      skip: {
+        type: GraphQLInt,
+        defaultValue: 0,
+      },
+      limit: {
+        type: GraphQLInt,
+        defaultValue: 20,
+      },
       ...connectionArgs,
     },
     resolve(root, args, { loaders, user }) {
