@@ -2,6 +2,7 @@ import {
   GraphQLNonNull,
   GraphQLString,
   GraphQLInt,
+  GraphQLList,
 } from 'graphql';
 
 import {
@@ -20,8 +21,13 @@ export default {
       text: {
         type: new GraphQLNonNull(GraphQLString),
       },
-      type: {
-        type: new GraphQLNonNull(SearchTypesEnum),
+      types: {
+        type: new GraphQLList(SearchTypesEnum),
+        defaultValue: [],
+      },
+      ratio: {
+        type: new GraphQLList(GraphQLInt),
+        defaultValue: [],
       },
       skip: {
         type: GraphQLInt,
@@ -34,6 +40,14 @@ export default {
       ...connectionArgs,
     },
     resolve(root, args, { loaders }) {
+      // Validate
+      // ---------------------------
+      // [x] types & ratio same length
+      // [] roles
+      if (args.types.length !== args.ratio.length) {
+        throw new Error('types & ratio not same length');
+      }
+
       return connectionFromPromisedArray(loaders.searchs.load(JSON.stringify(args)), {});
     },
   },
