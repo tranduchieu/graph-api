@@ -167,7 +167,7 @@ const calcSkipLimit = (types, typesRatio, skip, limit, totalCounts) => {
   if (typesGreaterThan.length > 0) {
     const typesGetMore = [];
     for (let i = 0; i < typesGreaterThan.length; i += 1) {
-      const getMore = Math.round(((typesLessThanRatio / typesGreaterThan.length) + ratioOfTypesGreaterThan[i]) / 100 * typesLessThanItems);
+      const getMore = Math.round(((typesLessThanRatio / typesGreaterThan.length) + ratioOfTypesGreaterThan[i]) / (100 * typesLessThanItems));
       typesGetMore.push(getMore);
     }
 
@@ -178,7 +178,7 @@ const calcSkipLimit = (types, typesRatio, skip, limit, totalCounts) => {
     while (totalGetMore > typesLessThanItems) {
       let i = 0;
       while (i < typesGetMore.length) {
-        if (((((typesLessThanRatio / typesGreaterThan.length) + ratioOfTypesGreaterThan[i]) / 100 * typesLessThanItems) % 1) >= 0.5) {
+        if (((((typesLessThanRatio / typesGreaterThan.length) + ratioOfTypesGreaterThan[i]) / (100 * typesLessThanItems)) % 1) >= 0.5) {
           typesGetMore[i] -= 1;
           totalGetMore = typesGetMore.reduce((a, b) => {
             return a + b;
@@ -191,7 +191,7 @@ const calcSkipLimit = (types, typesRatio, skip, limit, totalCounts) => {
     while (totalGetMore < typesLessThanItems) {
       let i = 0;
       while (i < typesGetMore.length) {
-        if (((((typesLessThanRatio / typesGreaterThan.length) + ratioOfTypesGreaterThan[i]) / 100 * typesLessThanItems) % 1) < 0.5) {
+        if (((((typesLessThanRatio / typesGreaterThan.length) + ratioOfTypesGreaterThan[i]) / (100 * typesLessThanItems)) % 1) < 0.5) {
           typesGetMore[i] += 1;
           totalGetMore = typesGetMore.reduce((a, b) => {
             return a + b;
@@ -238,6 +238,7 @@ const queryByType = (type: string, text: string, skip: number, limit: number) =>
   }
 
   return searchQuery(text)
+  .descending('createdAt')
   .skip(skip)
   .limit(limit)
   .find({ useMasterKey: true })
