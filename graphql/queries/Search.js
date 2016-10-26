@@ -43,9 +43,18 @@ export default {
       // Validate
       // ---------------------------
       // [x] types & ratio same length
+      // [x] ratio total = 100%
       // [] roles
-      if (args.types.length !== args.ratio.length) {
+      if (args.types.length > 1 && args.types.length !== args.ratio.length) {
         throw new Error('types & ratio not same length');
+      }
+
+      const ratioTotal = args.ratio.reduce((a, b) => {
+        return a + b;
+      }, 0);
+
+      if (args.ratio.length > 0 && ratioTotal !== 100) {
+        throw new Error('ratio toal not equal 100');
       }
 
       return connectionFromPromisedArray(loaders.searchs.load(JSON.stringify(args)), {});
