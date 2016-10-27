@@ -12,7 +12,8 @@
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
     "test": "echo \"Error: no test specified\" && exit 1",
     "mongodump-dev": "docker exec -it graphapi_mongo_1 /bin/bash -c 'mongodump -d dev -o /data/backup'",
-    "mongorestore-dev": "docker exec -it graphapi_mongo_1 /bin/bash -c 'mongorestore -d dev /data/backup/dev'"
+    "mongorestore-dev": "docker exec -it graphapi_mongo_1 /bin/bash -c 'mongorestore -d dev /data/backup/dev'",
+    "repairdb": "docker exec -it graphapi_node_1 bash -c 'babel-node data/repair/index.js'"
   },
   "repository": {
     "type": "git",
@@ -53,15 +54,15 @@
     "express": "^4.14.0",
     "express-graphql": "^0.5.3",
     "graphiql": "^0.7.4",
-    "graphql": "^0.7.1",
+    "graphql": "^0.7.2",
     "graphql-relay": "^0.4.2",
     "jimp": "^0.2.27",
     "lodash": "^4.15.0",
     "moment": "^2.14.1",
     "node-uuid": "^1.4.7",
     "parse": "^1.9.2",
-    "parse-dashboard": "^1.0.15",
-    "parse-server": "^2.2.18",
+    "parse-dashboard": "^1.0.19",
+    "parse-server": "^2.2.23",
     "react": "^15.3.0",
     "react-dom": "^15.3.0"
   },
