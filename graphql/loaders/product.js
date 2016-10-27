@@ -24,7 +24,7 @@ export const allProductsLoader = new DataLoader(keys => {
   return Promise.all(keys.map(key => {
     const args = JSON.parse(key);
     const { after, first, skip, limit, code, shop, status, isMultipleProduct, boxes } = args;
-    console.log(skip);
+
     const Product = Parse.Object.extend('Product');
     const queryProduct = new Parse.Query(Product);
     if (code) queryProduct.startsWith('code', code);
