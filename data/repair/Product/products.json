@@ -1,0 +1,201 @@
+[{
+  "name": "Đầm Mỹ - Hàn",
+  "code": "3a5-9ny",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 120000,
+  "additionalPrices": [150000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/25deac87-d16e-4828-9616-03ccaa14f352_11056966_721973034583875_1405284713_n.jpg"]
+}, {
+  "name": "Sơ mi xô Nhật + Hàn",
+  "code": "g2q-5e4",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 70000,
+  "additionalPrices": [90000, 100000, 120000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/38d516d1-dc53-44af-9063-8a97a6eded4a_1888979_428476063921833_1372634919_o.jpg"]
+}, {
+  "name": "Chân váy",
+  "code": "bgk-6jx",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 110000,
+  "additionalPrices": [100000, 90000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/8e38b307-9ea9-4ec1-b3ee-6337acfd0826_1149644_441551895947583_646575631_o.jpg"]
+}, {
+  "name": "Quần váy Nhật",
+  "code": "ned-xrb",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 110000,
+  "additionalPrices": [100000, 90000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/2bed9afd-87c1-4934-a7d4-1e59d74163a5_4a5f3f51f5337c27ce5668ced830f6b8.jpg"]
+}, {
+  "name": "Giày",
+  "code": "wm8-rxy",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 100000,
+  "additionalPrices": [200000, 220000, 230000, 250000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/a22d2207-4610-4b84-a46d-8d807244b27c_10896324_551316551637783_1704937369776778928_o.jpg"]
+}, {
+  "name": "Sandals",
+  "code": "rqn-nra",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 100000,
+  "additionalPrices": [160000, 170000, 180000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/275359d7-8117-4bff-a9d4-7d08556864ce_11102690_574920639277374_8402600777568756146_n.jpg"]
+}, {
+  "name": "Boots",
+  "code": "8b3-xx9",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 150000,
+  "additionalPrices": [350000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/f4e0ea8f-c027-4a7f-b772-3fccb7ca551c_10897829_548764405226331_428398258766803867_n.jpg"]
+}, {
+  "name": "Short jeans Mỹ - Nhật - Hàn",
+  "code": "xg4-g9d",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 100000,
+  "additionalPrices": [90000, 50000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/de5fe673-503b-4953-90e4-a844fb16b477_10245585_451949468241159_964748346025008283_n.jpg"]
+}, {
+  "name": "Áo ren, len móc",
+  "code": "3b2-3dv",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 60000,
+  "additionalPrices": [70000, 80000, 90000, 100000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/cf6b5543-91e3-4349-8c21-9428d3f70e32_10269394_520310131405092_2183955851117594567_n.jpg"]
+}, {
+  "name": "Thú bông",
+  "code": "3b2-3dv",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 20000,
+  "additionalPrices": [30000, 50000, 70000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/0caa90c4-f6b2-44ca-998a-4133155f18cb_10897901_549790185123753_7672198922117455954_n.jpg"]
+}, {
+  "name": "Đồ bơi",
+  "code": "8na-ege",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 70000,
+  "additionalPrices": [100000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/eeca887f-a711-4c9b-8b2e-e805ac556f03_10357173_473678006068305_4080481111154605449_n.jpg"]
+}, {
+  "name": "Hoodie Nhật",
+  "code": "ap9-jm5",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 90000,
+  "additionalPrices": [100000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/58c9dd62-626c-4e4c-9537-5f05b5ab2796_0c8bcdec381ac277dfe7b1578f69f6b7.jpg"]
+}, {
+  "name": "Áo phông Nhật - Hàn",
+  "code": "k35-7r6",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 70000,
+  "additionalPrices": [60000, 50000, 30000, 10000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/e522faef-271b-4fcf-86b4-4c905a71b24d_20877_577483225687782_3168929880380629199_n.jpg"]
+}, {
+  "name": "Chăn Mỹ Woven throws",
+  "code": "9e8-r79",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 210000,
+  "additionalPrices": [250000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/1e9687e4-31aa-4ec9-a66b-bec8caa10878_4abc7e77698bc5dc01386830f69cc913.jpg"]
+}, {
+  "name": "Kính râm HQ",
+  "code": "yxn-m4d",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 220000,
+  "additionalPrices": [350000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/4790633c-3311-4679-8b94-c1ff6c015ccc_11187362_586899934746111_2666222847160367757_o.jpg"]
+}, {
+  "name": "Dạ Nhật",
+  "code": "dbe-qn7",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 250000,
+  "additionalPrices": [270000, 290000, 300000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/74b133eb-9c1e-4c22-a368-9919f57332dc_5.2.jpg"]
+}, {
+  "name": "Dạ Hàn",
+  "code": "dqp-mp3",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 180000,
+  "additionalPrices": [200000, 220000, 250000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/1cad327a-de72-4225-b3f1-ea180290a48d_14.2.jpg"]
+}, {
+  "name": "Khoác Denim",
+  "code": "dkg-6yk",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 150000,
+  "additionalPrices": [180000, 200000, 250000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/81246aa3-b2de-42c7-8890-9a73190e8798_4.3.jpg"]
+}, {
+  "name": "Len chui Hàn",
+  "code": "3r4-74d",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 70000,
+  "additionalPrices": [80000, 90000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/9db5280d-9e28-4f7b-8b8c-fe10813d462c_IMG_1096.jpg"]
+}, {
+  "name": "Cardigan dày",
+  "code": "2p6-g35",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 120000,
+  "additionalPrices": [150000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/0bfee9fc-46e1-4cad-b5ee-6c44668fc90d_IMG_1059.jpg"]
+}, {
+  "name": "Cardigan mỏng Nhật",
+  "code": "qdr-wpv",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 70000,
+  "additionalPrices": [80000],
+  "images": ["https://ecolab-server.s3.amazonaws.com/1cb11b00-01bb-48ba-8420-22ce2eecaace_IMG_1091.jpg"]
+}, {
+  "name": "Đầm len Nhật",
+  "code": "jjg-vga",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 120000,
+  "additionalPrices": [150000],
+  "images": []
+}, {
+  "name": "Khăn",
+  "code": "37g-zwq",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 80000,
+  "additionalPrices": [100000],
+  "images": []
+}, {
+  "name": "Mũ len",
+  "code": "vn7-y5z",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 30000,
+  "additionalPrices": [50000],
+  "images": []
+}, {
+  "name": "Khoác kaki",
+  "code": "ddq-qw8",
+  "shop": "Tổ Cú",
+  "status": "availableInStore",
+  "price": 200000,
+  "additionalPrices": [250000],
+  "images": []
+}]
