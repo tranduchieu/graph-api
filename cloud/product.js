@@ -95,6 +95,12 @@ Parse.Cloud.beforeSave('Product', async (req, res) => {
     currentProduct = await productQuery.get(product.id, { useMasterKey: true });
   }
 
+  // Check required fields
+  if (!currentProduct && !product.get('code')) return res.error('code is required');
+  if (!currentProduct && !product.get('shop')) return res.error('shop is required');
+  if (!currentProduct && !product.get('status')) return res.error('status is required');
+  if (!currentProduct && !product.get('price')) return res.error('price is required');
+
   // Xử lý ảnh
   const images = product.get('images') || null;
 
@@ -137,6 +143,13 @@ Parse.Cloud.beforeSave('Product', async (req, res) => {
                         .match(/[^ ]+/g);
   }
   product.set('descriptionToWords', descriptionToWords);
+
+  // Set other fields
+  product.set('additionalPrices', product.get('additionalPrices') || []);
+  product.set('boxes', product.get('boxes') || []);
+  product.set('tags', product.get('tags') || []);
+  product.set('additionalProperties', product.get('additionalProperties') || []);
+  product.set('featured', product.get('featured') || false);
 
   return res.success();
 });
