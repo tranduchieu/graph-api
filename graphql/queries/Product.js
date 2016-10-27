@@ -5,6 +5,7 @@ import {
   GraphQLString,
   GraphQLInt,
   GraphQLList,
+  GraphQLBoolean,
 } from 'graphql';
 
 import {
@@ -59,6 +60,10 @@ export default {
       },
       status: {
         type: new GraphQLList(ProductStatusEnum),
+      },
+      isMultipleProduct: {
+        type: GraphQLBoolean,
+        defaultValue: false,
       },
       boxes: {
         type: new GraphQLList(GraphQLString),

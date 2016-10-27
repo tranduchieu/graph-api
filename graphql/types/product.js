@@ -47,7 +47,7 @@ const Product = new GraphQLObjectType({
     name: {
       type: GraphQLString,
       resolve(data) {
-        return data.get('data');
+        return data.get('name');
       },
     },
     description: {

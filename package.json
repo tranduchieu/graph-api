@@ -12,8 +12,7 @@
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
     "test": "echo \"Error: no test specified\" && exit 1",
     "mongodump-dev": "docker exec -it graphapi_mongo_1 /bin/bash -c 'mongodump -d dev -o /data/backup'",
-    "mongorestore-dev": "docker exec -it graphapi_mongo_1 /bin/bash -c 'mongorestore -d dev /data/backup/dev'",
-    "repairdb": "docker exec -it graphapi_node_1 bash -c 'babel-node data/repair/index.js'"
+    "mongorestore-dev": "docker exec -it graphapi_mongo_1 /bin/bash -c 'mongorestore -d dev /data/backup/dev'"
   },
   "repository": {
     "type": "git",
@@ -49,6 +48,7 @@
     "@tranduchieu/short-parse-id": "0.0.4",
     "aws-sdk": "^2.6.6",
     "axios": "^0.14.0",
+    "bluebird": "^3.4.6",
     "cors": "^2.7.1",
     "dataloader": "^1.2.0",
     "express": "^4.14.0",

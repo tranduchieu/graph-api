@@ -23,7 +23,7 @@ export const productByIdLoader = new DataLoader(ids => {
 export const allProductsLoader = new DataLoader(keys => {
   return Promise.all(keys.map(key => {
     const args = JSON.parse(key);
-    const { after, first, skip, limit, code, shop, status, boxes } = args;
+    const { after, first, skip, limit, code, shop, status, isMultipleProduct, boxes } = args;
     console.log(skip);
     const Product = Parse.Object.extend('Product');
     const queryProduct = new Parse.Query(Product);
@@ -31,6 +31,10 @@ export const allProductsLoader = new DataLoader(keys => {
     if (shop) queryProduct.containedIn('shop', shop);
     if (status) queryProduct.containedIn('status', status);
     if (boxes) queryProduct.containedIn('boxes', boxes);
+    if (isMultipleProduct) {
+      queryProduct.notEqualTo('additionalPrices', []);
+    }
+
     queryProduct.descending('createdAt');
     queryProduct.skip(skip || (after ? cursorToOffset(after) + 1 : 0));
     queryProduct.limit(limit || first || 20);
