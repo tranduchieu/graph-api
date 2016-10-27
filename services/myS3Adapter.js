@@ -65,7 +65,7 @@ export class MyS3Adapter extends S3Adapter {
     });
   }
 
-  static _rezieImage(jimpData, jimpMethod) {
+  _rezieImage(jimpData, jimpMethod) {
     return new Promise((resolve, reject) => {
       const { width, height, method } = jimpMethod;
       let firstAction = jimpData;
