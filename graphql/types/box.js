@@ -15,6 +15,8 @@ import { BoxTypesEnum } from './enumTypes';
 import { nodeInterface } from '../relay/RelayNode';
 import RelayRegistry from '../relay/RelayRegistry';
 
+import UserType from './user';
+
 export function boxResolver(_, { id }, { loaders }) {
   return loaders.box.load(id);
 }
@@ -76,6 +78,12 @@ const Box = new GraphQLObjectType({
       type: GraphQLDateTime,
       resolve(data) {
         return data.get('updatedAt');
+      },
+    },
+    viewer: {
+      type: UserType,
+      resolve(root, args, { user }) {
+        return user || {};
       },
     },
   }),

@@ -148,6 +148,12 @@ const Order = new GraphQLObjectType({
         return loaders.user.load(id);
       },
     },
+    viewer: {
+      type: UserType,
+      resolve(root, args, { user }) {
+        return user || {};
+      },
+    },
   }),
   interfaces: [nodeInterface],
 });
