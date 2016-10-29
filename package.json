@@ -64,7 +64,8 @@
     "parse-dashboard": "^1.0.19",
     "parse-server": "^2.2.23",
     "react": "^15.3.0",
-    "react-dom": "^15.3.0"
+    "react-dom": "^15.3.0",
+    "tabletojson": "^0.4.0"
   },
   "bugs": {
     "url": "https://gitlab.com/tocu/graph-api/issues"
