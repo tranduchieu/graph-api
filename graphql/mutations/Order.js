@@ -144,7 +144,7 @@ const OrderCreateMutation = mutationWithClientMutationId({
 
     loaders.products.clearAll();
     orderObjSaved.get('lines').forEach(line => {
-      return loaders.loaders.clear(line.productId);
+      return loaders.product.clear(line.productId);
     });
 
     return orderObjSaved;

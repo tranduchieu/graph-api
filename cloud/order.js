@@ -56,7 +56,7 @@ const checkProductStatus = async (productId: string, shopOnOrder: string): Promi
   const productQuery = new Parse.Query('Product');
   const productObj = await productQuery.get(productId);
   if (!productObj) throw new Error(`Product ${productId} not found`);
-  if (shopOnOrder !== 'Tổ Cú Online' && productObj.get('shop') !== shopOnOrder) {
+  if (productObj.get('shop') !== 'Tổ Cú' && shopOnOrder !== 'Tổ Cú Online' && productObj.get('shop') !== shopOnOrder) {
     throw new Error(`Sản phẩm ${productObj.get('code')} đang ở shop ${productObj.get('shop')}`);
   }
   const productStatus = productObj.get('status');
@@ -120,6 +120,11 @@ const changeProductStatus = async (productId: string, statusToChange: string): P
   const queryProduct = new Parse.Query('Product');
   const productObj = await queryProduct.get(productId, { useMasterKey: true });
   if (!productObj) throw new Error(`Product ${productId} not found`);
+
+  // Nếu là multipleProduct
+  if (productObj.get('additionalPrices').length > 0) {
+    return Promise.resolve();
+  }
 
   productObj.set('status', statusToChange);
   return productObj.save(null, { useMasterKey: true });
