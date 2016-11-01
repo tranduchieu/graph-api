@@ -47,7 +47,9 @@ Parse.Cloud.job('addDistricts', (req, res) => {
       const District = Parse.Object.extend('District');
       const newDistrict = new District();
 
-      return newDistrict.save({ name, province }, { useMasterKey: true });
+      const wardsOfBaDinh = ['Phường Cống Vị', 'Phường Điện Biên', 'Phường Đội Cấn', 'Phường Giảng Võ', 'Phường Kim Mã', 'Phường Liễu Giai', 'Phường Ngọc Hà', 'Phường Ngọc Khánh', 'Phường Nguyễn Trung Trực', 'Phường Phúc Xá', 'Phường Quán Thánh', 'Phường Thành Công', 'Phường Trúc Bạch', 'Phường Vĩnh Phúc'];
+      const wards = province === 'Hà Nội' && name === 'Quận Ba Đình' ? wardsOfBaDinh : [];
+      return newDistrict.save({ name, province, wards }, { useMasterKey: true });
     })
     .then(() => {
       return res.success('Done!');
@@ -58,3 +60,11 @@ Parse.Cloud.job('addDistricts', (req, res) => {
   });
 });
 
+Parse.Cloud.job('addWards', (req, res) => {
+  const url = 'https://vi.wikipedia.org/wiki/Danh_s%C3%A1ch_%C4%91%C6%A1n_v%E1%BB%8B_h%C3%A0nh_ch%C3%ADnh_c%E1%BA%A5p_x%C3%A3_(Vi%E1%BB%87t_Nam)';
+
+  tabletojson.convertUrl(url, (tablesAsJson) => {
+    console.log(tablesAsJson[7]);
+    res.success('OK');
+  });
+});

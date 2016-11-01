@@ -27,6 +27,7 @@ import OrderQueries from '../queries/Order';
 import BoxQueries from '../queries/Box';
 import SearchQueries from '../queries/Search';
 import UserQueries from '../queries/User';
+import DistrictQueries from '../queries/District';
 
 // Resolver
 export function userResolver(_, { id }, { loaders }) {
@@ -163,6 +164,9 @@ const User = new GraphQLObjectType({
     users: UserQueries.users,
     searchs: SearchQueries.searchs,
     searchsCount: SearchQueries.searchsCount,
+    provinces: DistrictQueries.provinces,
+    districts: DistrictQueries.districts,
+    wards: DistrictQueries.wards,
   }),
   interfaces: [nodeInterface],
 });
