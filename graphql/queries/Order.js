@@ -59,6 +59,14 @@ export default {
       status: {
         type: new GraphQLList(OrderStatusEnum),
       },
+      skip: {
+        type: GraphQLInt,
+        defaultValue: 0,
+      },
+      limit: {
+        type: GraphQLInt,
+        defaultValue: 20,
+      },
       ...connectionArgs,
     },
     async resolve(root, args, { loaders, user, staffWorkingAt }) {
