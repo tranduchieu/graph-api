@@ -59,7 +59,7 @@ const searchProductQuery = (searchText: string) => {
 // Search in Order class
 // [x] Search startsWith code
 const searchOrderQuery = (searchText: string) => {
-  const query = new Parse.Query('Product');
+  const query = new Parse.Query('Order');
   query.startsWith('code', searchText);
 
   return query;
