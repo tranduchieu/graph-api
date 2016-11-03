@@ -32,7 +32,9 @@
 // Query array in Object
 // -------------------------
 // const orderQuery = new Parse.Query('Order');
-// orderQuery.equalTo('lines2.productId', 'zzz');
+// orderQuery.equalTo('history.type', 'addPayment');
+// orderQuery.equalTo('history.content.method', 'cash');
+// orderQuery.greaterThan('history.updatedAt', '2016-10-27T10:29:27.333Z');
 // orderQuery.find({ useMasterKey: true })
 // .then(console.log);
 
