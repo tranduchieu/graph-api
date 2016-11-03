@@ -1,103 +1,677 @@
-schema {
-  query: Query
+# Address Type
+type Address {
+  id: ID
+  fullName: String
+  company: String
+  address: String
+  ward: String
+  district: String
+  province: String
+  phone: String
 }
 
+input AddressInput {
+  id: ID
+  fullName: String!
+  company: String
+  address: String!
+  ward: String!
+  district: String!
+  province: String!
+  phone: String!
+}
+
+# Box type
+type Box implements Node {
+  # The ID of an object
+  id: ID!
+  name: String
+  type: BoxTypesEnum
+  description: String
+  featured: Boolean
+  position: Int
+  visible: Boolean
+  coverImageSrc: URL
+  createdAt: DateTime
+  updatedAt: DateTime
+  viewer: User
+}
+
+# A connection to a list of items.
+type BoxConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [BoxEdge]
+}
+
+input BoxCreateInput {
+  name: String!
+  type: BoxTypesEnum!
+  description: String
+  featured: Boolean = false
+  position: Int
+  visible: Boolean = true
+  coverImageSrc: URL
+  clientMutationId: String
+}
+
+type BoxCreatePayload {
+  boxEdge: BoxEdge
+  viewer: User
+  clientMutationId: String
+}
+
+# An edge in a connection.
+type BoxEdge {
+  # The item at the end of the edge
+  node: Box
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+enum BoxTypesEnum {
+  # Box dạng Sản phẩm
+  PRODUCT
+
+  # Box dạng Bài viết
+  ARTICLE
+
+  # Box dạng Ảnh
+  PHOTO
+}
+
+type CreateOrderHistoryType {
+  createdAt: DateTime
+}
+
+# The DateTime scalar type represents date time strings complying to ISO-8601.
+scalar DateTime
+
+# The Email scalar type represents E-Mail addresses compliant to RFC 822.
 scalar Email
 
+union HistoryContentType = CreateOrderHistoryType | PrintHistoryType | PaymentHistoryType | ShippingHistoryType | OrderStatusHistoryType | RefundHistoryType
+
+# The MobilePhone scalar type
 scalar MobilePhone
 
+# This is a root Mutation
+type Mutation {
+  createUser(input: UserCreateInput!): UserCreatePayload
+  removeUser(input: UserRemoveInput!): UserRemovePayload
+  updateUser(input: UserUpdateInput!): UserUpdatePayload
+  createBox(input: BoxCreateInput!): BoxCreatePayload
+  createProduct(input: ProductCreateInput!): ProductCreatePayload
+  updateProduct(input: ProductUpdateInput!): ProductUpdatePayload
+  removeProduct(input: ProductRemoveInput!): ProductRemovePayload
+  createProductTag(input: ProductTagCreateInput!): ProductTagCreatePayload
+  shortId(input: ShortIdInput!): ShortIdPayload
+  createOrder(input: OrderCreateInput!): OrderCreatePayload
+  updateOrder(input: OrderUpdateInput!): OrderUpdatePayload
+}
+
+# An object with an ID
 interface Node {
+  # The id of the object.
   id: ID!
 }
 
-type PageInfo {
-  hasNextPage: Boolean!
-  hasPreviousPage: Boolean!
-  startCursor: String
-  endCursor: String
-}
-
-type Product {
+# Order type
+type Order implements Node {
+  # The ID of an object
   id: ID!
-  description: String
   code: String
-  shop: String
-  boxes: [String]
-  status: ProductStatusEnumType
-  featured: Boolean
-  images(size: String): [URL]
-  tags: [String]
-  price: Int
-  salePrice: Int
-  weight: Int
-  additionalProperties: [ProductAdditionalProperties]
+  shop: ShopEnumType
+  customer: User
+  shippingAddress: Address
+  shippingCost: Int
+  shippingDays: Int
+  status: OrderStatusEnum
+  lines: [OrderLine]
+  subTotal: Int
+  percentageDiscount: Int
+  fixedDiscount: Int
+  totalDiscounts: Int
+  total: Int
+  totalWeight: Int
+  note: String
+  createdAt: DateTime
   createdBy: User
+  updatedAt: DateTime
+  updatedBy: User
+  history: [OrderHistory]
+  viewer: User
+}
+
+# A connection to a list of items.
+type OrderConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [OrderEdge]
+}
+
+input OrderCreateInput {
+  code: String!
+  shop: ShopEnumType!
+  customer: ID!
+  shippingAddress: AddressInput
+  shippingCost: Int
+  shippingDays: Int
+  status: OrderStatusEnum!
+  lines: [OrderLineInput]!
+  subTotal: Int!
+
+  # Vd giảm giá 10% thì điền 10
+  percentageDiscount: Int = 0
+
+  # VND
+  fixedDiscount: Int = 0
+  totalDiscounts: Int = 0
+  total: Int!
+  totalWeight: Int
+  note: String
+  clientMutationId: String
+}
+
+type OrderCreatePayload {
+  orderEdge: OrderEdge
+  viewer: User
+  clientMutationId: String
+}
+
+# An edge in a connection.
+type OrderEdge {
+  # The item at the end of the edge
+  node: Order
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# Order History type
+type OrderHistory {
+  # The ID of an object
+  id: ID!
+  type: OrderHistoryTypes
+  content: HistoryContentType
+  updatedAt: DateTime
   updatedBy: User
 }
 
+enum OrderHistoryTypes {
+  CREATE_ORDER
+  PRINT
+  ADD_PAYMENT
+  ADD_SHIPPING
+  CHANGE_STATUS
+  CHANGE_LINES
+  CHANGE_DISCOUNTS
+  ADD_REFUND
+}
+
+# OrderLine type
+type OrderLine {
+  product: Product
+  unitPrice: Int
+  quantity: Int
+  amount: Int
+  weight: Int
+}
+
+input OrderLineInput {
+  productId: ID!
+  unitPrice: Int!
+  quantity: Int!
+  amount: Int!
+  weight: Int
+}
+
+enum OrderStatusEnum {
+  # Chờ thanh toán
+  PENDING
+
+  # Thanh toán một phần
+  PARTIALLY_PAID
+
+  # Đã thanh toán
+  PAID
+
+  # Đang gửi hàng
+  SENDING
+
+  # Đã hoàn thành
+  COMPLETED
+
+  # Thất bại
+  FAILED
+
+  # Đã hủy
+  CANCELED
+}
+
+type OrderStatusHistoryType {
+  oldStatus: OrderStatusEnum
+  newStatus: OrderStatusEnum
+  reason: String
+}
+
+input OrderUpdateInput {
+  id: ID!
+
+  # Nếu hủy hóa đơn thì bắt buộc gửi kèm lý do orderCancellationReason
+  status: OrderStatusEnum
+  orderCancellationReason: String
+  note: String
+  print: Boolean
+  addPayment: PaymentHistoryInputType
+  clientMutationId: String
+}
+
+type OrderUpdatePayload {
+  order: Order
+  clientMutationId: String
+}
+
+# Information about pagination in a connection.
+type PageInfo {
+  # When paginating forwards, are there more items?
+  hasNextPage: Boolean!
+
+  # When paginating backwards, are there more items?
+  hasPreviousPage: Boolean!
+
+  # When paginating backwards, the cursor to continue.
+  startCursor: String
+
+  # When paginating forwards, the cursor to continue.
+  endCursor: String
+}
+
+input PaymentHistoryInputType {
+  paymentMethod: PaymentMethods
+  amount: Int
+}
+
+type PaymentHistoryType {
+  paymentMethod: PaymentMethods
+  amount: Int
+}
+
+enum PaymentMethods {
+  CASH
+  POS
+  ATM_CARD_GATEWAY
+  DEBIT_CARD_GATEWAY
+  TRANSFER
+}
+
+type PrintHistoryType {
+  printedAt: DateTime
+}
+
+# Product type
+type Product implements Node {
+  # The ID of an object
+  id: ID!
+  name: String
+  description: String
+  code: String
+  shop: ShopEnumType
+  boxes: [String]
+  status: ProductStatusEnumType
+  featured: Boolean
+  images(size: String = "main"): [URL]
+  tags: [String]
+  price: Int
+  salePrice: Int
+  additionalPrices: [Int]
+  weight: Int
+  additionalProperties: [ProductAdditionalProperties]
+  createdAt: DateTime
+  createdBy: User
+  updatedAt: DateTime
+  updatedBy: User
+  viewer: User
+}
+
+# Product Additional Properties type
 type ProductAdditionalProperties {
   name: String
   value: String
 }
 
+input ProductAdditionalPropertiesInput {
+  name: String
+  value: String
+}
+
+# A connection to a list of items.
 type ProductConnection {
+  # Information to aid in pagination.
   pageInfo: PageInfo!
+
+  # A list of edges.
   edges: [ProductEdge]
 }
 
+input ProductCreateInput {
+  description: String
+  code: String!
+  shop: ShopEnumType!
+  boxes: [String]
+  status: ProductStatusEnumType!
+  featured: Boolean = false
+  images: [URL] = []
+  tags: [String] = []
+  price: Int!
+  salePrice: Int
+  weight: Int = 0
+  additionalProperties: [ProductAdditionalPropertiesInput] = []
+  clientMutationId: String
+}
+
+type ProductCreatePayload {
+  productEdge: ProductEdge
+  viewer: User
+  clientMutationId: String
+}
+
+# An edge in a connection.
 type ProductEdge {
+  # The item at the end of the edge
   node: Product
+
+  # A cursor for use in pagination
   cursor: String!
 }
 
+input ProductRemoveInput {
+  id: String!
+  clientMutationId: String
+}
+
+type ProductRemovePayload {
+  deletedProductId: ID
+  viewer: User
+  clientMutationId: String
+}
+
 enum ProductStatusEnumType {
+  # Sản phẩm lưu dạng nháp. Chưa public.
   DRAFT
+
+  # Sản phẩm chỉ bán ở cửa hàng
   AVAILABLE_IN_STORE
+
+  # Sản phẩm chỉ bán Online
   AVAILABLE_IN_ONLINE
+
+  # Sản phẩm bán cả on & off
   AVAILABLE_IN_ALL
+
+  # Sản phẩm đang treo
   SUSPENDED
+
+  # Sản phẩm đã bán
   SOLD
+
+  # Sản phẩm đã đóng
   CLOSED
 }
 
-type Query {
-  node(id: ID!): Node
-  viewer: Viewer
+# Product tag type
+type ProductTag {
+  # The ID of an object
+  id: ID!
+  name: String
+  description: String
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
+# A connection to a list of items.
+type ProductTagConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [ProductTagEdge]
+}
+
+input ProductTagCreateInput {
+  name: String!
+  description: String
+  clientMutationId: String
+}
+
+type ProductTagCreatePayload {
+  productTagEdge: ProductTagEdge
+  viewer: User
+  clientMutationId: String
+}
+
+# An edge in a connection.
+type ProductTagEdge {
+  # The item at the end of the edge
+  node: ProductTag
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+input ProductUpdateInput {
+  id: ID!
+  description: String
+  code: String
+  shop: ShopEnumType
+  boxes: [String]
+  status: ProductStatusEnumType
+  featured: Boolean
+  images: [URL]
+  tags: [String]
+  price: Int
+  salePrice: Int
+  weight: Int
+  additionalProperties: [ProductAdditionalPropertiesInput]
+  clientMutationId: String
+}
+
+type ProductUpdatePayload {
+  product: Product
+  clientMutationId: String
+}
+
+# This is a root Query
+type Query {
+  # Fetches an object given its ID
+  node(
+    # The ID of an object
+    id: ID!
+  ): Node
+  viewer: User
+  product(id: ID!): Product
+  productTag(id: ID!): ProductTag
+  box(id: ID!): Box
+  order(id: ID!): Order
+}
+
+type RefundHistoryType {
+  refundMethod: PaymentMethods
+  amount: Int
+}
+
+union SearchableType = User | Product | Order
+
+# A connection to a list of items.
+type SearchableTypeConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [SearchableTypeEdge]
+}
+
+# An edge in a connection.
+type SearchableTypeEdge {
+  # The item at the end of the edge
+  node: SearchableType
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+enum SearchTypesEnum {
+  # Tìm kiểm dạng Sản phẩm
+  PRODUCT
+
+  # Tìm kiếm dạng Hóa đơn
+  ORDER
+
+  # Tìm kiếm dạng Người dùng, khách hàng
+  USER
+}
+
+type ShippingHistoryType {
+  shipper: User
+  shippingStatus: ShippingHistoryTypes
+}
+
+enum ShippingHistoryTypes {
+  # Đóng gói xong. Sẵn sàng giao hàng
+  PACKAGED_COMPLETE
+}
+
+enum ShopEnumType {
+  TO_CU
+  HOANG_QUOC_VIET
+  MINH_KHAI
+  NGUYEN_TRAI
+  ONLINE
+}
+
+input ShortIdInput {
+  clientMutationId: String
+}
+
+type ShortIdPayload {
+  shortId: String
+  clientMutationId: String
+}
+
+# The URL scalar type represents URL addresses.
 scalar URL
 
-type User {
+# User type
+type User implements Node {
+  # The ID of an object
   id: ID!
   name: String
   username: String
   password: String
-  isCustomerOnly: Boolean
+  roles: [String]
   email: Email
   emailVerified: Boolean
   mobilePhone: MobilePhone
   mobilePhoneVerified: Boolean
   avatarUrl: URL
-  address: String
-  district: String
-  province: String
+  addresses: [Address]
+  tags: [String]
+  note: String
+
+  # Những nơi nhân viên được sắp xếp làm việc
+  staffWorkplaces: [ShopEnumType]
+
+  # Nhân viên đang làm việc tại
+  staffWorkingAt: ShopEnumType
+  createdAt: DateTime
+  updatedAt: DateTime
+  products(code: String, shop: [ShopEnumType], status: [ProductStatusEnumType], isMultipleProduct: Boolean = false, boxes: [String], skip: Int = 0, limit: Int = 20, after: String, first: Int, before: String, last: Int): ProductConnection
+  productsCount(status: [ProductStatusEnumType], shop: [ShopEnumType]): Int
+  productTags(nameStartsWith: String, after: String, first: Int, before: String, last: Int): ProductTagConnection
+  producTagsCount: Int
+  boxes(nameStartsWith: String, visible: Boolean, skip: Int = 0, limit: Int = 20, after: String, first: Int, before: String, last: Int): BoxConnection
+  boxesCount(type: BoxTypesEnum, visible: Boolean): Int
+  orders(code: String, shop: [ShopEnumType], status: [OrderStatusEnum], skip: Int = 0, limit: Int = 20, after: String, first: Int, before: String, last: Int): OrderConnection
+  ordersByCustomer(code: String, shop: ShopEnumType, status: OrderStatusEnum, skip: Int = 0, limit: Int = 20, after: String, first: Int, before: String, last: Int): OrderConnection
+  ordersCount(status: OrderStatusEnum, shop: ShopEnumType, customer: ID, createdBy: ID): Int
+  users(name: [String!], username: String, mobilePhoneStartsWith: String, after: String, first: Int, before: String, last: Int): UserConnection
+  searchs(text: String!, types: [SearchTypesEnum] = [], ratio: [Int] = [], skip: Int = 0, limit: Int = 20, after: String, first: Int, before: String, last: Int): SearchableTypeConnection
+  searchsCount(text: String!, type: SearchTypesEnum!): Int
+  provinces: [String]
+  districts(province: String!): [String]
+  wards(province: String!, district: String!): [String]
 }
 
+# A connection to a list of items.
 type UserConnection {
+  # Information to aid in pagination.
   pageInfo: PageInfo!
+
+  # A list of edges.
   edges: [UserEdge]
 }
 
+input UserCreateInput {
+  name: String
+  username: String
+  password: String
+  email: Email
+  mobilePhone: MobilePhone
+  avatarUrl: URL
+  addresses: [AddressInput] = []
+  tags: [String] = []
+  note: String
+  clientMutationId: String
+}
+
+type UserCreatePayload {
+  userEdge: UserEdge
+  viewer: User
+  clientMutationId: String
+}
+
+# An edge in a connection.
 type UserEdge {
+  # The item at the end of the edge
   node: User
+
+  # A cursor for use in pagination
   cursor: String!
 }
 
-type Viewer {
+input UserRemoveInput {
+  id: String!
+  clientMutationId: String
+}
+
+type UserRemovePayload {
+  deleteUserId: ID
+  viewer: User
+  clientMutationId: String
+}
+
+input UserUpdateInput {
   id: ID!
-  me: User
-  user(id: ID!): User
-  users(username: String, after: String, first: Int, before: String, last: Int): UserConnection
-  product(id: ID!): Product
-  products(code: String, boxes: [String], after: String, first: Int, before: String, last: Int): ProductConnection
+  name: String
+  username: String
+  password: String
+  email: Email
+  mobilePhone: MobilePhone
+  avatarUrl: URL
+  tags: [String]
+  addresses: [AddressInput]
+  note: String
+  staffWorkplaces: [ShopEnumType]
+  staffWorkingAt: ShopEnumType
+  clientMutationId: String
+}
+
+type UserUpdatePayload {
+  user: User
+  clientMutationId: String
 }
