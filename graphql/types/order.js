@@ -15,6 +15,7 @@ import { ShopEnumType, OrderStatusEnum } from './enumTypes';
 import UserType from './user';
 import { AddressType } from './address';
 import { OrderLineType } from './orderLine';
+import { OrderHistory } from './orderHistory';
 
 export function orderResolver(_, { id }, { loaders }) {
   return loaders.order.load(id);
@@ -146,6 +147,23 @@ const Order = new GraphQLObjectType({
       resolve(data, args, { loaders }) {
         const { id } = data.get('updatedBy');
         return loaders.user.load(id);
+      },
+    },
+    history: {
+      type: new GraphQLList(OrderHistory),
+      resolve(data) {
+        const history = data.get('history');
+
+        // Add first element
+        history.unshift({
+          type: 'createOrder',
+          content: {
+            createdAt: data.get('createdAt'),
+          },
+          updatedAt: data.get('createdAt'),
+          updatedBy: data.get('createdBy').id,
+        });
+        return history;
       },
     },
     viewer: {

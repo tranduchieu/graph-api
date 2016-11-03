@@ -4,6 +4,7 @@ import {
   GraphQLList,
   GraphQLString,
   GraphQLNonNull,
+  GraphQLBoolean,
 } from 'graphql';
 
 import {
@@ -14,6 +15,7 @@ import {
 
 import { omit } from 'lodash';
 import Parse from 'parse/node';
+import moment from 'moment';
 
 import OrderType from '../types/order';
 import { OrderLineInputType } from '../types/orderLine';
@@ -25,6 +27,7 @@ import {
 import { OrderEdge } from '../connections/order';
 import UserType from '../types/user';
 import { AddressInputType } from '../types/address';
+import { PaymentHistoryInputType } from '../types/orderHistory';
 
 const OrderCreateMutation = mutationWithClientMutationId({
   name: 'OrderCreate',
@@ -143,6 +146,8 @@ const OrderCreateMutation = mutationWithClientMutationId({
     loaders.order.prime(orderObjSaved.id, orderObjSaved);
 
     loaders.products.clearAll();
+    loaders.product.clearAll();
+
     orderObjSaved.get('lines').forEach(line => {
       return loaders.product.clear(line.productId);
     });
@@ -158,10 +163,20 @@ const OrderUpdateMutation = mutationWithClientMutationId({
       type: new GraphQLNonNull(GraphQLID),
     },
     status: {
+      description: 'Nếu hủy hóa đơn thì bắt buộc gửi kèm lý do orderCancellationReason',
       type: OrderStatusEnum,
+    },
+    orderCancellationReason: {
+      type: GraphQLString,
     },
     note: {
       type: GraphQLString,
+    },
+    print: {
+      type: GraphQLBoolean,
+    },
+    addPayment: {
+      type: PaymentHistoryInputType,
     },
   },
   outputFields: {
@@ -186,6 +201,29 @@ const OrderUpdateMutation = mutationWithClientMutationId({
     const orderObjById = await loaders.order.load(orderLocalId);
     if (!orderObjById) throw new Error('Order not found');
 
+    // History
+    const history = orderObjById.get('history');
+
+    // Nếu hủy hóa đơn thì bắt buộc gửi kèm lý do
+    if (obj.status && obj.status === 'canceled' && !obj.orderCancellationReason) {
+      throw new Error('Hủy hóa đơn bắt buộc gửi kèm lý do');
+    }
+
+    // Push changeStatus history
+    if (obj.status) {
+      history.push({
+        type: 'changeStatus',
+        content: {
+          oldStatus: orderObjById.get('status'),
+          newStatus: obj.status,
+          reason: obj.orderCancellationReason || null,
+        },
+        updatedAt: moment().format(),
+        updatedBy: user.id,
+      });
+    }
+
+    obj.history = history;
     obj.updatedBy = user;
 
     Object.keys(obj).forEach(key => {

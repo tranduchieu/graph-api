@@ -26,6 +26,11 @@ import {
 } from './order';
 
 import {
+  orderHistoryByIdLoader,
+  allOrderHistoryLoader,
+} from './orderHistory';
+
+import {
   searchsLoader,
   searchsCountLoader,
 } from './search';
@@ -43,6 +48,8 @@ module.exports = {
   order: orderByIdLoader,
   orders: allOrdersLoader,
   linesByOrder: linesByOrderLoader,
+  orderHistoryById: orderHistoryByIdLoader,
+  orderHistory: allOrderHistoryLoader,
   searchs: searchsLoader,
   searchsCount: searchsCountLoader,
 };

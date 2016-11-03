@@ -1,4 +1,7 @@
 /* global Parse, @flow */
+import nodeUUID from 'node-uuid';
+import _ from 'lodash';
+import loaders from '../graphql/loaders';
 
 // Before Save
 // =========================
@@ -67,6 +70,33 @@ const checkProductStatus = async (productId: string, shopOnOrder: string): Promi
   return true;
 };
 
+const createAddress = async (shippingAddress, customerId: string) => {
+  if (!shippingAddress) {
+    return Promise.resolve(shippingAddress);
+  }
+
+  const userObj = await loaders.user.load(customerId);
+  const addresses = userObj.get('addresses');
+
+  if (shippingAddress.id) {
+    _.remove(addresses, (item) => {
+      return item.id === shippingAddress.id;
+    });
+  } else {
+    shippingAddress.id = nodeUUID.v4();
+  }
+
+  addresses.unshift(shippingAddress);
+
+  userObj.set('addresses', addresses);
+  return userObj.save(null, { useMasterKey: true })
+  .then(userObjSaved => {
+    loaders.users.clearAll();
+    loaders.user.prime(customerId, userObjSaved);
+    return shippingAddress;
+  });
+};
+
 Parse.Cloud.beforeSave('Order', async (req, res) => {
   const order: Object = req.object;
   const shop = order.get('shop');
@@ -78,36 +108,45 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
   }
 
   // Check code
+  let checkCodePromise = Promise.resolve();
   const code = order.get('code');
   if (!currentOrder || (currentOrder && currentOrder.get('code') !== code)) {
-    try {
-      await checkCode(code);
-    } catch (error) {
-      return res.error(error.message);
-    }
+    checkCodePromise = checkCode(code);
   }
 
   // Check product
+  let checkProductPromise = Promise.resolve();
   if (!currentOrder) {
     const lines: Object[] = order.get('lines');
-    const checkProductPromises = [];
+    const checkProductPromisesArr = [];
     lines.map(line => {
-      checkProductPromises.push(checkProductStatus(line.productId, shop));
+      checkProductPromisesArr.push(checkProductStatus(line.productId, shop));
       return line;
     });
-    try {
-      await Promise.all(checkProductPromises);
-    } catch (error) {
-      return res.error(error.message);
-    }
+    checkProductPromise = Promise.all(checkProductPromisesArr);
   }
 
-  // Calculator
-  try {
-    await reCalculateOrder(order);
-  } catch (error) {
-    return res.error(error.message);
-  }
+  const shippingAddress = order.get('shippingAddress') || null;
+  const customerId = order.get('customer').id;
+
+  // Run Promise all
+  const result = await Promise.all([
+    // Check code
+    checkCodePromise,
+    // Check products
+    checkProductPromise,
+    // Calculator
+    reCalculateOrder(order),
+    // Add address to User
+    createAddress(shippingAddress, customerId),
+  ])
+  .catch(err => {
+    return res.error(err.message);
+  });
+
+  // Set other fields
+  order.set('history', order.get('history') || []);
+  order.set('shippingAddress', result[3]);
 
   return res.success();
 });
