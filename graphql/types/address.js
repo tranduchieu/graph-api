@@ -1,4 +1,5 @@
 import {
+  GraphQLID,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
@@ -9,6 +10,9 @@ export const AddressType = new GraphQLObjectType({
   name: 'Address',
   description: 'Address Type',
   fields: {
+    id: {
+      type: GraphQLID,
+    },
     fullName: {
       type: GraphQLString,
     },
@@ -36,6 +40,9 @@ export const AddressType = new GraphQLObjectType({
 export const AddressInputType = new GraphQLInputObjectType({
   name: 'AddressInput',
   fields: {
+    id: {
+      type: GraphQLID,
+    },
     fullName: {
       type: new GraphQLNonNull(GraphQLString),
     },
