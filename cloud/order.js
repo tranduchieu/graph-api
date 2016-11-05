@@ -1,6 +1,7 @@
 /* global Parse, @flow */
 import nodeUUID from 'node-uuid';
 import _ from 'lodash';
+import moment from 'moment';
 import loaders from '../graphql/loaders';
 
 // Before Save
@@ -144,8 +145,21 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
     return res.error(err.message);
   });
 
+    // Add history
+  const history = order.get('history') || [];
+  if (!currentOrder) {
+    history.unshift({
+      type: 'createOrder',
+      content: {
+        createdAt: moment().format(),
+      },
+      updatedAt: moment().format(),
+      updatedBy: order.get('createdBy').id,
+    });
+  }
+
   // Set other fields
-  order.set('history', order.get('history') || []);
+  order.set('history', history);
   order.set('shippingAddress', result[3]);
 
   return res.success();
@@ -186,19 +200,6 @@ Parse.Cloud.afterSave('Order', async (req, res) => {
     await Promise.all(promisesToChangeProducts);
   } catch (error) {
     return res.error(error.message);
-  }
-
-  // Add history
-  const history = order.get('history');
-  if (history.length === 0) {
-    history.unshift({
-      type: 'createOrder',
-      content: {
-        createdAt: order.get('createdAt'),
-      },
-      updatedAt: order.get('createdAt'),
-      updatedBy: order.get('createdBy').id,
-    });
   }
 
   return res.success();
