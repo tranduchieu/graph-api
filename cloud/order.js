@@ -154,6 +154,7 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
 // AfterSave triggers
 // ==============================
 // [x] Change Product status
+// [] Add createOrder history
 
 const changeProductStatus = async (productId: string, statusToChange: string): Promise<boolean> => {
   const queryProduct = new Parse.Query('Product');
@@ -185,6 +186,19 @@ Parse.Cloud.afterSave('Order', async (req, res) => {
     await Promise.all(promisesToChangeProducts);
   } catch (error) {
     return res.error(error.message);
+  }
+
+  // Add history
+  const history = order.get('history');
+  if (history.length === 0) {
+    history.unshift({
+      type: 'createOrder',
+      content: {
+        createdAt: order.get('createdAt'),
+      },
+      updatedAt: order.get('createdAt'),
+      updatedBy: order.get('createdBy').id,
+    });
   }
 
   return res.success();

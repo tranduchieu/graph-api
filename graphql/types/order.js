@@ -152,18 +152,7 @@ const Order = new GraphQLObjectType({
     history: {
       type: new GraphQLList(OrderHistory),
       resolve(data) {
-        const history = data.get('history');
-
-        // Add first element
-        history.unshift({
-          type: 'createOrder',
-          content: {
-            createdAt: data.get('createdAt'),
-          },
-          updatedAt: data.get('createdAt'),
-          updatedBy: data.get('createdBy').id,
-        });
-        return history;
+        return data.get('history');
       },
     },
     viewer: {

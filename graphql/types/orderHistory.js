@@ -1,4 +1,5 @@
 import {
+  GraphQLID,
   GraphQLString,
   GraphQLObjectType,
   GraphQLInt,
@@ -118,6 +119,18 @@ const ShippingHistoryType = new GraphQLObjectType({
         if (data.shipper) return loaders.user.load(data.shipper);
         return null;
       },
+    },
+    shippingStatus: {
+      type: ShippingStatusTypes,
+    },
+  }),
+});
+
+export const ShippingHistoryInputType = new GraphQLInputObjectType({
+  name: 'ShippingHistoryInputType',
+  fields: () => ({
+    shipper: {
+      type: GraphQLID,
     },
     shippingStatus: {
       type: ShippingStatusTypes,
