@@ -7,7 +7,6 @@ import {
   GraphQLInputObjectType,
 } from 'graphql';
 
-import { globalIdField } from 'graphql-relay';
 import { GraphQLDateTime } from '@tranduchieu/graphql-custom-types';
 
 import UserType from './user';
@@ -39,12 +38,6 @@ export const OrderHistoryTypes = new GraphQLEnumType({
     },
     CHANGE_STATUS: {
       value: 'changeStatus',
-    },
-    CHANGE_LINES: {
-      value: 'changeLines',
-    },
-    CHANGE_DISCOUNTS: {
-      value: 'changeDiscounts',
     },
     ADD_REFUND: {
       value: 'addRefund',
@@ -144,6 +137,18 @@ const RefundHistoryType = new GraphQLObjectType({
   }),
 });
 
+export const RefundHistoryInputType = new GraphQLInputObjectType({
+  name: 'RefundHistoryInputType',
+  fields: () => ({
+    refundMethod: {
+      type: PaymentMethods,
+    },
+    amount: {
+      type: GraphQLInt,
+    },
+  }),
+});
+
 const StatusHistoryType = new GraphQLObjectType({
   name: 'OrderStatusHistoryType',
   fields: () => ({
@@ -225,7 +230,6 @@ export const OrderHistory = new GraphQLObjectType({
   name: 'OrderHistory',
   description: 'Order History type',
   fields: () => ({
-    id: globalIdField('OrderHistory'),
     type: {
       type: OrderHistoryTypes,
     },

@@ -27,7 +27,7 @@ import {
 import { OrderEdge } from '../connections/order';
 import UserType from '../types/user';
 import { AddressInputType } from '../types/address';
-import { PaymentHistoryInputType } from '../types/orderHistory';
+import { PaymentHistoryInputType, RefundHistoryInputType } from '../types/orderHistory';
 
 const OrderCreateMutation = mutationWithClientMutationId({
   name: 'OrderCreate',
@@ -178,6 +178,9 @@ const OrderUpdateMutation = mutationWithClientMutationId({
     addPayment: {
       type: PaymentHistoryInputType,
     },
+    addRefund: {
+      type: RefundHistoryInputType,
+    },
   },
   outputFields: {
     order: {
@@ -218,6 +221,38 @@ const OrderUpdateMutation = mutationWithClientMutationId({
           newStatus: obj.status,
           reason: obj.orderCancellationReason || null,
         },
+        updatedAt: moment().format(),
+        updatedBy: user.id,
+      });
+    }
+
+    // Push print history
+    if (obj.print) {
+      history.push({
+        type: 'print',
+        content: {
+          printedAt: moment().format(),
+        },
+        updatedAt: moment().format(),
+        updatedBy: user.id,
+      });
+    }
+
+    // Push addPayment history
+    if (obj.addPayment) {
+      history.push({
+        type: 'addPayment',
+        content: obj.addPayment,
+        updatedAt: moment().format(),
+        updatedBy: user.id,
+      });
+    }
+
+    // Push addRefund history
+    if (obj.addRefund) {
+      history.push({
+        type: 'addRefund',
+        content: obj.addRefund,
         updatedAt: moment().format(),
         updatedBy: user.id,
       });
