@@ -267,6 +267,7 @@ const OrderUpdateMutation = mutationWithClientMutationId({
 
     // Push addShipping history
     if (obj.addShipping) {
+      obj.addShipping.shipper = fromGlobalId(obj.addShipping.shipper).id;
       history.push({
         type: 'addShipping',
         content: obj.addShipping,
@@ -277,6 +278,8 @@ const OrderUpdateMutation = mutationWithClientMutationId({
 
     obj.history = history;
     obj.updatedBy = user;
+
+    obj = omit(obj, ['clientMutationId', 'print', 'addPayment', 'addRefund', 'addShipping']);
 
     Object.keys(obj).forEach(key => {
       if (key !== 'id') orderObjById.set(key, obj[key]);
