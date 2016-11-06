@@ -3,6 +3,7 @@ import {
   GraphQLNonNull,
   GraphQLString,
   GraphQLList,
+  GraphQLInt,
 } from 'graphql';
 
 import {
@@ -69,6 +70,17 @@ export default {
       },
       mobilePhoneStartsWith: {
         type: GraphQLString,
+      },
+      role: {
+        type: GraphQLString,
+      },
+      skip: {
+        type: GraphQLInt,
+        defaultValue: 0,
+      },
+      limit: {
+        type: GraphQLInt,
+        defaultValue: 20,
       },
       ...connectionArgs,
     },

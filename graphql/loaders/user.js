@@ -21,18 +21,27 @@ export const userByIdLoader = new DataLoader(ids => {
 
 
 export const allUsersLoader = new DataLoader(keys => {
-  return Promise.all(keys.map(key => {
+  return Promise.all(keys.map(async key => {
     const args = JSON.parse(key);
-    const { after, first, username, name, mobilePhoneStartsWith } = args;
+    const { after, first, skip, limit, username, name, mobilePhoneStartsWith, role } = args;
 
-    const queryUser = new Parse.Query(Parse.User);
+    let queryUser = new Parse.Query(Parse.User);
+
+    if (role) {
+      const roleQuery = new Parse.Query(Parse.Role);
+      roleQuery.equalTo('name', role);
+      const roleObj = await roleQuery.first({ useMasterKey: true });
+      if (!roleObj) throw new Error(`Role name ${role} not found`);
+      queryUser = roleObj.relation('users').query();
+    }
+
     if (username) queryUser.equalTo('username', username);
     if (name) queryUser.containsAll('nameToWords', name);
     if (mobilePhoneStartsWith) queryUser.startsWith('mobilePhone', mobilePhoneStartsWith);
 
     queryUser.descending('createdAt');
-    queryUser.skip(after ? cursorToOffset(after) + 1 : 0);
-    queryUser.limit(first || 20);
+    queryUser.skip(skip || (after ? cursorToOffset(after) + 1 : 0));
+    queryUser.limit(limit || first || 20);
 
     return queryUser.find({ useMasterKey: true })
       .then(users => {

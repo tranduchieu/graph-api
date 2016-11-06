@@ -36,3 +36,13 @@
 //   console.log(session.get('user'));
 // })
 // .catch(console.error);
+
+// Query User by Role
+// -------------------------------------
+// const query = new Parse.Query(Parse.Role);
+// query.equalTo('name', 'Shipper');
+// query.first({ userMasterKey: true })
+// .then(role => {
+//   role.relation('users').query().find({ userMasterKey: true })
+//   .then(console.log);
+// });
