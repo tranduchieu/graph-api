@@ -21,7 +21,7 @@ import {
   GraphQLMobilePhone,
 } from '@tranduchieu/graphql-custom-types';
 
-import UserType from '../types/user';
+import UserType, { RolesEnumType } from '../types/user';
 import { ShopEnumType } from '../types/enumTypes';
 import { AddressInputType } from '../types/address';
 
@@ -59,6 +59,9 @@ const UserCreateMutation = mutationWithClientMutationId({
     note: {
       type: GraphQLString,
     },
+    roles: {
+      type: new GraphQLList(RolesEnumType),
+    },
   },
   outputFields: {
     userEdge: {
@@ -77,7 +80,7 @@ const UserCreateMutation = mutationWithClientMutationId({
       },
     },
   },
-  mutateAndGetPayload(obj) {
+  async mutateAndGetPayload(obj) {
     const userInput = omit(obj, ['clientMutationId']);
 
     // Fake username, email & password
@@ -87,7 +90,10 @@ const UserCreateMutation = mutationWithClientMutationId({
 
     const newUser = new Parse.User();
 
-    return newUser.save(userInput, { useMasterKey: true });
+    const userObjSaved = await newUser.save(userInput, { useMasterKey: true });
+
+    // Add to role
+    return userObjSaved;
   },
 });
 

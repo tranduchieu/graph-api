@@ -14,7 +14,7 @@ import {
 
 import latenize from '../../services/latenize';
 
-import UserType from '../types/user';
+import UserType, { RolesEnumType } from '../types/user';
 import { UserConnection } from '../connections/user';
 
 export default {
@@ -72,7 +72,7 @@ export default {
         type: GraphQLString,
       },
       role: {
-        type: GraphQLString,
+        type: RolesEnumType,
       },
       skip: {
         type: GraphQLInt,

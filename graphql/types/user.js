@@ -3,6 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLBoolean,
   GraphQLList,
+  GraphQLEnumType,
 } from 'graphql';
 
 import {
@@ -28,6 +29,33 @@ import BoxQueries from '../queries/Box';
 import SearchQueries from '../queries/Search';
 import UserQueries from '../queries/User';
 import DistrictQueries from '../queries/District';
+
+export const RolesEnumType = new GraphQLEnumType({
+  name: 'RolesEnumType',
+  values: {
+    BOSS: {
+      value: 'Boss',
+    },
+    ADMINISTRATOR: {
+      value: 'Administrator',
+    },
+    MANAGER: {
+      value: 'Manager',
+    },
+    CUSTOMER: {
+      value: 'Customer',
+    },
+    SALES: {
+      value: 'Sales',
+    },
+    USER: {
+      value: 'User',
+    },
+    SHIPPER: {
+      value: 'Shipper',
+    },
+  },
+});
 
 // Resolver
 export function userResolver(_, { id }, { loaders }) {
@@ -118,13 +146,13 @@ const User = new GraphQLObjectType({
       description: 'Những nơi nhân viên được sắp xếp làm việc',
       type: new GraphQLList(ShopEnumType),
       resolve(data, args, { user, roles }) {
-        if (!user) return null;
+        if (!user) return [];
         const validRoles = roles.filter(role => {
           return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
         });
 
-        if (validRoles.length === 0) return null;
-        return data.get('workplaces');
+        if (validRoles.length === 0) return [];
+        return data.get('staffWorkplaces');
       },
     },
     staffWorkingAt: {
@@ -137,7 +165,7 @@ const User = new GraphQLObjectType({
         });
 
         if (validRoles.length === 0) return null;
-        return data.get('workingIn');
+        return data.get('staffWorkingAt');
       },
     },
     createdAt: {
