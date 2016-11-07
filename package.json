@@ -62,7 +62,7 @@
     "node-uuid": "^1.4.7",
     "parse": "^1.9.2",
     "parse-dashboard": "^1.0.19",
-    "parse-server": "^2.2.23",
+    "parse-server": "^2.2.25-beta.1",
     "react": "^15.3.0",
     "react-dom": "^15.3.0",
     "tabletojson": "^0.4.0"
