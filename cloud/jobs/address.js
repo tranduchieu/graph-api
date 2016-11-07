@@ -67,8 +67,8 @@ Parse.Cloud.job('addWards', (req, res) => {
   const filesPath = path.join(__dirname, '../../data/files/wards');
   return readdir(filesPath, (err, files) => {
     return Promise.each(files, file => {
-      return readFile(path.join(__dirname, `../../data/files/wards/${file}`), 'utf8', (err, data) => {
-        if (err) return res.error(err.message);
+      return readFile(path.join(__dirname, `../../data/files/wards/${file}`), 'utf8', (err0, data) => {
+        if (err0) return res.error(err.message);
 
         const province = file.replace(/.[^.]+$/, '');
         return csvParse(data, { comment: '#' }, async (err2, output) => {
@@ -76,7 +76,7 @@ Parse.Cloud.job('addWards', (req, res) => {
             const queryDistrict = new Parse.Query('District');
             queryDistrict.equalTo('province', province);
             queryDistrict.equalTo('name', line[2]);
-            const districtObj = await queryDistrict.first({ useMasterKey: true })
+            const districtObj = await queryDistrict.first({ useMasterKey: true });
 
             if (!districtObj) return res.error(`District ${line[2]}, ${province} not found`);
 
