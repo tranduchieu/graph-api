@@ -46,3 +46,16 @@
 //   role.relation('users').query().find({ userMasterKey: true })
 //   .then(console.log);
 // });
+
+// Add role to user
+// -----------------------------------
+// const userQuery = new Parse.Query(Parse.User);
+// userQuery.get('gmQcHDPGlV', { userMasterKey: true })
+// .then(userObj => {
+//   const role = new Parse.Query(Parse.Role);
+//   role.equalTo('name', 'Shipper');
+//   role.getUsers().add(userObj);
+//   role.save(null, { userMasterKey: true })
+//   .then(console.log)
+//   .catch(console.error);
+// });
