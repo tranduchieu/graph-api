@@ -148,7 +148,7 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
     // Add history
   const history = order.get('history') || [];
   if (!currentOrder) {
-    history.unshift({
+    history.push({
       type: 'createOrder',
       content: {
         createdAt: moment().format(),

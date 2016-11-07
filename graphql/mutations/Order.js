@@ -221,7 +221,7 @@ const OrderUpdateMutation = mutationWithClientMutationId({
 
     // Push changeStatus history
     if (obj.status) {
-      history.push({
+      history.unshift({
         type: 'changeStatus',
         content: {
           oldStatus: orderObjById.get('status'),
@@ -235,7 +235,7 @@ const OrderUpdateMutation = mutationWithClientMutationId({
 
     // Push print history
     if (obj.print) {
-      history.push({
+      history.unshift({
         type: 'print',
         content: {
           printedAt: moment().format(),
@@ -247,7 +247,7 @@ const OrderUpdateMutation = mutationWithClientMutationId({
 
     // Push addPayment history
     if (obj.addPayment) {
-      history.push({
+      history.unshift({
         type: 'addPayment',
         content: obj.addPayment,
         updatedAt: moment().format(),
@@ -257,7 +257,7 @@ const OrderUpdateMutation = mutationWithClientMutationId({
 
     // Push addRefund history
     if (obj.addRefund) {
-      history.push({
+      history.unshift({
         type: 'addRefund',
         content: obj.addRefund,
         updatedAt: moment().format(),
@@ -268,7 +268,7 @@ const OrderUpdateMutation = mutationWithClientMutationId({
     // Push addShipping history
     if (obj.addShipping) {
       obj.addShipping.shipper = fromGlobalId(obj.addShipping.shipper).id;
-      history.push({
+      history.unshift({
         type: 'addShipping',
         content: obj.addShipping,
         updatedAt: moment().format(),
