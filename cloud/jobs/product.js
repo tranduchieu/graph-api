@@ -57,3 +57,19 @@ Parse.Cloud.job('additionalPricesToArray', async (req, res) => {
     return res.error(err.message);
   });
 });
+
+
+Parse.Cloud.job('ProductDescriptionToWords', async (req, res) => {
+  const queryProduct = new Parse.Query('Product');
+  const allProducts = await queryProduct.find({ useMasterKey: true });
+
+  return Promise.map(allProducts, product => {
+    return product.save(null, { useMasterKey: true });
+  }, { concurrency: 5 })
+  .then(() => {
+    return res.success('Done!');
+  })
+  .catch(err => {
+    return res.error(err.message);
+  });
+});

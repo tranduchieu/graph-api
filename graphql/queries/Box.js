@@ -34,7 +34,7 @@ export default {
       .then(boxObj => {
         if (!boxObj) throw new Error('Box not found');
         const validRoles = roles.filter(role => {
-          return ['Boss', 'Administrator', 'Manager'].indexOf(role) !== -1;
+          return ['Boss', 'Administrator', 'Manager', 'WarehouseManager'].indexOf(role) !== -1;
         });
 
         if (validRoles.length === 0 && boxObj.get('visible') === false) {

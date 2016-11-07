@@ -41,10 +41,10 @@ const ProductTagCreateMutation = mutationWithClientMutationId({
       },
     },
   },
-  async mutateAndGetPayload(obj, { loaders, user, roles, accessToken, useMasterKey }) {
+  async mutateAndGetPayload(obj, { user, roles, accessToken, useMasterKey }) {
     // Check quyền admin
     const validRoles = roles.filter(role => {
-      return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
+      return ['Boss', 'Administrator', 'Manager', 'Sales', 'WarehouseManager', 'WarehouseStaff'].indexOf(role) !== -1;
     });
 
     if (!useMasterKey && (!user || validRoles.length === 0)) {
@@ -58,9 +58,6 @@ const ProductTagCreateMutation = mutationWithClientMutationId({
     const productTagObjSaved = await newProductTag.save(productTagInput, {
       sessionToken: accessToken, useMasterKey: true,
     });
-
-    loaders.productTags.clearAll();
-    loaders.productTag.prime(productTagObjSaved.id, productTagObjSaved);
 
     return productTagObjSaved;
   },

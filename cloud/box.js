@@ -1,5 +1,6 @@
 /* global Parse, @flow */
 import latenize from '../services/latenize';
+import loaders from '../graphql/loaders';
 
 // Before Save triggers
 // ======================================
@@ -39,4 +40,29 @@ Parse.Cloud.beforeSave('Box', async (req, res) => {
   acl.setPublicReadAccess(true);
   box.setACL(acl);
   return res.success();
+});
+
+Parse.Cloud.afterSave('Box', (req, res) => {
+  const box = req.object;
+
+  // Clear loaders
+  loaders.box.prime(box.id, box);
+  loaders.boxes.clearAll();
+  loaders.searchs.clearAll();
+  loaders.searchsCount.clearAll();
+
+  res.success();
+});
+
+
+Parse.Cloud.afterDelete('Box', (req, res) => {
+  const box = req.object;
+
+  // Clear loaders
+  loaders.box.clear(box.id);
+  loaders.boxes.clearAll();
+  loaders.searchs.clearAll();
+  loaders.searchsCount.clearAll();
+
+  res.success();
 });

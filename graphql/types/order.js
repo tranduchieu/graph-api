@@ -111,6 +111,21 @@ const Order = new GraphQLObjectType({
         return data.get('totalWeight');
       },
     },
+    totalPaid: {
+      type: GraphQLInt,
+      resolve(data) {
+        const history = data.get('history');
+        let totalPaid = 0;
+        if (history.length > 0) {
+          history.forEach(item => {
+            if (item.type === 'addPayment') {
+              totalPaid += item.content.amount;
+            }
+          });
+        }
+        return totalPaid;
+      },
+    },
     note: {
       type: GraphQLString,
       resolve(data, args, { user, roles }) {

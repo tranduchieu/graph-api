@@ -1,12 +1,15 @@
 /* global Parse, @flow */
 import url from 'url';
 import path from 'path';
-import latenize from '../services/latenize';
+import Promise from 'bluebird';
 
-const masterkey = process.env.MASTER_KEY || '';
-const SERVER_PORT = process.env.PORT || 8080;
-const SERVER_HOST = process.env.HOST || 'localhost';
-const GraphQLurl = `http://${SERVER_HOST}:${SERVER_PORT}/graphql`;
+import latenize from '../services/latenize';
+import loaders from '../graphql/loaders';
+
+// const masterkey = process.env.MASTER_KEY || '';
+// const SERVER_PORT = process.env.PORT || 8080;
+// const SERVER_HOST = process.env.HOST || 'localhost';
+// const GraphQLurl = `http://${SERVER_HOST}:${SERVER_PORT}/graphql`;
 
 const bucket = process.env.S3_BUCKET || 'ecolab-server';
 const bucketPrefix = process.env.S3_BUCKET_PREFIX || '';
@@ -104,23 +107,22 @@ Parse.Cloud.beforeSave('Product', async (req, res) => {
   // Xử lý ảnh
   const images = product.get('images') || null;
 
-  let imagesUpdated;
-  try {
-    imagesUpdated = await updateImagesArray(images);
-  } catch (error) {
-    return res.error(error.message);
-  }
-  product.set('images', imagesUpdated);
-
   // Check code
+  let checkcodePromise = Promise.resolve();
   const code = product.get('code') || null;
   if (!currentProduct || (currentProduct && currentProduct.get('code') !== code)) {
-    try {
-      await checkcode(code);
-    } catch (error) {
-      return res.error(error.message);
-    }
+    checkcodePromise = checkcode(code);
   }
+
+  // Run all Promises
+  const [imagesUpdated] = await Promise.all([
+    updateImagesArray(images),
+    checkcodePromise,
+  ])
+  .catch(error => {
+    return res.error(error.message);
+  });
+  product.set('images', imagesUpdated);
 
   // Set nameToWords
   let nameToWords = [];
@@ -159,110 +161,122 @@ Parse.Cloud.beforeSave('Product', async (req, res) => {
 // - Create boxes
 // - Create tags
 
+const createBoxes = (boxes: string[]): Promise<Object[]> => {
+  return Promise.map(boxes, box => {
+    const Box = Parse.Object.extend('Box');
+    const newBox = new Box();
+    newBox.set('name', box);
+    newBox.set('type', 'product');
+    newBox.set('visible', true);
+    return newBox.save(null, { useMasterKey: true });
+  });
+};
+
+const createTags = (tags: string[]): Promise<Object[]> => {
+  return Promise.map(tags, tag => {
+    const ProductTag = Parse.Object.extend('ProductTag');
+    const newTag = new ProductTag();
+    newTag.set('name', tag);
+    return newTag.save(null, { useMasterKey: true });
+  });
+};
+
 // const createBoxes = (boxes: string[]): Promise<Object[]> => {
 //   const createBoxesPromise = boxes.map(box => {
-//     const Box = Parse.Object.extend('Box');
-//     const newBox = new Box();
-//     newBox.set('name', box);
-//     newBox.set('type', 'product');
-//     newBox.set('visible', true);
-//     return newBox.save(null, { useMasterKey: true });
+//     return Parse.Cloud.httpRequest({
+//       method: 'POST',
+//       url: GraphQLurl,
+//       headers: {
+//         masterkey,
+//       },
+//       params: {
+//         query: `mutation CreateBoxMutation($input: BoxCreateInput!) {
+//           createBox(input: $input) {
+//             boxEdge {
+//               node {
+//                 id
+//                 name
+//                 description
+//                 featured
+//               }
+//             }
+//           }
+//         }`,
+//         operationName: 'CreateBoxMutation',
+//         variables: `{
+//           "input": {
+//             "name": "${box}",
+//             "type": "PRODUCT",
+//             "clientMutationId": "abc"
+//           }
+//         }`,
+//       },
+//     });
 //   });
 //   return Promise.all(createBoxesPromise);
 // };
 
 // const createTags = (tags: string[]): Promise<Object[]> => {
 //   const createTagsPromise = tags.map(tag => {
-//     const ProductTag = Parse.Object.extend('ProductTag');
-//     const newTag = new ProductTag();
-//     newTag.set('name', tag);
-//     return newTag.save(null, { useMasterKey: true });
+//     return Parse.Cloud.httpRequest({
+//       method: 'POST',
+//       url: GraphQLurl,
+//       headers: {
+//         masterkey,
+//       },
+//       params: {
+//         query: `mutation CreateProductTagMutation($input: ProductTagCreateInput!) {
+//           createProductTag(input: $input) {
+//             productTagEdge {
+//               node {
+//                 id
+//                 name
+//                 description
+//               }
+//             }
+//           }
+//         }`,
+//         operationName: 'CreateProductTagMutation',
+//         variables: `{
+//           "input": {
+//             "name": "${tag}",
+//             "clientMutationId": "abc"
+//           }
+//         }`,
+//       },
+//     });
 //   });
 //   return Promise.all(createTagsPromise);
 // };
 
-const createBoxes = (boxes: string[]): Promise<Object[]> => {
-  const createBoxesPromise = boxes.map(box => {
-    return Parse.Cloud.httpRequest({
-      method: 'POST',
-      url: GraphQLurl,
-      headers: {
-        masterkey,
-      },
-      params: {
-        query: `mutation CreateBoxMutation($input: BoxCreateInput!) {
-          createBox(input: $input) {
-            boxEdge {
-              node {
-                id
-                name
-                description
-                featured
-              }
-            }
-          }
-        }`,
-        operationName: 'CreateBoxMutation',
-        variables: `{
-          "input": {
-            "name": "${box}",
-            "type": "PRODUCT",
-            "clientMutationId": "abc"
-          }
-        }`,
-      },
-    });
-  });
-  return Promise.all(createBoxesPromise);
-};
+Parse.Cloud.afterSave('Product', (req, res) => {
+  const product = req.object;
+  const boxes: string[] = product.get('boxes');
+  const tags: string[] = product.get('tags');
 
-const createTags = (tags: string[]): Promise<Object[]> => {
-  const createTagsPromise = tags.map(tag => {
-    return Parse.Cloud.httpRequest({
-      method: 'POST',
-      url: GraphQLurl,
-      headers: {
-        masterkey,
-      },
-      params: {
-        query: `mutation CreateProductTagMutation($input: ProductTagCreateInput!) {
-          createProductTag(input: $input) {
-            productTagEdge {
-              node {
-                id
-                name
-                description
-              }
-            }
-          }
-        }`,
-        operationName: 'CreateProductTagMutation',
-        variables: `{
-          "input": {
-            "name": "${tag}",
-            "clientMutationId": "abc"
-          }
-        }`,
-      },
-    });
-  });
-  return Promise.all(createTagsPromise);
-};
+  Promise.all([
+    createBoxes(boxes),
+    createTags(tags),
+  ]);
 
-Parse.Cloud.afterSave('Product', async (req, res) => {
-  const boxes: string[] = req.object.get('boxes');
-  const tags: string[] = req.object.get('tags');
-  await createBoxes(boxes);
-  await createTags(tags);
+  // Clear loaders
+  loaders.product.prime(product.id, product);
+  loaders.products.clearAll();
+  loaders.searchs.clearAll();
+  loaders.searchsCount.clearAll();
 
   return res.success();
 });
 
-// createTags(['Hồng'])
-// .then(result => {
-//   console.log(result[0].text);
-// })
-// .catch(error => {
-//   console.log(error.text);
-// });
+Parse.Cloud.afterDelete('Product', (req, res) => {
+  const product = req.object;
+
+  // Clear loaders
+  loaders.product.clear(product.id);
+  loaders.products.clearAll();
+  loaders.searchs.clearAll();
+  loaders.searchsCount.clearAll();
+
+  res.success();
+});
 

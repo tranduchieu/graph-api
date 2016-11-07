@@ -1,6 +1,7 @@
 /* global Parse, @flow */
 import randomAvatar from '../services/randomAvatar';
 import latenize from '../services/latenize';
+import loaders from '../graphql/loaders';
 
 // BeforeSave triggers
 // ===================================
@@ -103,6 +104,27 @@ Parse.Cloud.afterSave(Parse.User, async (req, res) => {
     return res.error(error.message);
   }
 
+  // Clear loaders
+  loaders.user.prime(userObj.id, userObj);
+  loaders.users.clearAll();
+  loaders.rolesByUser.clear(userObj.id);
+  loaders.searchs.clearAll();
+  loaders.searchsCount.clearAll();
+
   return res.success();
+});
+
+
+Parse.Cloud.afterDelete('User', (req, res) => {
+  const user = req.object;
+
+  // Clear loaders
+  loaders.user.clear(user.id);
+  loaders.users.clearAll();
+  loaders.rolesByUser.clear(user.id);
+  loaders.searchs.clearAll();
+  loaders.searchsCount.clearAll();
+
+  res.success();
 });
 

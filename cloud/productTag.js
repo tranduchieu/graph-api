@@ -1,5 +1,6 @@
 /* global Parse, @flow */
 import latenize from '../services/latenize';
+import loaders from '../graphql/loaders';
 
 // Before Save triggers
 // ======================================
@@ -41,4 +42,28 @@ Parse.Cloud.beforeSave('ProductTag', async (req, res) => {
   productTag.setACL(acl);
 
   return res.success();
+});
+
+Parse.Cloud.afterSave('ProductTag', (req, res) => {
+  const productTag = req.object;
+
+  // Clear loaders
+  loaders.productTag.prime(productTag.id, productTag);
+  loaders.productTags.clearAll();
+  loaders.searchs.clearAll();
+  loaders.searchsCount.clearAll();
+
+  res.success();
+});
+
+Parse.Cloud.afterDelete('ProductTag', (req, res) => {
+  const productTag = req.object;
+
+  // Clear loaders
+  loaders.productTag.clear(productTag.id);
+  loaders.productTags.clearAll();
+  loaders.searchs.clearAll();
+  loaders.searchsCount.clearAll();
+
+  res.success();
 });

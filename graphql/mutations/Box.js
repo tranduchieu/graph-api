@@ -66,10 +66,10 @@ const BoxCreateMutation = mutationWithClientMutationId({
       },
     },
   },
-  async mutateAndGetPayload(obj, { loaders, user, roles, accessToken, useMasterKey }) {
+  async mutateAndGetPayload(obj, { user, roles, accessToken, useMasterKey }) {
     // Check quyền admin
     const validRoles = roles.filter(role => {
-      return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
+      return ['Boss', 'Administrator', 'Manager', 'Sales', 'WarehouseManager', 'WarehouseStaff'].indexOf(role) !== -1;
     });
 
     if (!useMasterKey && (!user || validRoles.length === 0)) {
@@ -83,9 +83,6 @@ const BoxCreateMutation = mutationWithClientMutationId({
     const boxObjSaved = await newBox.save(boxInput, {
       sessionToken: accessToken, useMasterKey: true,
     });
-
-    loaders.boxes.clearAll();
-    loaders.box.prime(boxObjSaved.id, boxObjSaved);
 
     return boxObjSaved;
   },

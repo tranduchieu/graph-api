@@ -1,6 +1,9 @@
 /* global Parse */
 import Promise from 'bluebird';
 import tabletojson from 'tabletojson';
+import csvParse from 'csv-parse';
+import { readFile, readdir } from 'fs';
+import path from 'path';
 
 Parse.Cloud.job('addDistricts', (req, res) => {
   const url = 'https://vi.wikipedia.org/wiki/Danh_s%C3%A1ch_%C4%91%C6%A1n_v%E1%BB%8B_h%C3%A0nh_ch%C3%ADnh_c%E1%BA%A5p_huy%E1%BB%87n_c%E1%BB%A7a_Vi%E1%BB%87t_Nam';
@@ -61,10 +64,39 @@ Parse.Cloud.job('addDistricts', (req, res) => {
 });
 
 Parse.Cloud.job('addWards', (req, res) => {
-  const url = 'https://vi.wikipedia.org/wiki/Danh_s%C3%A1ch_%C4%91%C6%A1n_v%E1%BB%8B_h%C3%A0nh_ch%C3%ADnh_c%E1%BA%A5p_x%C3%A3_(Vi%E1%BB%87t_Nam)';
+  const filesPath = path.join(__dirname, '../../data/files/wards');
+  return readdir(filesPath, (err, files) => {
+    return Promise.each(files, file => {
+      return readFile(path.join(__dirname, `../../data/files/wards/${file}`), 'utf8', (err, data) => {
+        if (err) return res.error(err.message);
 
-  tabletojson.convertUrl(url, (tablesAsJson) => {
-    console.log(tablesAsJson[7]);
-    res.success('OK');
+        const province = file.replace(/.[^.]+$/, '');
+        return csvParse(data, { comment: '#' }, async (err2, output) => {
+          return await Promise.map(output, async line => {
+            const queryDistrict = new Parse.Query('District');
+            queryDistrict.equalTo('province', province);
+            queryDistrict.equalTo('name', line[2]);
+            const districtObj = await queryDistrict.first({ useMasterKey: true })
+
+            if (!districtObj) return res.error(`District ${line[2]}, ${province} not found`);
+
+            const wards = districtObj.get('wards');
+            if (wards.indexOf(`${line[0]} ${line[1]}`) === -1) {
+              wards.push(`${line[0]} ${line[1]}`);
+              districtObj.set('wards', wards);
+              return districtObj.save(null, { useMasterKey: true });
+            }
+            return Promise.resolve(null);
+          }, { concurrency: 5 })
+          .then(console.log);
+        });
+      });
+    })
+    .then(() => {
+      return res.success('Done!');
+    })
+    .catch(err4 => {
+      return res.error(err4.message);
+    });
   });
 });

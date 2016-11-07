@@ -137,7 +137,7 @@ server.use(
     let staffWorkingAt = null;
     if (user) {
       roles = await loaders.rolesByUser.load(user.id);
-      staffWorkingAt = user.get('staffWorkingAt');
+      staffWorkingAt = user.get('staffWorkingAt') || user.get('staffWorkplaces')[0] || null;
     }
 
     return {

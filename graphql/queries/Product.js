@@ -36,7 +36,7 @@ export default {
         if (!productObj) throw new Error('Product not found');
 
         const validRoles = roles.filter(role => {
-          return ['Boss', 'Administrator', 'Manager'].indexOf(role) !== -1;
+          return ['Boss', 'Administrator', 'Manager', 'WarehouseManager'].indexOf(role) !== -1;
         });
 
         if (validRoles.length === 0 &&
@@ -80,7 +80,7 @@ export default {
     },
     resolve(root, args, { loaders, roles }) {
       const validRoles = roles.filter(role => {
-        return ['Boss', 'Administrator', 'Manager'].indexOf(role) !== -1;
+        return ['Boss', 'Administrator', 'Manager', 'WarehouseManager'].indexOf(role) !== -1;
       });
 
       if (validRoles.length === 0 &&

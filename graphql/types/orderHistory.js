@@ -103,9 +103,18 @@ export const PaymentHistoryInputType = new GraphQLInputObjectType({
 const ShippingStatusTypes = new GraphQLEnumType({
   name: 'ShippingHistoryTypes',
   values: {
-    PACKAGED_COMPLETE: {
-      value: 'packagedComplete',
+    PACKAGED: {
+      value: 'packaged',
       description: 'Đóng gói xong. Sẵn sàng giao hàng',
+    },
+    SHIPPER_RECEIVED: {
+      value: 'shipperReceived',
+    },
+    DELIVERED: {
+      value: 'delivered',
+    },
+    BACK_RECEIVED: {
+      value: 'backReceived',
     },
   },
 });

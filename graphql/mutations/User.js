@@ -82,7 +82,16 @@ const UserCreateMutation = mutationWithClientMutationId({
       },
     },
   },
-  async mutateAndGetPayload(obj, { loaders }) {
+  async mutateAndGetPayload(obj) {
+    // Check roles
+    if (obj.roles && obj.roles.length > 0) {
+      const checkRoles = obj.roles.filter(role => {
+        return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
+      });
+
+      if (checkRoles.length > 0) throw new Error('Bạn không có quyền thêm những roles: Boss, Administrator, Manager, Sales');
+    }
+
     const userInput = omit(obj, ['clientMutationId', 'roles']);
 
     // Fake username, email & password
@@ -105,10 +114,6 @@ const UserCreateMutation = mutationWithClientMutationId({
         return roleObj.save(null, { useMasterKey: true });
       });
     }
-
-    // Clear loaders
-    loaders.users.clearAll();
-    loaders.user.prime(userObjSaved.id, userObjSaved);
 
     return userObjSaved;
   },
@@ -150,10 +155,6 @@ const UserRemoveMutation = mutationWithClientMutationId({
     if (!userObjById) throw new Error('User not found');
 
     const userObjRemoved = await userObjById.destroy({ useMasterKey: true, sessionToken: accessToken });
-
-    // Clear loaders
-    loaders.users.clearAll();
-    loaders.user.clear(localUserId);
 
     return Object.assign({}, userObjRemoved, { id });
   },
@@ -231,8 +232,6 @@ const UserUpdateMutation = mutationWithClientMutationId({
     });
 
     const userObjUpdated = await userObjById.save(null, { sessionToken: accessToken, useMasterKey: true });
-    loaders.users.clearAll();
-    loaders.user.prime(id, userObjUpdated);
 
     return userObjUpdated;
   },

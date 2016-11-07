@@ -9,6 +9,7 @@ import loaders from '../graphql/loaders';
 // [x] Tính toán lại order
 // [x] Check code
 // [x] Check product status
+// [x] Check history
 
 const reCalculateOrder = async (Order: Object): Promise<boolean> => {
   const total: number = Order.get('total') || 0;
@@ -98,6 +99,31 @@ const createAddress = async (shippingAddress, customerId: string) => {
   });
 };
 
+const checkHistory = (history: Object, total: number, shippingAddress) => {
+  let totalPayments: number = 0;
+  let lastHistoryShippingStatus;
+
+  history.forEach(item => {
+    if (item.type === 'addPayment') {
+      totalPayments += item.content.amount;
+    }
+
+    if (item.type === 'addShipping' && !lastHistoryShippingStatus) {
+      lastHistoryShippingStatus = item.content.shippingStatus;
+    }
+  });
+
+  let statusToChange = null;
+  // Cases
+  // --------------
+  if (totalPayments > total) throw new Error('Số tiền khách thanh toán vượt quá hóa đơn');
+  if (totalPayments === total && (lastHistoryShippingStatus === 'delivered' || !shippingAddress)) statusToChange = 'completed';
+  if (lastHistoryShippingStatus === 'shipperReceived') statusToChange = 'sending';
+  if (totalPayments > 0 && totalPayments < total) statusToChange = 'partiallyPaid';
+
+  return statusToChange;
+};
+
 Parse.Cloud.beforeSave('Order', async (req, res) => {
   const order: Object = req.object;
   const shop = order.get('shop');
@@ -145,8 +171,18 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
     return res.error(err.message);
   });
 
-    // Add history
   const history = order.get('history') || [];
+  // Check history
+  let statusToChange = order.get('status');
+  if (currentOrder && (history.length > currentOrder.get('history').length)) {
+    try {
+      statusToChange = checkHistory(order.get('history'), order.get('total'), shippingAddress) || order.get('status');
+    } catch (error) {
+      res.error(error.message);
+    }
+  }
+
+  // Add history
   if (!currentOrder) {
     history.push({
       type: 'createOrder',
@@ -161,6 +197,7 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
   // Set other fields
   order.set('history', history);
   order.set('shippingAddress', result[3]);
+  order.set('status', statusToChange);
 
   return res.success();
 });
@@ -168,7 +205,6 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
 // AfterSave triggers
 // ==============================
 // [x] Change Product status
-// [] Add createOrder history
 
 const changeProductStatus = async (productId: string, statusToChange: string): Promise<boolean> => {
   const queryProduct = new Parse.Query('Product');
@@ -202,5 +238,23 @@ Parse.Cloud.afterSave('Order', async (req, res) => {
     return res.error(error.message);
   }
 
+  // Clear loaders
+  loaders.order.prime(order.id, order);
+  loaders.orders.clearAll();
+  loaders.searchs.clearAll();
+  loaders.searchsCount.clearAll();
+
   return res.success();
+});
+
+Parse.Cloud.afterDelete('Order', (req, res) => {
+  const order = req.object;
+
+  // Clear loaders
+  loaders.order.clear(order.id);
+  loaders.orders.clearAll();
+  loaders.searchs.clearAll();
+  loaders.searchsCount.clearAll();
+
+  res.success();
 });

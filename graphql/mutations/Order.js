@@ -146,16 +146,6 @@ const OrderCreateMutation = mutationWithClientMutationId({
       sessionToken: accessToken, useMasterKey: true,
     });
 
-    loaders.orders.clearAll();
-    loaders.order.prime(orderObjSaved.id, orderObjSaved);
-
-    loaders.products.clearAll();
-    loaders.product.clearAll();
-
-    orderObjSaved.get('lines').forEach(line => {
-      return loaders.product.clear(line.productId);
-    });
-
     return orderObjSaved;
   },
 });
@@ -266,7 +256,20 @@ const OrderUpdateMutation = mutationWithClientMutationId({
     }
 
     // Push addShipping history
+    let lastHistoryShippingStatus;
+    if (history.length > 0) {
+      history.forEach(item => {
+        if (item.type === 'addShipping' && !lastHistoryShippingStatus) {
+          lastHistoryShippingStatus = item.content.shippingStatus;
+        }
+      });
+    }
+    const shippingStatus = ['packaged', 'shipperReceived', 'delivered', 'backReceived'];
+
     if (obj.addShipping) {
+      if (lastHistoryShippingStatus && (shippingStatus.indexOf(lastHistoryShippingStatus) >= shippingStatus.indexOf(obj.addShipping.shippingStatus))) {
+        throw new Error(`Đơn hàng này đã thêm trạng thái ${lastHistoryShippingStatus}. Không thể thêm trạng thái ${obj.addShipping.shippingStatus}`);
+      }
       obj.addShipping.shipper = fromGlobalId(obj.addShipping.shipper).id;
       history.unshift({
         type: 'addShipping',
@@ -288,9 +291,6 @@ const OrderUpdateMutation = mutationWithClientMutationId({
     const orderUpdated = await orderObjById.save(null, {
       sessionToken: accessToken, useMasterKey: true,
     });
-
-    loaders.orders.clearAll();
-    loaders.order.prime(orderLocalId, orderUpdated);
 
     return orderUpdated;
   },

@@ -105,12 +105,12 @@ const ProductCreateMutation = mutationWithClientMutationId({
       },
     },
   },
-  mutateAndGetPayload(obj, { loaders, user, roles, accessToken }) {
+  mutateAndGetPayload(obj, { user, roles, accessToken }) {
     if (!user) throw new Error('Guest không có quyền tạo Sản phẩm');
 
     // Check quyền admin
     const validRoles = roles.filter(role => {
-      return ['Boss', 'Administrator', 'Manager'].indexOf(role) !== -1;
+      return ['Boss', 'Administrator', 'Manager', 'WarehouseManager', 'WarehouseStaff'].indexOf(role) !== -1;
     });
 
     if (validRoles.length === 0) throw new Error('Không có quyền tạo Sản phẩm');
@@ -125,8 +125,6 @@ const ProductCreateMutation = mutationWithClientMutationId({
     newProduct.setACL(acl);
     return newProduct.save(product, { sessionToken: accessToken })
     .then(productSavedObj => {
-      loaders.products.clearAll();
-      loaders.product.prime(productSavedObj.id, productSavedObj);
       return productSavedObj;
     });
   },
@@ -171,8 +169,6 @@ const ProductRemoveMutation = mutationWithClientMutationId({
 
       return res.destroy({ sessionToken: accessToken, useMasterKey: true })
       .then(productDeletedObj => {
-        loaders.products.clearAll();
-        loaders.product.clear(localProductId);
         return Object.assign({}, productDeletedObj, { id });
       });
     });
@@ -235,7 +231,7 @@ const ProductUpdateMutation = mutationWithClientMutationId({
 
     // Check quyền admin
     const validRoles = roles.filter(role => {
-      return ['Boss', 'Administrator', 'Manager'].indexOf(role) !== -1;
+      return ['Boss', 'Administrator', 'Manager', 'WarehouseManager', 'WarehouseStaff'].indexOf(role) !== -1;
     });
 
     if (validRoles.length === 0) throw new Error('Không có quyền cập nhật Sản phẩm');
@@ -253,8 +249,6 @@ const ProductUpdateMutation = mutationWithClientMutationId({
 
       return productObj.save(null, { sessionToken: accessToken, useMasterKey: true })
       .then(productUpdatedObj => {
-        loaders.products.clearAll();
-        loaders.product.prime(id, productUpdatedObj);
         return productUpdatedObj;
       });
     });
