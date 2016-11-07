@@ -11,6 +11,8 @@ import {
   offsetToCursor,
 } from 'graphql-relay';
 
+import Promise from 'bluebird';
+
 import Parse from 'parse/node';
 import { omit } from 'lodash';
 import nodeUUID from 'node-uuid';
@@ -80,8 +82,8 @@ const UserCreateMutation = mutationWithClientMutationId({
       },
     },
   },
-  async mutateAndGetPayload(obj) {
-    const userInput = omit(obj, ['clientMutationId']);
+  async mutateAndGetPayload(obj, { loaders }) {
+    const userInput = omit(obj, ['clientMutationId', 'roles']);
 
     // Fake username, email & password
     if (!userInput.username) userInput.username = nodeUUID.v4();
@@ -93,6 +95,21 @@ const UserCreateMutation = mutationWithClientMutationId({
     const userObjSaved = await newUser.save(userInput, { useMasterKey: true });
 
     // Add to role
+    if (obj.roles && obj.roles.length > 0) {
+      Promise.map(obj.roles, async role => {
+        const roleQuery = new Parse.Query(Parse.Role);
+        roleQuery.equalTo('name', role);
+        const roleObj = await roleQuery.first({ useMasterKey: true });
+        console.log(roleObj, userObjSaved);
+        roleObj.getUsers().add(userObjSaved);
+        return roleObj.save(null, { useMasterKey: true });
+      });
+    }
+
+    // Clear loaders
+    loaders.users.clearAll();
+    loaders.user.prime(userObjSaved.id, userObjSaved);
+
     return userObjSaved;
   },
 });
