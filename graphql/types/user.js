@@ -165,7 +165,7 @@ const User = new GraphQLObjectType({
         });
 
         if (validRoles.length === 0) return null;
-        return data.get('staffWorkingAt');
+        return data.get('staffWorkingAt') || null;
       },
     },
     createdAt: {
