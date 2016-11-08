@@ -109,12 +109,15 @@ const ShippingStatusTypes = new GraphQLEnumType({
     },
     SHIPPER_RECEIVED: {
       value: 'shipperReceived',
+      description: 'Đã chuyển hàng cho shipper',
     },
     DELIVERED: {
       value: 'delivered',
+      description: 'Giao hàng thành công. Khách hàng đã nhận hàng',
     },
     BACK_RECEIVED: {
       value: 'backReceived',
+      description: 'Đã nhận hàng gửi trả lại',
     },
   },
 });

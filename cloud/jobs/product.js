@@ -25,9 +25,9 @@ Parse.Cloud.job('addProducts', (req, res) => {
     const userQuery = new Parse.Query(Parse.User);
     const userObj = await userQuery.get('2eN0hIjiqu', { useMasterKey: true });
 
-    return Promise.map(data, (item) => {
+    return Promise.each(data, (item) => {
       return createProduct(userObj, item);
-    }, { concurrency: 5 })
+    })
     .then(() => {
       return res.success('Done!');
     })
