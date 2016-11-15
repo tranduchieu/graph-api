@@ -2,6 +2,7 @@
 import nodeUUID from 'node-uuid';
 import _ from 'lodash';
 import moment from 'moment';
+import Promise from 'bluebird';
 import loaders from '../graphql/loaders';
 
 // Before Save
@@ -206,13 +207,72 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
 // ==============================
 // [x] Change Product status
 
-const changeProductStatus = async (productId: string, statusToChange: string): Promise<boolean> => {
+const changeProductStatus = async (productId: string, orderStatus: string): Promise => {
   const queryProduct = new Parse.Query('Product');
   const productObj = await queryProduct.get(productId, { useMasterKey: true });
   if (!productObj) throw new Error(`Product ${productId} not found`);
 
+  const productStatus = productObj.get('status');
+
   // Nếu là multipleProduct
   if (productObj.get('additionalPrices').length > 0) {
+    return Promise.resolve();
+  }
+  let statusToChange = null;
+  // Cases
+  if (orderStatus === 'pending') {
+    switch (productStatus) {
+      case 'inStock':
+      case 'availableInStore':
+      case 'availableInOnline':
+      case 'availableInAll':
+        statusToChange = 'suspended';
+        break;
+      default:
+        break;
+    }
+  }
+
+  if (orderStatus === 'partiallyPaid') {
+    switch (productStatus) {
+      case 'inStock':
+      case 'suspended':
+      case 'availableInStore':
+      case 'availableInOnline':
+      case 'availableInAll':
+        statusToChange = 'sold';
+        break;
+      default:
+        break;
+    }
+  }
+
+  if (orderStatus === 'paid' || orderStatus === 'sending' || orderStatus === 'completed') {
+    switch (productStatus) {
+      case 'inStock':
+      case 'suspended':
+      case 'availableInStore':
+      case 'availableInOnline':
+      case 'availableInAll':
+        statusToChange = 'sold';
+        break;
+      default:
+        break;
+    }
+  }
+
+  if (orderStatus === 'failed' || orderStatus === 'canceled') {
+    switch (productStatus) {
+      case 'suspended':
+      case 'sold':
+        statusToChange = 'inStock';
+        break;
+      default:
+        break;
+    }
+  }
+
+  if (!statusToChange) {
     return Promise.resolve();
   }
 
@@ -225,18 +285,10 @@ Parse.Cloud.afterSave('Order', async (req, res) => {
   const orderStatus: string = order.get('status');
   const lines: Object[] = order.get('lines');
 
-  // Change Product status
-  const productStatusToChange = orderStatus === 'pending' ? 'suspended' : 'sold';
-  const promisesToChangeProducts = [];
-  lines.map(line => {
-    promisesToChangeProducts.push(changeProductStatus(line.productId, productStatusToChange));
-    return line;
+  // Change product status
+  Promise.map(lines, line => {
+    return changeProductStatus(line.productId, orderStatus);
   });
-  try {
-    await Promise.all(promisesToChangeProducts);
-  } catch (error) {
-    return res.error(error.message);
-  }
 
   // Clear loaders
   loaders.order.prime(order.id, order);
@@ -255,6 +307,7 @@ Parse.Cloud.afterDelete('Order', (req, res) => {
   loaders.orders.clearAll();
   loaders.searchs.clearAll();
   loaders.searchsCount.clearAll();
+  loaders.salesReport.clearAll();
 
   res.success();
 });
