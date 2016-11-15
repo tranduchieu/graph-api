@@ -1,5 +1,6 @@
 // import Parse from 'parse/node';
 // import latenize from '../services/latenize';
+// import moment from 'moment';
 
 // Counting
 // -----------------------
@@ -76,3 +77,11 @@
 // .count()
 // .then(console.log)
 // .catch(console.error);
+
+// Query by date
+// ------------------------------
+// console.log('-->', moment().startOf('day').toDate());
+// const query = new Parse.Query('Order');
+// query.lessThanOrEqualTo('createdAt', moment().startOf('day').toDate());
+// query.find({ useMasterKey: true })
+// .then(console.log);
