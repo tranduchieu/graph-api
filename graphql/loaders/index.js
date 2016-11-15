@@ -29,6 +29,10 @@ import {
   searchsCountLoader,
 } from './search';
 
+import {
+  salesReportLoader,
+} from './report';
+
 module.exports = {
   users: allUsersLoader,
   user: userByIdLoader,
@@ -43,4 +47,5 @@ module.exports = {
   orders: allOrdersLoader,
   searchs: searchsLoader,
   searchsCount: searchsCountLoader,
+  salesReport: salesReportLoader,
 };

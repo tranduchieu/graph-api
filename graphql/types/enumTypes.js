@@ -30,6 +30,10 @@ export const ProductStatusEnum = new GraphQLEnumType({
       value: 'draft',
       description: 'Sản phẩm lưu dạng nháp. Chưa public.',
     },
+    IN_STOCK: {
+      value: 'inStock',
+      description: 'Hàng đang lưu kho',
+    },
     AVAILABLE_IN_STORE: {
       value: 'availableInStore',
       description: 'Sản phẩm chỉ bán ở cửa hàng',
@@ -123,6 +127,33 @@ export const SearchTypesEnum = new GraphQLEnumType({
     USER: {
       value: 'user',
       description: 'Tìm kiếm dạng Người dùng, khách hàng',
+    },
+  },
+});
+
+export const DateRangeEnum = new GraphQLEnumType({
+  name: 'DateRangeEnum',
+  values: {
+    TODAY: {
+      value: 'today',
+    },
+    YESTERDAY: {
+      value: 'yesterday',
+    },
+    LAST_WEEK: {
+      value: 'lastWeek',
+    },
+    LAST_MONTH: {
+      value: 'lastMonth',
+    },
+    LAST_7_DAYS: {
+      value: 'last7Days',
+    },
+    LAST_30_DAYS: {
+      value: 'last30Days',
+    },
+    CUSTOM: {
+      value: 'custom',
     },
   },
 });

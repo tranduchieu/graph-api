@@ -29,6 +29,7 @@ import BoxQueries from '../queries/Box';
 import SearchQueries from '../queries/Search';
 import UserQueries from '../queries/User';
 import DistrictQueries from '../queries/District';
+import ReportQueries from '../queries/Report';
 
 export const RolesEnumType = new GraphQLEnumType({
   name: 'RolesEnumType',
@@ -195,6 +196,7 @@ const User = new GraphQLObjectType({
     provinces: DistrictQueries.provinces,
     districts: DistrictQueries.districts,
     wards: DistrictQueries.wards,
+    salesReport: ReportQueries.salesReport,
   }),
   interfaces: [nodeInterface],
 });
