@@ -56,6 +56,7 @@ const OrderCreateMutation = mutationWithClientMutationId({
     },
     status: {
       type: new GraphQLNonNull(OrderStatusEnum),
+      defaultValue: 'pending',
     },
     lines: {
       type: new GraphQLNonNull(new GraphQLList(OrderLineInputType)),
