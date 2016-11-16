@@ -2,18 +2,22 @@ import moment from 'moment';
 import { omit } from 'lodash';
 import {
   GraphQLID,
+  GraphQLInt,
   GraphQLNonNull,
   GraphQLList,
 } from 'graphql';
 
 import {
   fromGlobalId,
+  connectionArgs,
+  connectionFromPromisedArray,
 } from 'graphql-relay';
 
 import { GraphQLDateTime } from '@tranduchieu/graphql-custom-types';
 
 import { SalesReport } from '../types/report';
 import { DateRangeEnum, ShopEnumType } from '../types/enumTypes';
+import { ShiftReportConnection } from '../connections/shiftReport';
 
 export default {
   salesReport: {
@@ -96,6 +100,52 @@ export default {
       args = omit(args, ['dateRange']);
 
       return loaders.salesReport.load(JSON.stringify(args));
+    },
+  },
+  shiftReports: {
+    type: ShiftReportConnection,
+    args: {
+      shops: {
+        type: new GraphQLList(ShopEnumType),
+      },
+      skip: {
+        type: GraphQLInt,
+        defaultValue: 0,
+      },
+      limit: {
+        type: GraphQLInt,
+        defaultValue: 20,
+      },
+      ...connectionArgs,
+    },
+    resolve(root, args, { loaders, user, roles, staffWorkingAt }) {
+      // Check roles
+      if (!user) throw new Error('Guest không có quyền xem Báo cáo');
+      const validRoles = roles.filter(role => {
+        return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
+      });
+      if (validRoles.length === 0) throw new Error('Không có quyền xem Báo cáo');
+
+      // Check manager roles
+      const validManagerRoles = roles.filter(role => {
+        return ['Boss', 'Administrator', 'Manager'].indexOf(role) !== -1;
+      });
+      // Nếu là Sales thì chỉ xem được các báo cáo tạo bởi chính mình
+      if (validManagerRoles === 0) {
+        args.staff = user.id;
+      }
+
+      // Check admin roles
+      const validAdminRoles = roles.filter(role => {
+        return ['Boss', 'Administrator'].indexOf(role) !== -1;
+      });
+
+      // Nếu là Manager thì xem được các báo cáo của Tổ nơi làm việc
+      if (validManagerRoles === 1 && validAdminRoles === 0) {
+        args.shops = [staffWorkingAt];
+      }
+
+      return connectionFromPromisedArray(loaders.shiftReports.load(JSON.stringify(args)), {});
     },
   },
 };

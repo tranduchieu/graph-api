@@ -3,6 +3,7 @@ import DataLoader from 'dataloader';
 import Parse from 'parse/node';
 import Promise from 'bluebird';
 import moment from 'moment';
+import { cursorToOffset } from 'graphql-relay';
 import { userByIdLoader } from './user';
 
 const revenueCalc = async (start, end, shops: string[], staffObj): Promise<Object> => {
@@ -113,5 +114,25 @@ export const salesReportLoader = new DataLoader(keys => {
 export const customersReportLoader = new DataLoader(keys => {
   return Promise.map(keys, key => {
     return key;
+  });
+});
+
+export const shiftReportsLoader = new DataLoader(keys => {
+  return Promise.map(keys, async key => {
+    const args = JSON.parse(key);
+    const { after, first, skip, limit, shops, staff } = args;
+
+    const query = new Parse.Query('ShiftReport');
+    if (shops) query.containedIn('shop', shops);
+    if (staff) {
+      const staffObj = await userByIdLoader.load(staff);
+      query.equalTo('staff', staffObj);
+    }
+
+    query.descending('createdAt');
+    query.skip(skip || (after ? cursorToOffset(after) + 1 : 0));
+    query.limit(limit || first || 20);
+
+    return query.find({ useMasterKey: true });
   });
 });

@@ -197,6 +197,7 @@ const User = new GraphQLObjectType({
     districts: DistrictQueries.districts,
     wards: DistrictQueries.wards,
     salesReport: ReportQueries.salesReport,
+    shiftReports: ReportQueries.shiftReports,
   }),
   interfaces: [nodeInterface],
 });
