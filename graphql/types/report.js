@@ -4,6 +4,7 @@ import {
   GraphQLEnumType,
   GraphQLString,
   GraphQLList,
+  GraphQLInputObjectType,
 } from 'graphql';
 
 import {
@@ -76,6 +77,21 @@ const ShiftReportAdjust = new GraphQLObjectType({
   }),
 });
 
+export const ShiftReportAdjustInput = new GraphQLInputObjectType({
+  name: 'ShiftReportAdjustInput',
+  fields: () => ({
+    type: {
+      type: ShiftReportAdjustEnumType,
+    },
+    amount: {
+      type: GraphQLInt,
+    },
+    note: {
+      type: GraphQLString,
+    },
+  }),
+});
+
 export const ShiftReport = new GraphQLObjectType({
   name: 'ShiftReport',
   fields: () => ({
@@ -134,6 +150,9 @@ export const ShiftReport = new GraphQLObjectType({
       resolve(data) {
         return data.get('adjust');
       },
+    },
+    note: {
+      type: GraphQLString,
     },
     viewer: {
       type: UserType,

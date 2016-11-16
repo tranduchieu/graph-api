@@ -17,6 +17,7 @@ import UserMutation from './mutations/User';
 import OrderMutation from './mutations/Order';
 import BoxMutation from './mutations/Box';
 import ProductTagMutation from './mutations/ProductTag';
+import ReportMutation from './mutations/Report';
 
 const Query = new GraphQLObjectType({
   name: 'Query',
@@ -46,6 +47,7 @@ const Mutation = new GraphQLObjectType({
     shortId: ShortIdMutation,
     createOrder: OrderMutation.create,
     updateOrder: OrderMutation.update,
+    createShiftReport: ReportMutation.createShiftReport,
   }),
 });
 
