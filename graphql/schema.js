@@ -10,6 +10,7 @@ import ProductQueries from './queries/Product';
 import ProductTagQueries from './queries/ProductTag';
 import OrderQueries from './queries/Order';
 import BoxQueries from './queries/Box';
+import ReportQueries from './queries/Report';
 
 import ProductMutation from './mutations/Product';
 import ShortIdMutation from './mutations/ShortId';
@@ -29,6 +30,7 @@ const Query = new GraphQLObjectType({
     productTag: ProductTagQueries.productTag,
     box: BoxQueries.box,
     order: OrderQueries.order,
+    shiftReport: ReportQueries.shiftReport,
   }),
 });
 

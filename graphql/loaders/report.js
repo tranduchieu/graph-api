@@ -117,6 +117,24 @@ export const customersReportLoader = new DataLoader(keys => {
   });
 });
 
+export const shiftReportByIdLoader = new DataLoader(ids => {
+  const ShiftReport = Parse.Object.extend('ShiftReport');
+  const query = new Parse.Query(ShiftReport);
+  query.containedIn('objectId', ids);
+
+  return query.find({ useMasterKey: true })
+    .then(shiftReports => {
+      return ids.map(id => {
+        const reportFilter = shiftReports.filter(item => {
+          return item.id === id;
+        });
+
+        const result = reportFilter.length >= 1 ? reportFilter[0] : null;
+        return result;
+      });
+    });
+});
+
 export const shiftReportsLoader = new DataLoader(keys => {
   return Promise.map(keys, async key => {
     const args = JSON.parse(key);
@@ -133,6 +151,13 @@ export const shiftReportsLoader = new DataLoader(keys => {
     query.skip(skip || (after ? cursorToOffset(after) + 1 : 0));
     query.limit(limit || first || 20);
 
-    return query.find({ useMasterKey: true });
+    const shiftReports = await query.find({ useMasterKey: true });
+
+    Promise.map(shiftReports, item => {
+      shiftReportByIdLoader.prime(item.id, item);
+      return Promise.resolve();
+    });
+
+    return shiftReports;
   });
 });

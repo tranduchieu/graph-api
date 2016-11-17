@@ -15,7 +15,7 @@ import {
 
 import { GraphQLDateTime } from '@tranduchieu/graphql-custom-types';
 
-import { SalesReport } from '../types/report';
+import ShiftReportType, { SalesReport } from '../types/report';
 import { DateRangeEnum, ShopEnumType } from '../types/enumTypes';
 import { ShiftReportConnection } from '../connections/shiftReport';
 
@@ -100,6 +100,27 @@ export default {
       args = omit(args, ['dateRange']);
 
       return loaders.salesReport.load(JSON.stringify(args));
+    },
+  },
+  shiftReport: {
+    type: ShiftReportType,
+    args: {
+      id: {
+        type: new GraphQLNonNull(GraphQLID),
+      },
+    },
+    async resolve(root, { id }, { loaders, user, roles }) {
+       // Check roles
+      if (!user) throw new Error('Guest không có quyền xem Báo cáo');
+      const validRoles = roles.filter(role => {
+        return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
+      });
+      if (validRoles.length === 0) throw new Error('Không có quyền xem Báo cáo');
+
+      const { id: shiftReportId } = fromGlobalId(id);
+
+      const shiftReportObj = await loaders.shiftReport.load(shiftReportId);
+      return shiftReportObj;
     },
   },
   shiftReports: {

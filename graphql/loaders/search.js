@@ -232,9 +232,12 @@ const queryByType = (type: string, text: string, skip: number, limit: number) =>
       searchQuery = searchOrderQuery;
       loaderById = orderByIdLoader;
       break;
-    default:
+    case 'product':
       searchQuery = searchProductQuery;
       loaderById = productByIdLoader;
+      break;
+    default:
+      break;
   }
 
   return searchQuery(text)
@@ -327,8 +330,11 @@ export const searchsCountLoader = new DataLoader(keys => {
       case 'order':
         searchQuery = searchOrderQuery;
         break;
-      default:
+      case 'product':
         searchQuery = searchProductQuery;
+        break;
+      default:
+        break;
     }
 
     return searchQuery(text)

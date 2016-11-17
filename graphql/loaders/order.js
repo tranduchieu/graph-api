@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader';
 import Parse from 'parse/node';
+import Promise from 'bluebird';
 import { cursorToOffset } from 'graphql-relay';
 import { userByIdLoader } from './user';
 
@@ -22,7 +23,7 @@ export const orderByIdLoader = new DataLoader(ids => {
 });
 
 export const allOrdersLoader = new DataLoader(keys => {
-  return Promise.all(keys.map(async key => {
+  return Promise.map(keys, async key => {
     const args = JSON.parse(key);
     const { after, first, skip, limit, code, shop, status, createdBy, customer } = args;
     const Order = Parse.Object.extend('Order');
@@ -42,12 +43,13 @@ export const allOrdersLoader = new DataLoader(keys => {
     queryOrder.skip(skip || (after ? cursorToOffset(after) + 1 : 0));
     queryOrder.limit(limit || first || 20);
 
-    return queryOrder.find({ useMasterKey: true })
-      .then(orders => {
-        orders.forEach(item => {
-          orderByIdLoader.prime(item.id, item);
-        });
-        return orders;
-      });
-  }));
+    const orders = await queryOrder.find({ useMasterKey: true });
+
+    Promise.map(orders, item => {
+      orderByIdLoader.prime(item.id, item);
+      return Promise.resolve();
+    });
+
+    return orders;
+  });
 });

@@ -1,6 +1,7 @@
 import DataLoader from 'dataloader';
 import Parse from 'parse/node';
 import { cursorToOffset } from 'graphql-relay';
+import Promise from 'bluebird';
 
 export const productTagByIdLoader = new DataLoader(ids => {
   const ProductTag = Parse.Object.extend('ProductTag');
@@ -21,7 +22,7 @@ export const productTagByIdLoader = new DataLoader(ids => {
 });
 
 export const allProductTagsLoader = new DataLoader(keys => {
-  return Promise.all(keys.map(async key => {
+  return Promise.map(keys, async key => {
     const args = JSON.parse(key);
     const { after, first, nameStartsWith } = args;
     const ProductTag = Parse.Object.extend('ProductTag');
@@ -32,12 +33,13 @@ export const allProductTagsLoader = new DataLoader(keys => {
     queryProductTag.skip(after ? cursorToOffset(after) + 1 : 0);
     queryProductTag.limit(first || 20);
 
-    return queryProductTag.find({ useMasterKey: true })
-      .then(productTags => {
-        productTags.forEach(item => {
-          productTagByIdLoader.prime(item.id, item);
-        });
-        return productTags;
-      });
-  }));
+    const tags = await queryProductTag.find({ useMasterKey: true });
+
+    Promise.map(tags, item => {
+      productTagByIdLoader.prime(item.id, item);
+      return Promise.resolve();
+    });
+
+    return tags;
+  });
 });

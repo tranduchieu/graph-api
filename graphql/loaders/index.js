@@ -32,6 +32,7 @@ import {
 import {
   salesReportLoader,
   shiftReportsLoader,
+  shiftReportByIdLoader,
 } from './report';
 
 module.exports = {
@@ -49,5 +50,6 @@ module.exports = {
   searchs: searchsLoader,
   searchsCount: searchsCountLoader,
   salesReport: salesReportLoader,
+  shiftReport: shiftReportByIdLoader,
   shiftReports: shiftReportsLoader,
 };

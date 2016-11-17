@@ -1,6 +1,7 @@
 import DataLoader from 'dataloader';
 import Parse from 'parse/node';
 import { cursorToOffset } from 'graphql-relay';
+import Promise from 'bluebird';
 
 export const userByIdLoader = new DataLoader(ids => {
   const queryUser = new Parse.Query(Parse.User);
@@ -21,7 +22,7 @@ export const userByIdLoader = new DataLoader(ids => {
 
 
 export const allUsersLoader = new DataLoader(keys => {
-  return Promise.all(keys.map(async key => {
+  return Promise.map(keys, async key => {
     const args = JSON.parse(key);
     const { after, first, skip, limit, username, name, mobilePhoneStartsWith, role } = args;
 
@@ -43,14 +44,15 @@ export const allUsersLoader = new DataLoader(keys => {
     queryUser.skip(skip || (after ? cursorToOffset(after) + 1 : 0));
     queryUser.limit(limit || first || 20);
 
-    return queryUser.find({ useMasterKey: true })
-      .then(users => {
-        users.forEach(item => {
-          userByIdLoader.prime(item.id, item);
-        });
-        return users;
-      });
-  }));
+    const users = await queryUser.find({ useMasterKey: true });
+
+    Promise.map(users, item => {
+      userByIdLoader.prime(item.id, item);
+      return Promise.resolve();
+    });
+
+    return users;
+  });
 });
 
 export const rolesByUserLoader = new DataLoader(userIds => {
@@ -69,26 +71,4 @@ export const rolesByUserLoader = new DataLoader(userIds => {
     );
   });
 });
-
-// const queryUser = new Parse.Query(Parse.User);
-// queryUser.equalTo('username', 'hieu');
-// const promise = queryUser.find();
-// // const promise = allUserLoader.load('allUsers');
-// promise
-// .then(users => {
-//   console.log(users);
-// })
-// .catch(console.error);
-
-// const promise1 = rolesByUserLoader.load('u9AF63PAEd');
-// const promise2 = rolesByUserLoader.load('8JqQOYbX81');
-
-// Promise.all([
-//   promise1,
-//   promise2,
-// ])
-// .then(result => {
-//   console.log(result);
-// })
-// .catch(console.error);
 
