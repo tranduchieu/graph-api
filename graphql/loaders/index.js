@@ -1,6 +1,7 @@
 import {
   allUsersLoader,
   userByIdLoader,
+  userByUsernameLoader,
   rolesByUserLoader,
 } from './user';
 
@@ -38,6 +39,7 @@ import {
 module.exports = {
   users: allUsersLoader,
   user: userByIdLoader,
+  userByUsername: userByUsernameLoader,
   rolesByUser: rolesByUserLoader,
   box: boxByIdLoader,
   boxes: allBoxesLoader,

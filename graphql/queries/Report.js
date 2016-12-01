@@ -15,7 +15,7 @@ import {
 
 import { GraphQLDateTime } from '@tranduchieu/graphql-custom-types';
 
-import ShiftReportType, { SalesReport } from '../types/report';
+import ShiftReportType, { SalesReport, ShiftReportEnumStatus } from '../types/report';
 import { DateRangeEnum, ShopEnumType } from '../types/enumTypes';
 import { ShiftReportConnection } from '../connections/shiftReport';
 
@@ -128,6 +128,9 @@ export default {
     args: {
       shops: {
         type: new GraphQLList(ShopEnumType),
+      },
+      status: {
+        type: new GraphQLList(ShiftReportEnumStatus),
       },
       skip: {
         type: GraphQLInt,

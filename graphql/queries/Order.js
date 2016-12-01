@@ -13,6 +13,8 @@ import {
   connectionFromPromisedArray,
 } from 'graphql-relay';
 
+import { GraphQLDateTime } from '@tranduchieu/graphql-custom-types';
+
 import OrderType from '../types/order';
 import { OrderStatusEnum, ShopEnumType } from '../types/enumTypes';
 
@@ -58,6 +60,12 @@ export default {
       },
       status: {
         type: new GraphQLList(OrderStatusEnum),
+      },
+      start: {
+        type: GraphQLDateTime,
+      },
+      end: {
+        type: GraphQLDateTime,
       },
       skip: {
         type: GraphQLInt,

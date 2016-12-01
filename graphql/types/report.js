@@ -92,6 +92,24 @@ export const ShiftReportAdjustInput = new GraphQLInputObjectType({
   }),
 });
 
+export const ShiftReportEnumStatus = new GraphQLEnumType({
+  name: 'ShiftReportEnumStatusType',
+  values: {
+    SENT: {
+      value: 'sent',
+    },
+    OPEN: {
+      value: 'open',
+    },
+    WORKING: {
+      value: 'working',
+    },
+    CANCELED: {
+      value: 'canceled',
+    },
+  },
+});
+
 export const ShiftReport = new GraphQLObjectType({
   name: 'ShiftReport',
   fields: () => ({
@@ -119,6 +137,12 @@ export const ShiftReport = new GraphQLObjectType({
       resolve(data, args, { loaders }) {
         const { id } = data.get('staff');
         return loaders.user.load(id);
+      },
+    },
+    status: {
+      type: ShiftReportEnumStatus,
+      resolve(data) {
+        return data.get('status');
       },
     },
     itemsSold: {

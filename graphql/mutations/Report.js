@@ -17,7 +17,8 @@ import { omit } from 'lodash';
 import { GraphQLDateTime } from '@tranduchieu/graphql-custom-types';
 
 import { ShiftReportEdge } from '../connections/shiftReport';
-import ShiftReportType, { ShiftReportAdjustInput } from '../types/report';
+import ShiftReportType, { ShiftReportAdjustInput, ShiftReportEnumStatus } from '../types/report';
+import UserType from '../types/user';
 
 const ShiftReportMutation = mutationWithClientMutationId({
   name: 'ShiftReportCreate',
@@ -31,6 +32,10 @@ const ShiftReportMutation = mutationWithClientMutationId({
     itemsSold: {
       type: new GraphQLNonNull(GraphQLInt),
       defaultValue: 0,
+    },
+    status: {
+      type: new GraphQLNonNull(ShiftReportEnumStatus),
+      defaultValue: 'open',
     },
     revenue: {
       type: new GraphQLNonNull(GraphQLInt),
@@ -63,7 +68,7 @@ const ShiftReportMutation = mutationWithClientMutationId({
       },
     },
     viewer: {
-      type: ShiftReportType,
+      type: UserType,
       resolve(root, args, { user }) {
         return user || {};
       },

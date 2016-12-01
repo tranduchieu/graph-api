@@ -59,8 +59,8 @@ export const RolesEnumType = new GraphQLEnumType({
 });
 
 // Resolver
-export function userResolver(_, { id }, { loaders }) {
-  return loaders.user.load(id);
+export async function userResolver(_, { id }, { loaders }) {
+  return await loaders.user.load(id) || {};
 }
 
 const User = new GraphQLObjectType({
@@ -190,6 +190,7 @@ const User = new GraphQLObjectType({
     orders: OrderQueries.orders,
     ordersByCustomer: OrderQueries.ordersByCustomer,
     ordersCount: OrderQueries.ordersCount,
+    userByUsername: UserQueries.userByUsername,
     users: UserQueries.users,
     searchs: SearchQueries.searchs,
     searchsCount: SearchQueries.searchsCount,

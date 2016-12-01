@@ -27,6 +27,8 @@ const mobilePhoneUniqueValidate = (mobilePhone) => {
 };
 
 Parse.Cloud.beforeSave(Parse.User, async (req, res) => {
+  // console.log('===>', req.object.existed(), req.object.isNew());
+  // console.log(req.object);
   const user = req.object;
   let currentUser;
   if (user.id) {

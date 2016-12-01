@@ -159,3 +159,4 @@ if (IS_DEVELOPMENT) {
   // require('./services/import-csv');
 }
 
+console.log('----->', process.env.PM2_WATCH);

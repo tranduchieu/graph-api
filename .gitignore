@@ -5,3 +5,5 @@ logs
 data/db
 db.js
 files/*
+dist
+mongo-data

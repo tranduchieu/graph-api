@@ -20,6 +20,23 @@ export const userByIdLoader = new DataLoader(ids => {
     });
 });
 
+export const userByUsernameLoader = new DataLoader(keys => {
+  const queryUser = new Parse.Query(Parse.User);
+  queryUser.containedIn('username', keys);
+
+  return queryUser.find({ useMasterKey: true })
+    .then(users => {
+      return keys.map(username => {
+        const userFilter = users.filter(user => {
+          return user.get('username') === username;
+        });
+
+        const result = userFilter.length >= 1 ? userFilter[0] : null;
+        return result;
+      });
+    });
+});
+
 
 export const allUsersLoader = new DataLoader(keys => {
   return Promise.map(keys, async key => {

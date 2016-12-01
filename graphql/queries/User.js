@@ -59,6 +59,17 @@ export default {
       });
     },
   },
+  userByUsername: {
+    type: UserType,
+    args: {
+      username: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
+    },
+    resolve(root, { username }, { loaders }) {
+      return loaders.userByUsername.load(username);
+    },
+  },
   users: {
     type: UserConnection,
     args: {
