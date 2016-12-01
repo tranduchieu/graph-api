@@ -18,6 +18,7 @@ import {
 } from '@tranduchieu/graphql-custom-types';
 import { AddressType } from './address';
 import { ShopEnumType } from './enumTypes';
+import ShiftReportType from './types';
 
 import { nodeInterface } from '../relay/RelayNode';
 import RelayRegistry from '../relay/RelayRegistry';
@@ -167,6 +168,12 @@ const User = new GraphQLObjectType({
 
         if (validRoles.length === 0) return null;
         return data.get('staffWorkingAt') || null;
+      },
+    },
+    todayShiftReports: {
+      type: new GraphQLList(ShiftReportType),
+      resolve(data) {
+        return data.get('todayShiftReports');
       },
     },
     createdAt: {

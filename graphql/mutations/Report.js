@@ -17,7 +17,7 @@ import { omit } from 'lodash';
 import { GraphQLDateTime } from '@tranduchieu/graphql-custom-types';
 
 import { ShiftReportEdge } from '../connections/shiftReport';
-import ShiftReportType, { ShiftReportAdjustInput, ShiftReportEnumStatus } from '../types/report';
+import { ShiftReportAdjustInput, ShiftReportEnumStatus } from '../types/report';
 import UserType from '../types/user';
 
 const ShiftReportMutation = mutationWithClientMutationId({
