@@ -177,6 +177,9 @@ export const ShiftReport = new GraphQLObjectType({
     },
     note: {
       type: GraphQLString,
+      resolve(data) {
+        return data.get('note');
+      },
     },
     viewer: {
       type: UserType,

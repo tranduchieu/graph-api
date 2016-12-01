@@ -1,3 +1,4 @@
+import moment from 'moment';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -18,7 +19,7 @@ import {
 } from '@tranduchieu/graphql-custom-types';
 import { AddressType } from './address';
 import { ShopEnumType } from './enumTypes';
-import ShiftReportType from './report';
+import ShiftReportType, { ShiftReportEnumStatus } from './report';
 
 import { nodeInterface } from '../relay/RelayNode';
 import RelayRegistry from '../relay/RelayRegistry';
@@ -147,33 +148,42 @@ const User = new GraphQLObjectType({
     staffWorkplaces: {
       description: 'Những nơi nhân viên được sắp xếp làm việc',
       type: new GraphQLList(ShopEnumType),
-      resolve(data, args, { user, roles }) {
-        if (!user) return [];
-        const validRoles = roles.filter(role => {
-          return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
-        });
+      resolve(data) {
+        // if (!user) return [];
+        // const validRoles = roles.filter(role => {
+        //   return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
+        // });
 
-        if (validRoles.length === 0) return [];
+        // if (validRoles.length === 0) return [];
         return data.get('staffWorkplaces');
       },
     },
     staffWorkingAt: {
       description: 'Nhân viên đang làm việc tại',
       type: ShopEnumType,
-      resolve(data, args, { user, roles }) {
-        if (!user) return null;
-        const validRoles = roles.filter(role => {
-          return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
-        });
+      resolve(data) {
+        // if (!user) return null;
+        // const validRoles = roles.filter(role => {
+        //   return ['Boss', 'Administrator', 'Manager', 'Sales'].indexOf(role) !== -1;
+        // });
 
-        if (validRoles.length === 0) return null;
-        return data.get('staffWorkingAt') || null;
+        // if (validRoles.length === 0) return null;
+        return data.get('staffWorkingAt');
       },
     },
     todayShiftReports: {
       type: new GraphQLList(ShiftReportType),
-      resolve(data) {
-        return data.get('todayShiftReports');
+      args: {
+        status: {
+          type: new GraphQLList(ShiftReportEnumStatus),
+        },
+      },
+      resolve(data, args, { loaders }) {
+        args.start = moment().startOf('day').toDate();
+        args.end = moment().endOf('day').toDate();
+        args.staff = data.id;
+
+        return loaders.shiftReports.load(JSON.stringify(args));
       },
     },
     createdAt: {

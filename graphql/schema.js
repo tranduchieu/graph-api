@@ -50,6 +50,7 @@ const Mutation = new GraphQLObjectType({
     createOrder: OrderMutation.create,
     updateOrder: OrderMutation.update,
     createShiftReport: ReportMutation.createShiftReport,
+    updateShiftReport: ReportMutation.updateShiftReport,
   }),
 });
 

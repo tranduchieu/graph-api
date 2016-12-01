@@ -108,6 +108,7 @@ Parse.Cloud.afterSave(Parse.User, async (req, res) => {
 
   // Clear loaders
   loaders.user.prime(userObj.id, userObj);
+  loaders.userByUsername.prime(userObj.get('username'), userObj);
   loaders.users.clearAll();
   loaders.rolesByUser.clear(userObj.id);
   loaders.searchs.clearAll();
@@ -122,6 +123,7 @@ Parse.Cloud.afterDelete('User', (req, res) => {
 
   // Clear loaders
   loaders.user.clear(user.id);
+  loaders.userByUsername.clear(user.get('username'));
   loaders.users.clearAll();
   loaders.rolesByUser.clear(user.id);
   loaders.searchs.clearAll();

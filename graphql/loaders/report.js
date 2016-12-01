@@ -138,13 +138,16 @@ export const shiftReportByIdLoader = new DataLoader(ids => {
 export const shiftReportsLoader = new DataLoader(keys => {
   return Promise.map(keys, async key => {
     const args = JSON.parse(key);
-    const { after, first, skip, limit, shops, staff } = args;
+    const { after, first, skip, limit, shops, staff, status } = args;
 
     const query = new Parse.Query('ShiftReport');
     if (shops) query.containedIn('shop', shops);
     if (staff) {
       const staffObj = await userByIdLoader.load(staff);
       query.equalTo('staff', staffObj);
+    }
+    if (status) {
+      query.containedIn('status', status);
     }
 
     query.descending('createdAt');
