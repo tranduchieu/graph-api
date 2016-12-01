@@ -158,5 +158,3 @@ if (IS_DEVELOPMENT) {
   require('./parse-example');
   // require('./services/import-csv');
 }
-
-console.log('----->', process.env.PM2_WATCH);
