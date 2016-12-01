@@ -22,9 +22,9 @@ RUN rm -rf dist && mkdir dist
 
 # Build
 RUN babel-node --presets es2015,stage-0 ./scripts/updateSchema.js
-RUN babel . --ignore node_modules,test,flow-typed,interfaces --out-dir dist
+RUN babel . --ignore node_modules,test,flow-typed,interfaces,dist --out-dir dist
 
-VOLUME /data/db /data/backup
+# VOLUME /data/db /data/backup
 
 EXPOSE 8080
 
