@@ -87,6 +87,16 @@ type CreateOrderHistoryType {
   createdAt: DateTime
 }
 
+enum DateRangeEnum {
+  TODAY
+  YESTERDAY
+  LAST_WEEK
+  LAST_MONTH
+  LAST_7_DAYS
+  LAST_30_DAYS
+  CUSTOM
+}
+
 # The DateTime scalar type represents date time strings complying to ISO-8601.
 scalar DateTime
 
@@ -111,6 +121,7 @@ type Mutation {
   shortId(input: ShortIdInput!): ShortIdPayload
   createOrder(input: OrderCreateInput!): OrderCreatePayload
   updateOrder(input: OrderUpdateInput!): OrderUpdatePayload
+  createShiftReport(input: ShiftReportCreateInput!): ShiftReportCreatePayload
 }
 
 # An object with an ID
@@ -137,6 +148,7 @@ type Order implements Node {
   totalDiscounts: Int
   total: Int
   totalWeight: Int
+  totalPaid: Int
   note: String
   createdAt: DateTime
   createdBy: User
@@ -162,7 +174,7 @@ input OrderCreateInput {
   shippingAddress: AddressInput
   shippingCost: Int
   shippingDays: Int
-  status: OrderStatusEnum!
+  status: OrderStatusEnum! = PENDING
   lines: [OrderLineInput]!
   subTotal: Int!
 
@@ -195,8 +207,6 @@ type OrderEdge {
 
 # Order History type
 type OrderHistory {
-  # The ID of an object
-  id: ID!
   type: OrderHistoryTypes
   content: HistoryContentType
   updatedAt: DateTime
@@ -209,8 +219,6 @@ enum OrderHistoryTypes {
   ADD_PAYMENT
   ADD_SHIPPING
   CHANGE_STATUS
-  CHANGE_LINES
-  CHANGE_DISCOUNTS
   ADD_REFUND
 }
 
@@ -269,6 +277,8 @@ input OrderUpdateInput {
   note: String
   print: Boolean
   addPayment: PaymentHistoryInputType
+  addRefund: RefundHistoryInputType
+  addShipping: ShippingHistoryInputType
   clientMutationId: String
 }
 
@@ -405,6 +415,9 @@ enum ProductStatusEnumType {
   # Sản phẩm lưu dạng nháp. Chưa public.
   DRAFT
 
+  # Hàng đang lưu kho
+  IN_STOCK
+
   # Sản phẩm chỉ bán ở cửa hàng
   AVAILABLE_IN_STORE
 
@@ -498,11 +511,34 @@ type Query {
   productTag(id: ID!): ProductTag
   box(id: ID!): Box
   order(id: ID!): Order
+  shiftReport(id: ID!): ShiftReport
+}
+
+input RefundHistoryInputType {
+  refundMethod: PaymentMethods
+  amount: Int
 }
 
 type RefundHistoryType {
   refundMethod: PaymentMethods
   amount: Int
+}
+
+enum RolesEnumType {
+  BOSS
+  ADMINISTRATOR
+  MANAGER
+  CUSTOMER
+  SALES
+  USER
+  SHIPPER
+}
+
+type SalesReport {
+  itemsSold: Int
+  revenue: Int
+  cash: Int
+  bank: Int
 }
 
 union SearchableType = User | Product | Order
@@ -536,6 +572,89 @@ enum SearchTypesEnum {
   USER
 }
 
+type ShiftReport implements Node {
+  # The ID of an object
+  id: ID!
+  start: DateTime
+  end: DateTime
+  shop: ShopEnumType
+  staff: User
+  status: ShiftReportEnumStatusType
+  itemsSold: Int
+  revenue: Int
+  cash: Int
+  bank: Int
+  adjust: [ShiftReportAdjust]
+  note: String
+  viewer: User
+}
+
+type ShiftReportAdjust {
+  type: ShiftReportAdjustEnumType
+  amount: Int
+  note: String
+}
+
+enum ShiftReportAdjustEnumType {
+  ADD
+  SUBTRACT
+}
+
+input ShiftReportAdjustInput {
+  type: ShiftReportAdjustEnumType
+  amount: Int
+  note: String
+}
+
+# A connection to a list of items.
+type ShiftReportConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [ShiftReportEdge]
+}
+
+input ShiftReportCreateInput {
+  start: DateTime!
+  end: DateTime!
+  itemsSold: Int! = 0
+  status: ShiftReportEnumStatusType! = OPEN
+  revenue: Int! = 0
+  cash: Int! = 0
+  bank: Int! = 0
+  adjust: [ShiftReportAdjustInput] = []
+  note: String
+  clientMutationId: String
+}
+
+type ShiftReportCreatePayload {
+  shiftReportEdge: ShiftReportEdge
+  viewer: User
+  clientMutationId: String
+}
+
+# An edge in a connection.
+type ShiftReportEdge {
+  # The item at the end of the edge
+  node: ShiftReport
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+enum ShiftReportEnumStatusType {
+  SENT
+  OPEN
+  WORKING
+  CANCELED
+}
+
+input ShippingHistoryInputType {
+  shipper: ID
+  shippingStatus: ShippingHistoryTypes
+}
+
 type ShippingHistoryType {
   shipper: User
   shippingStatus: ShippingHistoryTypes
@@ -543,7 +662,16 @@ type ShippingHistoryType {
 
 enum ShippingHistoryTypes {
   # Đóng gói xong. Sẵn sàng giao hàng
-  PACKAGED_COMPLETE
+  PACKAGED
+
+  # Đã chuyển hàng cho shipper
+  SHIPPER_RECEIVED
+
+  # Giao hàng thành công. Khách hàng đã nhận hàng
+  DELIVERED
+
+  # Đã nhận hàng gửi trả lại
+  BACK_RECEIVED
 }
 
 enum ShopEnumType {
@@ -588,6 +716,7 @@ type User implements Node {
 
   # Nhân viên đang làm việc tại
   staffWorkingAt: ShopEnumType
+  todayShiftReports: [ShiftReport]
   createdAt: DateTime
   updatedAt: DateTime
   products(code: String, shop: [ShopEnumType], status: [ProductStatusEnumType], isMultipleProduct: Boolean = false, boxes: [String], skip: Int = 0, limit: Int = 20, after: String, first: Int, before: String, last: Int): ProductConnection
@@ -596,15 +725,18 @@ type User implements Node {
   producTagsCount: Int
   boxes(nameStartsWith: String, visible: Boolean, skip: Int = 0, limit: Int = 20, after: String, first: Int, before: String, last: Int): BoxConnection
   boxesCount(type: BoxTypesEnum, visible: Boolean): Int
-  orders(code: String, shop: [ShopEnumType], status: [OrderStatusEnum], skip: Int = 0, limit: Int = 20, after: String, first: Int, before: String, last: Int): OrderConnection
+  orders(code: String, shop: [ShopEnumType], status: [OrderStatusEnum], start: DateTime, end: DateTime, skip: Int = 0, limit: Int = 20, after: String, first: Int, before: String, last: Int): OrderConnection
   ordersByCustomer(code: String, shop: ShopEnumType, status: OrderStatusEnum, skip: Int = 0, limit: Int = 20, after: String, first: Int, before: String, last: Int): OrderConnection
   ordersCount(status: OrderStatusEnum, shop: ShopEnumType, customer: ID, createdBy: ID): Int
-  users(name: [String!], username: String, mobilePhoneStartsWith: String, after: String, first: Int, before: String, last: Int): UserConnection
+  userByUsername(username: String!): User
+  users(name: [String!], username: String, mobilePhoneStartsWith: String, role: RolesEnumType, skip: Int = 0, limit: Int = 20, after: String, first: Int, before: String, last: Int): UserConnection
   searchs(text: String!, types: [SearchTypesEnum] = [], ratio: [Int] = [], skip: Int = 0, limit: Int = 20, after: String, first: Int, before: String, last: Int): SearchableTypeConnection
   searchsCount(text: String!, type: SearchTypesEnum!): Int
   provinces: [String]
   districts(province: String!): [String]
   wards(province: String!, district: String!): [String]
+  salesReport(dateRange: DateRangeEnum! = TODAY, start: DateTime, end: DateTime, shops: [ShopEnumType], staff: ID): SalesReport
+  shiftReports(shops: [ShopEnumType], status: [ShiftReportEnumStatusType], skip: Int = 0, limit: Int = 20, after: String, first: Int, before: String, last: Int): ShiftReportConnection
 }
 
 # A connection to a list of items.
@@ -626,6 +758,7 @@ input UserCreateInput {
   addresses: [AddressInput] = []
   tags: [String] = []
   note: String
+  roles: [RolesEnumType]
   clientMutationId: String
 }
 

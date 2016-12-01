@@ -18,7 +18,7 @@ import {
 } from '@tranduchieu/graphql-custom-types';
 import { AddressType } from './address';
 import { ShopEnumType } from './enumTypes';
-import ShiftReportType from './types';
+import ShiftReportType from './report';
 
 import { nodeInterface } from '../relay/RelayNode';
 import RelayRegistry from '../relay/RelayRegistry';
