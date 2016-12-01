@@ -159,6 +159,10 @@ const ShiftReportUpdateMutation = mutationWithClientMutationId({
 
     const shiftReportObj = await loaders.shiftReport.load(id);
 
+    if (!shiftReportObj) {
+      throw new Error(`ShiftReport id ${id} not found`);
+    }
+
     if (shiftReportObj.get('status') === 'sent') {
       throw new Error('Không thể cập nhật Báo cáo đã gửi');
     }
