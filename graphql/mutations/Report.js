@@ -30,7 +30,6 @@ const ShiftReportCreateMutation = mutationWithClientMutationId({
     },
     end: {
       type: GraphQLDateTime,
-      defaultValue: moment().toDate(),
     },
     itemsSold: {
       type: GraphQLInt,
