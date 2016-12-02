@@ -122,6 +122,7 @@ type Mutation {
   createOrder(input: OrderCreateInput!): OrderCreatePayload
   updateOrder(input: OrderUpdateInput!): OrderUpdatePayload
   createShiftReport(input: ShiftReportCreateInput!): ShiftReportCreatePayload
+  updateShiftReport(input: ShiftReportUpdateInput!): ShiftReportUpdatePayload
 }
 
 # An object with an ID
@@ -379,7 +380,7 @@ input ProductCreateInput {
   images: [URL] = []
   tags: [String] = []
   price: Int!
-  salePrice: Int
+  salePrice: Int = null
   weight: Int = 0
   additionalProperties: [ProductAdditionalPropertiesInput] = []
   clientMutationId: String
@@ -617,12 +618,12 @@ type ShiftReportConnection {
 
 input ShiftReportCreateInput {
   start: DateTime!
-  end: DateTime!
-  itemsSold: Int! = 0
-  status: ShiftReportEnumStatusType! = OPEN
-  revenue: Int! = 0
-  cash: Int! = 0
-  bank: Int! = 0
+  end: DateTime
+  itemsSold: Int = 0
+  status: ShiftReportEnumStatusType = OPEN
+  revenue: Int = 0
+  cash: Int = 0
+  bank: Int = 0
   adjust: [ShiftReportAdjustInput] = []
   note: String
   clientMutationId: String
@@ -648,6 +649,24 @@ enum ShiftReportEnumStatusType {
   OPEN
   WORKING
   CANCELED
+}
+
+input ShiftReportUpdateInput {
+  id: ID!
+  status: ShiftReportEnumStatusType
+  end: DateTime
+  itemsSold: Int
+  revenue: Int
+  cash: Int
+  bank: Int
+  adjust: [ShiftReportAdjustInput]
+  note: String
+  clientMutationId: String
+}
+
+type ShiftReportUpdatePayload {
+  shiftReport: ShiftReport
+  clientMutationId: String
 }
 
 input ShippingHistoryInputType {
@@ -716,7 +735,7 @@ type User implements Node {
 
   # Nhân viên đang làm việc tại
   staffWorkingAt: ShopEnumType
-  todayShiftReports: [ShiftReport]
+  todayShiftReports(status: [ShiftReportEnumStatusType]): [ShiftReport]
   createdAt: DateTime
   updatedAt: DateTime
   products(code: String, shop: [ShopEnumType], status: [ProductStatusEnumType], isMultipleProduct: Boolean = false, boxes: [String], skip: Int = 0, limit: Int = 20, after: String, first: Int, before: String, last: Int): ProductConnection
