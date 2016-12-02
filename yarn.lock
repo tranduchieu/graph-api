@@ -2106,7 +2106,7 @@ graphql-relay@^0.4.2:
   version "0.4.4"
   resolved "https://registry.yarnpkg.com/graphql-relay/-/graphql-relay-0.4.4.tgz#876a654445b6af4539f81cb9befd5cd7ead129dd"
 
-graphql@^0.7.2:
+graphql@0.7.2:
   version "0.7.2"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-0.7.2.tgz#cc894a32823399b8a0cb012b9e9ecad35cd00f72"
   dependencies:
@@ -3015,7 +3015,7 @@ parse-bmfont-xml@^1.1.0:
     xml-parse-from-string "^1.0.0"
     xml2js "^0.4.5"
 
-parse-dashboard@^1.0.19:
+parse-dashboard@1.0.19:
   version "1.0.19"
   resolved "https://registry.yarnpkg.com/parse-dashboard/-/parse-dashboard-1.0.19.tgz#820b93f9bc25a7317c586e68f3ad5cdb48d9745a"
   dependencies:

@@ -83,6 +83,7 @@ if (IS_DEVELOPMENT) {
         masterKey: MASTER_KEY,
         appName: 'Parse Server',
       }],
+      mountPath: '/dashboard',
       users,
     }, IS_DEVELOPMENT)
   );

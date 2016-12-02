@@ -380,7 +380,7 @@ input ProductCreateInput {
   images: [URL] = []
   tags: [String] = []
   price: Int!
-  salePrice: Int = null
+  salePrice: Int
   weight: Int = 0
   additionalProperties: [ProductAdditionalPropertiesInput] = []
   clientMutationId: String
