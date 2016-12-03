@@ -1,13 +1,12 @@
+// @flow
 import {
   GraphQLString,
 } from 'graphql';
-import ShortParseId from '@tranduchieu/short-parse-id';
 
 import { mutationWithClientMutationId } from 'graphql-relay';
 
-const APP_ID = process.env.APP_ID;
+import { getOne } from '../../services/shortId';
 
-const ShortId = new ShortParseId(6, APP_ID);
 // ShortId.batchAdd(20);
 const ShortIdMutation = mutationWithClientMutationId({
   name: 'ShortId',
@@ -17,8 +16,9 @@ const ShortIdMutation = mutationWithClientMutationId({
       resolve: (payload) => payload.shortId,
     },
   },
-  async mutateAndGetPayload(args, { accessToken }) {
-    const shortId = await ShortId.getOne(accessToken);
+  async mutateAndGetPayload(args, { user }) {
+    if (!user) throw new Error('Guest không có quyền get ShortId');
+    const shortId = await getOne();
     return { shortId };
   },
 });

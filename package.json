@@ -50,7 +50,6 @@
   },
   "dependencies": {
     "@tranduchieu/graphql-custom-types": "^0.6.8",
-    "@tranduchieu/short-parse-id": "0.0.4",
     "aws-sdk": "^2.6.6",
     "axios": "^0.14.0",
     "bluebird": "^3.4.6",
