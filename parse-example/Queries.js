@@ -85,3 +85,31 @@
 // query.lessThanOrEqualTo('createdAt', moment().startOf('day').toDate());
 // query.find({ useMasterKey: true })
 // .then(console.log);
+
+// Query Orderlines
+// ---------------------------
+// const boxes = ['Váy', 'Chân váy', 'Áo phao'];
+// const report = [];
+// boxes.forEach(key => {
+//   report[key] = 0;
+// });
+
+// const query = new Parse.Query('Order');
+// query.containedIn('lines.tags', boxes);
+// query.find({ useMasterKey: true })
+// .then(result => {
+//   if (result.length > 0) {
+//     result.forEach(order => {
+//       order.get('lines').forEach(line => {
+//         if (line.tags) {
+//           line.tags.forEach(tag => {
+//             if (boxes.indexOf(tag) !== -1) {
+//               report[tag] += line.quantity;
+//             }
+//           });
+//         }
+//       });
+//     });
+//   }
+//   console.log(report);
+// });
