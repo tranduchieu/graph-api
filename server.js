@@ -65,29 +65,26 @@ server.use(
   })
 );
 
-if (IS_DEVELOPMENT) {
-  let users;
-  if (DASHBOARD_AUTH) {
-    const [user, pass] = DASHBOARD_AUTH.split(':');
-    users = [{
-      user,
-      pass,
-    }];
-  }
-  server.use(
-    '/dashboard',
-    new ParseDashboard({
-      apps: [{
-        serverURL: '/parse',
-        appId: APP_ID,
-        masterKey: MASTER_KEY,
-        appName: 'Parse Server',
-      }],
-      mountPath: '/dashboard',
-      users,
-    }, IS_DEVELOPMENT)
-  );
+let users;
+if (DASHBOARD_AUTH) {
+  const [user, pass] = DASHBOARD_AUTH.split(':');
+  users = [{
+    user,
+    pass,
+  }];
 }
+server.use(
+  '/dashboard',
+  new ParseDashboard({
+    apps: [{
+      serverURL: '/parse',
+      appId: APP_ID,
+      masterKey: MASTER_KEY,
+      appName: 'Parse Server',
+    }],
+    users,
+  }, true)
+);
 
 function extractTokenFromHeader(headers) {
   if (headers == null || headers.authorization == null) return null;
