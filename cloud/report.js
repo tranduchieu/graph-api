@@ -21,7 +21,7 @@ const shiftReportCalc = (shiftReportObj: Object) => {
     });
   }
 
-  if (revenue !== (bank + (cash + totalAdjust))) {
+  if (revenue !== (bank + (cash - totalAdjust))) {
     throw new Error('Tính toán không đúng');
   }
   return true;

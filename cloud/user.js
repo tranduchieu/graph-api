@@ -105,10 +105,10 @@ Parse.Cloud.afterSave(Parse.User, async (req, res) => {
   } catch (error) {
     return res.error(error.message);
   }
-
+  // console.log(userObj.get('username'), userObj.get('staffWorkingAt'));
   // Clear loaders
   loaders.user.prime(userObj.id, userObj);
-  loaders.userByUsername.prime(userObj.get('username'), userObj);
+  loaders.userByUsername.clear(userObj.get('username')).prime(userObj.get('username'), userObj);
   loaders.users.clearAll();
   loaders.rolesByUser.clear(userObj.id);
   loaders.searchs.clearAll();

@@ -12,7 +12,7 @@ import loaders from '../graphql/loaders';
 // [x] Check product status
 // [x] Check history
 
-const reCalculateOrder = async (Order: Object): Promise<boolean> => {
+const reCalculateOrder = (Order: Object): Promise<boolean> => {
   const total: number = Order.get('total') || 0;
   const subTotal: number = Order.get('subTotal') || 0;
   const shippingCost: number = Order.get('shippingCost') || 0;
@@ -58,16 +58,13 @@ const checkCode = async (code: string) => {
   return true;
 };
 
-const checkProductStatus = async (productId: string, shopOnOrder: string): Promise<boolean> => {
-  const productQuery = new Parse.Query('Product');
-  const productObj = await productQuery.get(productId);
-  if (!productObj) throw new Error(`Product ${productId} not found`);
+const checkProductStatus = (productObj: Object, shopOnOrder: string) => {
   if (productObj.get('shop') !== 'Tổ Cú' && shopOnOrder !== 'Tổ Cú Online' && productObj.get('shop') !== shopOnOrder) {
     throw new Error(`Sản phẩm ${productObj.get('code')} đang ở shop ${productObj.get('shop')}`);
   }
   const productStatus = productObj.get('status');
   if (productStatus.indexOf('available') === -1) {
-    throw new Error(`Product ${productId} not available for order`);
+    throw new Error(`Product ${productObj.id} not available for order`);
   }
 
   return true;
@@ -143,15 +140,22 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
   }
 
   // Check product
-  let checkProductPromise = Promise.resolve();
+  let linesPromise = Promise.resolve([]);
   if (!currentOrder) {
     const lines: Object[] = order.get('lines');
-    const checkProductPromisesArr = [];
-    lines.map(line => {
-      checkProductPromisesArr.push(checkProductStatus(line.productId, shop));
+    console.log(lines);
+    linesPromise = Promise.map(lines, async line => {
+      const productObj = await loaders.product.load(line.productId);
+      if (!productObj) throw new Error(`Product ${line.productId} not found`);
+
+      checkProductStatus(productObj, shop);
+
+      line.boxes = productObj.get('boxes') || [];
+      line.tags = productObj.get('tags') || [];
+      line.productName = productObj.get('name');
+
       return line;
     });
-    checkProductPromise = Promise.all(checkProductPromisesArr);
   }
 
   const shippingAddress = order.get('shippingAddress') || null;
@@ -162,7 +166,7 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
     // Check code
     checkCodePromise,
     // Check products
-    checkProductPromise,
+    linesPromise,
     // Calculator
     reCalculateOrder(order),
     // Add address to User
@@ -196,6 +200,7 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
   }
 
   // Set other fields
+  order.set('lines', result[1]);
   order.set('history', history);
   order.set('shippingAddress', result[3]);
   order.set('status', statusToChange);
@@ -295,6 +300,7 @@ Parse.Cloud.afterSave('Order', async (req, res) => {
   loaders.orders.clearAll();
   loaders.searchs.clearAll();
   loaders.searchsCount.clearAll();
+  loaders.salesReport.clearAll();
 
   return res.success();
 });
