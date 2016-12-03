@@ -90,7 +90,7 @@ const ShiftReportCreateMutation = mutationWithClientMutationId({
     inputObj.staff = user;
     inputObj.shop = staffWorkingAt;
     inputObj.start = moment(inputObj.start).toDate();
-    inputObj.end = moment(inputObj).toDate();
+    inputObj.end = moment(inputObj.end).toDate();
 
     const ShiftReport = Parse.Object.extend('ShiftReport');
     const newShiftReport = new ShiftReport();
@@ -166,6 +166,8 @@ const ShiftReportUpdateMutation = mutationWithClientMutationId({
     if (shiftReportObj.get('status') === 'sent') {
       throw new Error('Không thể cập nhật Báo cáo đã gửi');
     }
+
+    obj.end = moment(obj.end).toDate();
 
     Object.keys(obj).forEach(key => {
       if (key !== 'id' && key !== 'clientMutationId') shiftReportObj.set(key, obj[key]);
