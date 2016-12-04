@@ -140,11 +140,11 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
   }
 
   // Check product
-  let linesPromise = Promise.resolve([]);
+  const lines: Object[] = order.get('lines');
+  let linesPromise = () => Promise.resolve(lines);
   if (!currentOrder) {
-    const lines: Object[] = order.get('lines');
     console.log(lines);
-    linesPromise = Promise.map(lines, async line => {
+    linesPromise = () => Promise.map(lines, async line => {
       const productObj = await loaders.product.load(line.productId);
       if (!productObj) throw new Error(`Product ${line.productId} not found`);
 
@@ -153,7 +153,7 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
       line.boxes = productObj.get('boxes') || [];
       line.tags = productObj.get('tags') || [];
       line.productName = productObj.get('name');
-
+      console.log('line--->', line);
       return line;
     });
   }
@@ -166,7 +166,7 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
     // Check code
     checkCodePromise,
     // Check products
-    linesPromise,
+    linesPromise(),
     // Calculator
     reCalculateOrder(order),
     // Add address to User
@@ -198,6 +198,8 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
       updatedBy: order.get('createdBy').id,
     });
   }
+
+  console.log('--->', result[1]);
 
   // Set other fields
   order.set('lines', result[1]);
