@@ -1,0 +1,28 @@
+[
+  {
+    "boxes": [
+      "Áophôngnam",
+      "Giầy"
+    ],
+    "images": [],
+    "description": "Quanvayyyy",
+    "code": "jfh-76i",
+    "shop": "Tổ Cú Hoàng Quốc Việt",
+    "status": "sold",
+    "featured": false,
+    "price": 120000,
+    "updatedBy": {
+      "__type": "Pointer",
+      "className": "_User",
+      "objectId": "2eN0hIjiqu"
+    },
+    "createdBy": {
+      "__type": "Pointer",
+      "className": "_User",
+      "objectId": "2eN0hIjiqu"
+    },
+    "additionalPrices": [],
+    "tags": [],
+    "additionalProperties": []
+  }
+]

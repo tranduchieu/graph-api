@@ -4,7 +4,7 @@ FROM node:latest
 MAINTAINER Hieu Tran <hieu.tranduc@gmail.com>
 
 # Install Node global packages
-RUN npm install -g yarn pm2 babel-cli
+RUN npm install -g yarn jest pm2 babel-cli
 
 # Create app directory
 RUN mkdir -p /usr/src
