@@ -1,4 +1,5 @@
-/* global Parse, @flow */
+// @flow
+import Parse from 'parse/node';
 import nodeUUID from 'node-uuid';
 import _ from 'lodash';
 import moment from 'moment';
@@ -12,45 +13,48 @@ import loaders from '../graphql/loaders';
 // [x] Check product status
 // [x] Check history
 
-const reCalculateOrder = (Order: Object): Promise<boolean> => {
-  const total: number = Order.get('total') || 0;
-  const subTotal: number = Order.get('subTotal') || 0;
-  const shippingCost: number = Order.get('shippingCost') || 0;
-  const percentageDiscount: number = Order.get('percentageDiscount') || 0;
-  const fixedDiscount: number = Order.get('fixedDiscount') || 0;
-  const totalDiscounts: number = Order.get('totalDiscounts') || 0;
-  const OrderLines: Object[] = Order.get('lines') || [];
+export const reCalculateOrder = (OrderJSON: Object): Promise => {
+  return new Promise((resolve, reject) => {
+    const total: number = OrderJSON.total || 0;
+    const subTotal: number = OrderJSON.subTotal || 0;
+    const shippingCost: number = OrderJSON.shippingCost || 0;
+    const percentageDiscount: number = OrderJSON.percentageDiscount || 0;
+    const fixedDiscount: number = OrderJSON.fixedDiscount || 0;
+    const totalDiscounts: number = OrderJSON.totalDiscounts || 0;
+    const OrderLines: Object[] = OrderJSON.lines || [];
 
-  // Tính tổng OrderLines
-  let totalLinesAmount = 0;
-  OrderLines.forEach(line => {
-    if (line.unitPrice * line.quantity !== line.amount) {
-      throw new Error('OrderLine amount không đúng');
+    // Tính tổng OrderLines
+    let totalLinesAmount = 0;
+    OrderLines.forEach(line => {
+      if (line.unitPrice * line.quantity !== line.amount) {
+        return reject(new Error('OrderLine amount không đúng'));
+      }
+      totalLinesAmount += line.amount;
+      return line;
+    });
+
+    // Tính subTotal
+    if (totalLinesAmount !== subTotal) {
+      return reject(new Error('subTotal không đúng'));
     }
-    totalLinesAmount += line.amount;
+
+    // Tính totalDiscounts
+    if (percentageDiscount !== 0 || fixedDiscount !== 0 || totalDiscounts !== 0) {
+      if (totalDiscounts !== (((subTotal * percentageDiscount) / 100) + fixedDiscount)) {
+        return reject(new Error('totalDiscounts không đúng'));
+      }
+    }
+
+    // Tính total
+    if (total !== (subTotal + shippingCost) - totalDiscounts) {
+      return reject(new Error('total không đúng'));
+    }
+
+    return resolve(true);
   });
-
-  // Tính subTotal
-  if (totalLinesAmount !== subTotal) {
-    throw new Error('subTotal không đúng');
-  }
-
-  // Tính totalDiscounts
-  if (percentageDiscount !== 0 || fixedDiscount !== 0 || totalDiscounts !== 0) {
-    if (totalDiscounts !== (((subTotal * percentageDiscount) / 100) + fixedDiscount)) {
-      throw new Error('totalDiscounts không đúng');
-    }
-  }
-
-  // Tính total
-  if (total !== (subTotal + shippingCost) - totalDiscounts) {
-    throw new Error('total không đúng');
-  }
-
-  return true;
 };
 
-const checkCode = async (code: string) => {
+export const checkCode = async (code: string) => {
   const orderQuery = new Parse.Query('Order');
   orderQuery.equalTo('code', code);
   const orderObj = await orderQuery.first({ useMasterKey: true });
@@ -58,46 +62,36 @@ const checkCode = async (code: string) => {
   return true;
 };
 
-const checkProductStatus = (productObj: Object, shopOnOrder: string) => {
-  if (productObj.get('shop') !== 'Tổ Cú' && shopOnOrder !== 'Tổ Cú Online' && productObj.get('shop') !== shopOnOrder) {
-    throw new Error(`Sản phẩm ${productObj.get('code')} đang ở shop ${productObj.get('shop')}`);
+export const checkProductStatus = (productObj: Object, shopOnOrder: string) => {
+  if (productObj.shop !== 'Tổ Cú' && shopOnOrder !== 'Tổ Cú Online' && productObj.shop !== shopOnOrder) {
+    throw new Error(`Sản phẩm ${productObj.code} đang ở shop ${productObj.shop}`);
   }
-  const productStatus = productObj.get('status');
+  const productStatus = productObj.status;
   if (productStatus.indexOf('available') === -1) {
-    throw new Error(`Product ${productObj.id} not available for order`);
+    throw new Error(`Product ${productObj.objectId} status is ${productStatus}, not available for order`);
   }
 
   return true;
 };
 
-const createAddress = async (shippingAddress, customerId: string) => {
-  if (!shippingAddress) {
-    return Promise.resolve(shippingAddress);
-  }
-
-  const userObj = await loaders.user.load(customerId);
-  const addresses = userObj.get('addresses');
-
+export const createAddress = async (shippingAddress: Object, customerId: string, customerAddresses: []) => {
   if (shippingAddress.id) {
-    _.remove(addresses, (item) => {
+    _.remove(customerAddresses, (item) => {
       return item.id === shippingAddress.id;
     });
   } else {
     shippingAddress.id = nodeUUID.v4();
   }
 
-  addresses.unshift(shippingAddress);
+  customerAddresses.unshift(shippingAddress);
 
-  userObj.set('addresses', addresses);
-  return userObj.save(null, { useMasterKey: true })
-  .then(userObjSaved => {
-    loaders.users.clearAll();
-    loaders.user.prime(customerId, userObjSaved);
-    return shippingAddress;
-  });
+  const user = new Parse.User();
+  user.id = customerId;
+  user.set('addresses', customerAddresses);
+  return user.save(null, { useMasterKey: true });
 };
 
-const checkHistory = (history: Object, total: number, shippingAddress) => {
+export const checkHistory = (history: Object, total: number, shippingAddress) => {
   let totalPayments: number = 0;
   let lastHistoryShippingStatus;
 
@@ -122,8 +116,19 @@ const checkHistory = (history: Object, total: number, shippingAddress) => {
   return statusToChange;
 };
 
-Parse.Cloud.beforeSave('Order', async (req, res) => {
+const getCustomerJSON = async (customerId) => {
+  const queryUser = new Parse.Query(Parse.User);
+  const userObj = await queryUser.get(customerId, { useMasterKey: true })
+  .catch(() => {
+    throw new Error(`Customer id ${customerId} not found`);
+  });
+  const customerJSON = userObj.toJSON();
+  return customerJSON;
+};
+
+export const beforeSaveOrder = async (req, res) => {
   const order: Object = req.object;
+  const orderJSON: Object = order.toJSON();
   const shop = order.get('shop');
   let currentOrder;
 
@@ -143,34 +148,41 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
   const lines: Object[] = order.get('lines');
   let linesPromise = () => Promise.resolve(lines);
   if (!currentOrder) {
-    console.log(lines);
     linesPromise = () => Promise.map(lines, async line => {
-      const productObj = await loaders.product.load(line.productId);
-      if (!productObj) throw new Error(`Product ${line.productId} not found`);
+      const productQuery = new Parse.Query('Product');
+      const productObj = await productQuery.get(line.productId, { useMasterKey: true })
+      .catch(() => {
+        throw new Error(`Product ${line.productId} not found`);
+      });
+      const productJSON = productObj.toJSON();
 
-      checkProductStatus(productObj, shop);
-
+      checkProductStatus(productJSON, shop);
       line.boxes = productObj.get('boxes') || [];
       line.tags = productObj.get('tags') || [];
       line.productName = productObj.get('name');
-      console.log('line--->', line);
       return line;
     });
   }
 
   const shippingAddress = order.get('shippingAddress') || null;
-  const customerId = order.get('customer').id;
+
+  let createAddressPromise = Promise.resolve();
+  if (shippingAddress) {
+    const customerId = order.get('customer').id;
+    const customerJSON = await getCustomerJSON(customerId);
+    createAddressPromise = createAddress(shippingAddress, customerJSON.objectId, customerJSON.addresses);
+  }
 
   // Run Promise all
-  const result = await Promise.all([
+  const [, linesResult] = await Promise.all([
     // Check code
     checkCodePromise,
     // Check products
     linesPromise(),
     // Calculator
-    reCalculateOrder(order),
+    reCalculateOrder(orderJSON),
     // Add address to User
-    createAddress(shippingAddress, customerId),
+    createAddressPromise,
   ])
   .catch(err => {
     return res.error(err.message);
@@ -199,22 +211,19 @@ Parse.Cloud.beforeSave('Order', async (req, res) => {
     });
   }
 
-  console.log('--->', result[1]);
-
   // Set other fields
-  order.set('lines', result[1]);
+  order.set('lines', linesResult);
   order.set('history', history);
-  order.set('shippingAddress', result[3]);
   order.set('status', statusToChange);
 
   return res.success();
-});
+};
 
 // AfterSave triggers
 // ==============================
 // [x] Change Product status
 
-const changeProductStatus = async (productId: string, orderStatus: string): Promise => {
+export const changeProductStatus = async (productId: string, orderStatus: string): Promise => {
   const queryProduct = new Parse.Query('Product');
   const productObj = await queryProduct.get(productId, { useMasterKey: true });
   if (!productObj) throw new Error(`Product ${productId} not found`);
@@ -287,7 +296,7 @@ const changeProductStatus = async (productId: string, orderStatus: string): Prom
   return productObj.save(null, { useMasterKey: true });
 };
 
-Parse.Cloud.afterSave('Order', async (req, res) => {
+export const afterSaveOrder = async (req, res) => {
   const order: Object = req.object;
   const orderStatus: string = order.get('status');
   const lines: Object[] = order.get('lines');
@@ -305,9 +314,9 @@ Parse.Cloud.afterSave('Order', async (req, res) => {
   loaders.salesReport.clearAll();
 
   return res.success();
-});
+};
 
-Parse.Cloud.afterDelete('Order', (req, res) => {
+export const afterDeleteOrder = (req, res) => {
   const order = req.object;
 
   // Clear loaders
@@ -318,4 +327,4 @@ Parse.Cloud.afterDelete('Order', (req, res) => {
   loaders.salesReport.clearAll();
 
   res.success();
-});
+};

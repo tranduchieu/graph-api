@@ -84,6 +84,10 @@ const OrderCreateMutation = mutationWithClientMutationId({
     totalWeight: {
       type: GraphQLInt,
     },
+    addPayments: {
+      type: new GraphQLList(PaymentHistoryInputType),
+      defaultValue: [],
+    },
     note: {
       type: GraphQLString,
     },
@@ -105,7 +109,7 @@ const OrderCreateMutation = mutationWithClientMutationId({
       },
     },
   },
-  async mutateAndGetPayload(obj, { loaders, user, roles, accessToken, staffWorkingAt }) {
+  async mutateAndGetPayload(obj, { user, roles, accessToken, staffWorkingAt }) {
     if (!user) throw new Error('Guest không có quyền tạo Order');
 
     // Check quyền admin
@@ -121,11 +125,25 @@ const OrderCreateMutation = mutationWithClientMutationId({
     if (staffWorkingAt && obj.shop !== staffWorkingAt) {
       throw new Error('Shop trong Hóa đơn không đúng với nơi bạn đang làm việc');
     }
+    if (obj.addPayments.length > 0) {
+      obj.history = [];
+      obj.addPayments.forEach(payment => {
+        obj.history.unshift({
+          type: 'addPayment',
+          content: payment,
+          updatedAt: moment().format(),
+          updatedBy: user.id,
+        });
+      });
+    }
 
-    const orderInput = omit(obj, ['clientMutationId']);
+    const orderInput = omit(obj, ['clientMutationId', 'addPayments']);
 
-    const customerObj = await loaders.user.load(localCustomerId);
-    if (!customerObj) throw new Error('Customer not found');
+    const customerQuery = new Parse.Query('User');
+    const customerObj = await customerQuery.get(localCustomerId, { useMasterKey: true })
+    .catch(() => {
+      throw new Error('Customer not found');
+    });
 
     orderInput.customer = customerObj;
     orderInput.createdBy = orderInput.updatedBy = user;
@@ -188,7 +206,7 @@ const OrderUpdateMutation = mutationWithClientMutationId({
       },
     },
   },
-  async mutateAndGetPayload(obj, { loaders, user, roles, accessToken }) {
+  async mutateAndGetPayload(obj, { user, roles, accessToken }) {
     if (!user) throw new Error('Guest không có quyền cập nhật Order');
 
     // Check quyền admin
@@ -199,8 +217,11 @@ const OrderUpdateMutation = mutationWithClientMutationId({
     if (validRoles.length === 0) throw new Error('Không có quyền cập nhật Order');
 
     const { id: orderLocalId } = fromGlobalId(obj.id);
-    const orderObjById = await loaders.order.load(orderLocalId);
-    if (!orderObjById) throw new Error('Order not found');
+    const orderQuery = new Parse.Query('Order');
+    const orderObjById = await orderQuery.get(orderLocalId, { useMasterKey: true })
+    .catch(() => {
+      throw new Error('Order not found');
+    });
 
     // History
     const history = orderObjById.get('history');
