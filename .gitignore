@@ -1,9 +1,10 @@
 node_modules
 coverage
-docker-compose.dev.yml
-docker-compose.prod.yml
+docker-compose.yml
 logs
 data/db
+data/files
+data/backup
 db.js
 files/*
 dist
