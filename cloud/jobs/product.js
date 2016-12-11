@@ -3,7 +3,7 @@ import { readFile } from 'fs';
 import path from 'path';
 import Promise from 'bluebird';
 
-const file = path.join(__dirname, '../../data/files/products.json');
+const file = path.join(__dirname, '../../files/products.json');
 
 async function createProduct(userObj, args) {
   const Product = Parse.Object.extend('Product');

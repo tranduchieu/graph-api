@@ -7,7 +7,7 @@ import Promise from 'bluebird';
 
 // import latenize from '../latenize';
 
-const file = path.join(__dirname, '../../data/files/tocu_kh_30_09_2016_checked.csv');
+const file = path.join(__dirname, '../../files/tocu_kh_30_09_2016_checked.csv');
 
 readFile(file, 'utf8', (err, data) => {
   if (err) console.log(err);
@@ -43,7 +43,7 @@ readFile(file, 'utf8', (err, data) => {
         const newFailedUser = new FailedUser();
         return newFailedUser.save(inputObj, { useMasterKey: true });
       });
-    }, { concurrency: 5 });
+    }, { concurrency: 10 });
   });
 });
 

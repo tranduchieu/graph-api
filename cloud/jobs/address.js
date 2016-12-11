@@ -64,10 +64,10 @@ Parse.Cloud.job('addDistricts', (req, res) => {
 });
 
 Parse.Cloud.job('addWards', (req, res) => {
-  const filesPath = path.join(__dirname, '../../data/files/wards');
+  const filesPath = path.join(__dirname, '../../files/wards');
   return readdir(filesPath, (err, files) => {
     return Promise.each(files, file => {
-      return readFile(path.join(__dirname, `../../data/files/wards/${file}`), 'utf8', (err0, data) => {
+      return readFile(path.join(__dirname, `../../files/wards/${file}`), 'utf8', (err0, data) => {
         if (err0) return res.error(err.message);
 
         const province = file.replace(/.[^.]+$/, '');
