@@ -1,3 +1,4 @@
+import Parse from 'parse/node';
 import {
   GraphQLID,
   GraphQLNonNull,
@@ -112,4 +113,14 @@ export default {
       return connectionFromPromisedArray(loaders.users.load(JSON.stringify(args)), {});
     },
   },
+  usersCount: {
+    type: GraphQLInt,
+    args: {},
+    resolve: usersCountResolve(),
+  },
 };
+
+export function usersCountResolve() {
+  const query = new Parse.Query(Parse.User);
+  return query.count({ useMasterKey: true });
+}

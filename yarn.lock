@@ -3707,9 +3707,9 @@ parse-json@^2.1.0, parse-json@^2.2.0:
   dependencies:
     error-ex "^1.2.0"
 
-parse-mockdb@^0.1.19:
-  version "0.1.19"
-  resolved "https://registry.yarnpkg.com/parse-mockdb/-/parse-mockdb-0.1.19.tgz#726a8625835def8b5d7b9192e193606bba929ec8"
+parse-mockdb@^0.1.20:
+  version "0.1.20"
+  resolved "https://registry.yarnpkg.com/parse-mockdb/-/parse-mockdb-0.1.20.tgz#9788179d8bf3288ce6d727108e5159005a5f0d95"
   dependencies:
     lodash "^4.0.0"
     parse-shim "^1.0.6"

@@ -62,7 +62,13 @@ export const checkCode = async (code: string) => {
   return true;
 };
 
-export const checkProductStatus = (productObj: Object, shopOnOrder: string) => {
+type ProductObjType = {
+  shop: string,
+  status: string,
+  objectId: string,
+}
+
+export const checkProductStatus = (productObj: ProductObjType, shopOnOrder: string) => {
   if (productObj.shop !== 'Tổ Cú' && shopOnOrder !== 'Tổ Cú Online' && productObj.shop !== shopOnOrder) {
     throw new Error(`Sản phẩm ${productObj.code} đang ở shop ${productObj.shop}`);
   }
@@ -132,7 +138,7 @@ export const beforeSaveOrder = async (req, res) => {
   const shop = order.get('shop');
   let currentOrder;
 
-  if (order.id) {
+  if (order.existed()) {
     const orderQuery = new Parse.Query('Order');
     currentOrder = await orderQuery.get(order.id, { useMasterKey: true });
   }
@@ -195,12 +201,12 @@ export const beforeSaveOrder = async (req, res) => {
     try {
       statusToChange = checkHistory(order.get('history'), order.get('total'), shippingAddress) || order.get('status');
     } catch (error) {
-      res.error(error.message);
+      return res.error(error.message);
     }
   }
 
   // Add history
-  if (!currentOrder) {
+  if (order.isNew()) {
     history.push({
       type: 'createOrder',
       content: {

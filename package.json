@@ -50,7 +50,8 @@
     "iflow-lodash": "^1.1.27",
     "iflow-moment": "^1.1.13",
     "jest": "^17.0.3",
-    "jest-cli": "^17.0.3"
+    "jest-cli": "^17.0.3",
+    "parse-mockdb": "^0.1.20"
   },
   "dependencies": {
     "@tranduchieu/graphql-custom-types": "^0.6.8",
@@ -68,12 +69,14 @@
     "lodash": "^4.15.0",
     "moment": "^2.14.1",
     "node-uuid": "^1.4.7",
-    "parse": "^1.9.2",
     "parse-dashboard": "1.0.19",
     "parse-server": "^2.2.24",
     "react": "^15.3.0",
     "react-dom": "^15.3.0",
     "tabletojson": "^0.4.0"
+  },
+  "peerDependencies": {
+    "parse": "^1.9.2"
   },
   "bugs": {
     "url": "https://gitlab.com/tocu/graph-api/issues"

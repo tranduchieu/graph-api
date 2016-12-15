@@ -7,7 +7,7 @@ import loaders from '../graphql/loaders';
 // [x] Check box name
 // [x] Set name toLowerCase
 
-const checkBoxName = (boxName: string): Promise<boolean> => {
+export const checkBoxName = (boxName: string): Promise<boolean> => {
   const boxQuery = new Parse.Query('Box');
   boxQuery.equalTo('name', boxName);
   return boxQuery.first({ useMasterKey: true })
@@ -17,7 +17,7 @@ const checkBoxName = (boxName: string): Promise<boolean> => {
   });
 };
 
-Parse.Cloud.beforeSave('Box', async (req, res) => {
+export const beforeSaveBox = async (req, res) => {
   const box = req.object;
   let currentBox;
 
@@ -40,9 +40,9 @@ Parse.Cloud.beforeSave('Box', async (req, res) => {
   acl.setPublicReadAccess(true);
   box.setACL(acl);
   return res.success();
-});
+};
 
-Parse.Cloud.afterSave('Box', (req, res) => {
+export const afterSaveBox = (req, res) => {
   const box = req.object;
 
   // Clear loaders
@@ -52,10 +52,10 @@ Parse.Cloud.afterSave('Box', (req, res) => {
   loaders.searchsCount.clearAll();
 
   res.success();
-});
+};
 
 
-Parse.Cloud.afterDelete('Box', (req, res) => {
+export const afterDeleteBox = (req, res) => {
   const box = req.object;
 
   // Clear loaders
@@ -65,4 +65,4 @@ Parse.Cloud.afterDelete('Box', (req, res) => {
   loaders.searchsCount.clearAll();
 
   res.success();
-});
+};
